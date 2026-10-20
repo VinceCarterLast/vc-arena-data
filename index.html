@@ -343,8 +343,8 @@ function drawBoards(){BOARDS.forEach((b,i)=>{const ad=adFor(i);
   ctx.font="800 16px 'Barlow Condensed',sans-serif";ctx.fillText(ad?ad.text:"📣 YOUR AD HERE · DM @VC15TRACKER",0,1,b.h-16);ctx.restore()})}
 function boardAt(p){return BOARDS.findIndex(b=>Math.abs(p.x-b.x)<=b.w/2+2&&Math.abs(p.y-b.y)<=b.h/2)}
 // moment pictures on the floor, placed where each play happened (no overlaps)
-const FLOOR_SPOTS={asg:[-392,-68,50],rib:[-392,0,50],fandom:[-392,68,50],origin:[392,-34,50],archive:[392,34,50],
-  tsd:[176,-34,50],cosmic:[176,34,50],galac:[-444,214,36],dallas:[-402,214,36],omega:[-360,214,36]};
+const FLOOR_SPOTS={rib:[-438,-62,46],fandom:[-438,0,46],asg:[-438,62,46],origin:[438,-31,46],archive:[438,31,46],
+  tsd:[176,-34,50],cosmic:[176,34,50],omega:[-444,214,36],galac:[-402,214,36],dallas:[-360,214,36]};
 const PIMG={};for(const k in PLAYS){const im=new Image();im.onload=()=>dirty=true;im.src=PLAYS[k].img;PIMG[k]=im}
 function drawPlays(){
   const sel=selSeat?selSeat.set:null;
@@ -519,6 +519,9 @@ function secName(m){return SHORT[m.set]}
 function panelList(rows){const ul=salePanel.querySelector("ul");
   for(const r of rows){const li=document.createElement("li");li.innerHTML=`<button><span></span><strong></strong><em></em></button>`;
     const b=li.firstChild;b.children[0].innerHTML=r.a;b.children[1].textContent=r.b;b.children[2].textContent=r.c;b.onclick=r.go;ul.appendChild(li)}}
+// average sale price per set (from Top Shot, Oct 20, 2026); promo.json can override with "avg":{...}
+const AVG_SALE={asg:1577.60,tsd:19.19,origin:58.60,archive:3.08,rib:20.50,fandom:13.80,cosmic:2983,galac:550,dallas:313,omega:750};
+const dealTxt=m=>{const r=m.price/AVG_SALE[m.set];const p=Math.round(Math.abs(r-1)*100);return p<1?"at avg sale":r<1?`${p}% below avg sale`:`${p}% above avg sale`};
 function renderSale(){
   const on=["sale","hodl","burn","joined","notable"].includes(filter);salePanel.hidden=!on;document.getElementById("legend").hidden=on;if(!on)return;
   salePanel.className="sale "+filter;
@@ -567,18 +570,20 @@ function renderSale(){
   if(saleSort==="low")show=list.slice().sort((a,b)=>a.price-b.price);
   else if(saleSort==="best")show=list.slice().sort((a,b)=>tierRank[SK[a.set].tier]-tierRank[SK[b.set].tier]||b.price-a.price);
   else show=list.filter(m=>m.price<=floor[m.set]*1.15).sort((a,b)=>tierRank[SK[a.set].tier]-tierRank[SK[b.set].tier]||(b.gold-a.gold)||a.serial-b.serial);
+  const ratio=m=>AVG_SALE[m.set]?m.price/AVG_SALE[m.set]:99;
+  if(saleSort==="deal")show=list.filter(m=>ratio(m)<=2).sort((a,b)=>ratio(a)-ratio(b)||tierRank[SK[a.set].tier]-tierRank[SK[b.set].tier]||a.serial-b.serial);
   const spon=nearSeat?[]:(PROMO.featured||[]).map(f=>SK[f.set]&&SK[f.set].list[f.serial-1]).filter(m=>m&&m.price>0);
   salePanel.innerHTML=`<header><b>${nearSeat?"For sale near "+esc(nearSeat.burned?"this seat":nearSeat.owner.name):"Seats for sale"}</b>
     <small>${list.length.toLocaleString()} listed${nearSeat?" within a few rows":" across the arena"} · green seats on the map</small>
     <div class="tabs"><button data-s="low" class="${saleSort==="low"?"on":""}">Lowest price</button><button data-s="best" class="${saleSort==="best"?"on":""}">Best seats</button><button data-s="deal" class="${saleSort==="deal"?"on":""}">Best deals</button></div>
-    ${saleSort==="deal"?`<small style="display:block;margin-top:6px">Priced within 15% of the lowest ask in their set, best seats first (closest to the court, lowest serials).</small>`:""}</header><ul></ul>
+    ${saleSort==="deal"?`<small style="display:block;margin-top:6px">Ask compared with each set's average sale price on Top Shot (Oct 20, 2026). Lowest % first.</small>`:""}</header><ul></ul>
     <div class="note">📣 Want your listing featured at the top? DM <a href="https://x.com/VC15Tracker" target="_blank" rel="noopener" style="color:var(--gold)">@VC15Tracker</a></div>`;
   const ul=salePanel.querySelector("ul");
   for(const m of spon){const li=document.createElement("li");li.className="spon";
     li.innerHTML=`<button><span><i class="tag">Featured</i> ${SK[m.set].name.replace(" · Debut Club","")} <b>#${m.serial}</b></span><strong>${money(m.price)}</strong><em>Sponsored listing · Row ${m.row} · Seat ${m.seat}</em></button>`;
     li.firstChild.onclick=()=>showSeat(m);ul.appendChild(li)}
   for(const m of show.slice(0,60)){const li=document.createElement("li");
-    li.innerHTML=`<button><span>${SK[m.set].name.replace(" · Debut Club","")} <b>#${m.serial}</b></span><strong>${money(m.price)}</strong><em>${m.gold?"⭐ ":""}Row ${m.row} · Seat ${m.seat}</em></button>`;
+    li.innerHTML=`<button><span>${SK[m.set].name.replace(" · Debut Club","")} <b>#${m.serial}</b></span><strong>${money(m.price)}</strong><em>${m.gold?"⭐ ":""}Row ${m.row} · Seat ${m.seat}${saleSort==="deal"?" · "+dealTxt(m):""}</em></button>`;
     li.firstChild.onclick=()=>showSeat(m);ul.appendChild(li)}
   if(!show.length&&!spon.length)ul.innerHTML='<li style="padding:12px;color:var(--muted);font-size:13px">Nothing listed close by. Try the whole arena.</li>';
   salePanel.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{saleSort=b.dataset.s;renderSale()});
@@ -599,7 +604,7 @@ const momentUrl=m=>{const id=m.token||(TOKENS[m.set]&&TOKENS[m.set][m.serial-1])
 // {"featured":[{"set":"archive","serial":2313}],"ads":[{"text":"YOUR BRAND","url":"https://…"}]}
 let PROMO={featured:[],ads:[]};
 async function loadPromo(){try{const r=await fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/promo.json?t="+Math.floor(Date.now()/60000),{cache:"no-store"});
-  if(r.ok){const d=await r.json();PROMO={featured:Array.isArray(d.featured)?d.featured:[],ads:Array.isArray(d.ads)?d.ads:[]};dirty=true;renderSale()}}catch(e){}}
+  if(r.ok){const d=await r.json();PROMO={featured:Array.isArray(d.featured)?d.featured:[],ads:Array.isArray(d.ads)?d.ads:[]};if(d.avg&&typeof d.avg==="object")for(const k in d.avg)if(k in AVG_SALE&&+d.avg[k]>0)AVG_SALE[k]=+d.avg[k];dirty=true;renderSale()}}catch(e){}}
 loadPromo();setInterval(loadPromo,10*60*1000);
 const LIVE_URL="https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/listings.json";
 const liveTag=document.getElementById("live");
