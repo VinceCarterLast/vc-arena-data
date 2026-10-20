@@ -143,7 +143,7 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
   <button data-f="debut">Debut Club</button>
   <button data-f="lock">🔒 Locked</button>
   <button data-f="joined">📅 Joined Top Shot</button>
-  <button data-f="new26">2026 newcomers</button>
+  <button data-f="new26">🆕 New to Top Shot in 2026</button>
   <div class="match" id="match"></div>
 </nav>
 
@@ -304,7 +304,7 @@ const clampS=s=>Math.max(fitView().s*.6,Math.min(14,s));
 function matches(m){switch(filter){
  case"sale":return m.price>0&&(!nearSeat||Math.hypot(m.x-nearSeat.x,m.y-nearSeat.y)<NEAR);
  case"court":return SK[m.set].tier==="court";case"debut":return !!SK[m.set].debut;case"gold":return m.gold&&!m.burned;case"notable":return !m.burned&&!!notableOf(m.owner);case"hodl":return !m.burned&&!m.pack&&m.yrs>=hodlMin;case"burn":return m.burned;case"lock":return m.locked&&!m.burned;
- case"joined":return !m.burned&&!m.pack&&m.owner.joined===joinYear;case"new26":return !m.burned&&m.owner.firstVc===2026;default:return true}}
+ case"joined":return !m.burned&&!m.pack&&m.owner.joined===joinYear;case"new26":return !m.burned&&!m.pack&&m.owner.joined===2026;default:return true}}
 function seatColor(m){return m.burned?BURN:m.pack?PACK:(filter==="sale"||nearSeat)&&m.price?SALE:filter==="hodl"&&m.yrs>=5?"#9fe3ff":m.gold?GOLD:SK[m.set].color}
 
 function drawCourt(){
@@ -494,7 +494,7 @@ q.addEventListener("keydown",e=>{if(e.key==="Enter"){const f=res.querySelector("
 const match=document.getElementById("match");
 function setFilter(f){document.querySelectorAll("#chips button").forEach(x=>x.classList.toggle("on",x.dataset.f===f));
   if(f!=="sale")nearSeat=null;filter=f;selOwner=null;dirty=true;
-  match.textContent=["all","sale","hodl","burn","joined","notable"].includes(f)?"":`${seats.filter(matches).length.toLocaleString()} seats light up`;renderSale()}
+  match.textContent=["all","sale","hodl","burn","joined","notable"].includes(f)?"":(n=>`${n.toLocaleString()} seat${n===1?" lights":"s light"} up`)(seats.filter(matches).length);renderSale()}
 document.querySelectorAll("#chips button").forEach(b=>b.onclick=()=>{nearSeat=null;setFilter(b.dataset.f)});
 const salePanel=document.getElementById("sale");let saleSort="low";
 function secName(m){return SHORT[m.set]}
@@ -509,10 +509,11 @@ function renderSale(){
     salePanel.innerHTML=`<header><b>🤝 HODL: stay standing if…</b><small>Like the arena game: everyone sits down except seats held at least this long.</small>
       <div class="tabs">${[1,2,3,4,5,6].map(y=>`<button data-y="${y}" class="${hodlMin===y?"on":""}">${y}+ yr</button>`).join("")}</div>
       <span class="stand">${stand.toLocaleString()} of ${held.length.toLocaleString()} seats still standing (${Math.round(stand/held.length*100)}%)</span>
-      <div class="tabs sub"><button data-v="long" class="${hodlView==="long"?"on":""}">Longest holds</button><button data-v="lead" class="${hodlView==="lead"?"on":""}">HODL leaders</button></div></header><ul></ul>
+      <div class="tabs sub"><button data-v="long" class="${hodlView==="long"?"on":""}">Longest holds</button><button data-v="lead" class="${hodlView==="lead"?"on":""}">HODL leaders</button></div>
+      ${hodlView==="lead"?`<small style="display:block;margin-top:8px">HODL score = add up the years each VC moment has been held. Example: 2 moments held 3 years each = 6. More moments held longer = higher score.</small>`:""}</header><ul></ul>
       <div class="note">💎 Diamond hands = held 5+ years (light blue on the map). Locking and unlocking doesn't reset the clock; selling or gifting does.</div>`;
     if(hodlView==="long")panelList(held.filter(m=>m.yrs>=hodlMin).sort((a,b)=>(b===longest)-(a===longest)||b.yrs-a.yrs).slice(0,60).map(m=>({a:`${esc(SK[m.set].name.replace(" · Debut Club",""))} <b>#${m.serial}</b>`,b:m.yrs.toFixed(1)+" yrs",c:`${disp(m.owner.name)} · since ${fmtMonth(m.held)}`,go:()=>showSeat(m)})));
-    else panelList(holders.slice().sort((a,b)=>b.my-a.my).slice(0,60).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:Math.round(o.my).toLocaleString(),c:`moment-years · ${nHeld(o).toLocaleString()} seats`,go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>b.yrs-a.yrs)[0];showSeat(best,true,true)}})));
+    else panelList(holders.slice().sort((a,b)=>b.my-a.my).slice(0,60).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:Math.round(o.my).toLocaleString(),c:`HODL score · ${nHeld(o).toLocaleString()} moment${nHeld(o)===1?"":"s"} · avg ${(o.my/Math.max(1,nHeld(o))).toFixed(1)} yrs held`,go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>b.yrs-a.yrs)[0];showSeat(best,true,true)}})));
     salePanel.querySelectorAll("[data-y]").forEach(b=>b.onclick=()=>{hodlMin=+b.dataset.y;dirty=true;renderSale()});
     salePanel.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{hodlView=b.dataset.v;renderSale()});
     return;
@@ -530,7 +531,7 @@ function renderSale(){
     salePanel.innerHTML=`<header><b>📅 Joined Top Shot in…</b><small>Stand up if you joined in this year. Seats light up for collectors who did.</small>
       <div class="tabs">${yrsList.map(y=>`<button data-j="${y}" class="${joinYear===y?"on":""}">${String(y).slice(2)}</button>`).join("")}</div>
       <span class="stand">${list.length.toLocaleString()} collector${list.length===1?"":"s"} joined in ${joinYear} · ${seatsN.toLocaleString()} seat${seatsN===1?"":"s"}</span></header><ul></ul>
-      <div class="note">Years shown as '20 = 2020. Join date comes from each Top Shot profile; wallets with no username aren't counted.</div>`;
+      <div class="note">Joined = the date the Top Shot account was created (from each profile), not when they bought a VC moment.${joinYear===2026?` Another ${holders.filter(o=>o.firstVc===2026&&o.joined&&o.joined<2026).length} longer-time collectors bought their first VC moment in 2026.`:""} Wallets with no username aren't counted.</div>`;
     panelList(list.slice(0,80).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:nHeld(o).toLocaleString(),c:nHeld(o)>1?"VC seats":"VC seat",go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>SETS.indexOf(SK[a.set])-SETS.indexOf(SK[b.set]))[0];showSeat(best,true,true)}})));
     salePanel.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{joinYear=+b.dataset.j;dirty=true;renderSale()});
     return;
