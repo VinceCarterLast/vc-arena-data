@@ -43,13 +43,14 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .chips button.on{background:var(--gold);color:#1b1608;border-color:var(--gold)}
 .chips button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .match{width:100%;text-align:center;color:var(--muted);font-size:12px}
-.legend{max-height:calc(100% - 220px);overflow:auto;position:fixed;z-index:4;right:max(16px,env(safe-area-inset-right,0px));top:calc(112px + env(safe-area-inset-top,0px));display:grid;gap:5px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px;min-width:200px}
+.legend{max-height:calc(100% - 300px);overflow:auto;position:fixed;z-index:4;right:max(16px,env(safe-area-inset-right,0px));top:calc(112px + env(safe-area-inset-top,0px));display:grid;gap:5px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px;min-width:200px}
 .legend h3{margin:0 0 2px;font:700 11px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .legend div,.legend .lrow{display:flex;align-items:center;gap:8px}
 .legend .lrow{width:100%;background:none;border:0;color:var(--fg);font:inherit;text-align:left;padding:2px 4px;margin:0 -4px;border-radius:5px;cursor:pointer}
 .legend .lrow:hover,.legend .lrow:focus-visible{background:rgba(255,255,255,.08);outline:none}
 .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;flex:none}
 .legend span{color:var(--muted);margin-left:auto;padding-left:10px;font-variant-numeric:tabular-nums}
+.legend .lthumb{width:24px;height:24px;border-radius:4px;flex:none}
 .legend .lnote{margin:0 0 4px;font-size:11px;color:var(--muted)}
 .legend hr{border:0;border-top:1px solid var(--line);margin:3px 0;width:100%}
 .zoom{position:fixed;z-index:5;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(70px + env(safe-area-inset-bottom,0px));display:grid;gap:6px}
@@ -233,7 +234,7 @@ const PLAYS={"asg":{"d":"Feb 12, 2000","s":"NBA All-Star Classics","p":"Dominate
 const ROWS=["AA","A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","V","W","X","Y","Z"];
 const rowName=k=>ROWS[k]||("Z"+(k-ROWS.length+2));
 const SHORT={omega:"OMEGA",galac:"GALACTIC",cosmic:"COSMIC",asg:"ASG",dallas:"DALLAS",origin:"ORIGIN",tsd:"DEBUT",rib:"RIB",fandom:"FANDOM",archive:"ARCHIVE"};
-const GOLDWHY=(m,S)=>m.serial===1?"First mint":m.serial===S.minted?"Last mint":m.serial===15?"Jersey #15":m.serial===25&&S.key==="dallas"?"Dallas jersey #25":"";
+const GOLDWHY=(m,S)=>m.serial===1?"First mint":m.serial===S.minted?"Last mint":m.serial===15&&!["dallas","galac","omega"].includes(S.key)?"Jersey #15":m.serial===25&&S.key==="dallas"?"Dallas jersey #25":"";
 for(const S of SETS)for(const m of S.list){m.gold=!!GOLDWHY(m,S);m.sec=S.key;m.seat=m.serial}
 const labels=[];
 function buildBand(inner,keys,wantRows){
@@ -602,7 +603,7 @@ function renderSale(){
   }
   if(filter==="gold"){
     const g=seats.filter(m=>m.gold).sort((a,b)=>SETS.indexOf(SK[a.set])-SETS.indexOf(SK[b.set])||a.serial-b.serial);
-    salePanel.innerHTML=`<header><b>⭐ Gold seats (special serials)</b><small>${g.length} special serials: #1 (first mint), #15 (his jersey), the last mint of each set, and Dallas #25. They glow gold where their serial puts them. Tap one to fly there.</small></header><ul></ul>`;
+    salePanel.innerHTML=`<header><b>⭐ Gold seats (special serials)</b><small>${g.length} special serials: #1 (first mint), #15 (his jersey, except Dallas), the last mint of each set, and Dallas #25. They glow gold where their serial puts them. Tap one to fly there.</small></header><ul></ul>`;
     panelList(g.map(m=>({a:`<span class="dot" style="background:${SK[m.set].color}"></span>${esc(SK[m.set].name.replace(" · Debut Club",""))} <b>#${m.serial}</b>`,b:m.burned?"Retired":m.price?money(m.price):"",c:`${GOLDWHY(m,SK[m.set])} · ${m.burned?"retired by ":m.pack?"":""}${m.pack?"in a pack":esc(disp(m.owner.name))}`,go:()=>showSeat(m)})));
     return;
   }
@@ -659,7 +660,7 @@ const lg=document.getElementById("legend");
 function goSet(k){setKey=k;setFilter("set");const S=SK[k];match.textContent=`${S.name.replace(" · Debut Club","")} · ${S.minted.toLocaleString()} seats · Rows ${S.list[0].row}–${S.list[S.list.length-1].row}`;
   const xs=S.list.map(m=>m.x),ys=S.list.map(m=>m.y);const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
   const s=clampS(Math.min((W-80)/(x1-x0+80),(H-220)/(y1-y0+80),4));fly({x:(x0+x1)/2,y:(y0+y1)/2,s},900)}
-lg.innerHTML=`<p class="lnote">15,695 moments · 10 editions · 7 plays</p>`+["court","100","200","300"].map(t=>`<h3>${TIERNAME[t]}</h3>`+SETS.filter(s=>s.tier===t).map(s=>`<button class="lrow" data-set="${s.key}"><i style="background:${s.color}"></i>${s.name}<span>${s.minted.toLocaleString()}</span></button>`).join("")).join("")
+lg.innerHTML=`<p class="lnote">15,695 moments · 10 editions · 7 plays</p>`+["court","100","200","300"].map(t=>`<h3>${TIERNAME[t]}</h3>`+SETS.filter(s=>s.tier===t).map(s=>`<button class="lrow" data-set="${s.key}"><img class="lthumb" src="${PLAYS[s.key].img}" alt=""><i style="background:${s.color}"></i>${s.name}<span>${s.minted.toLocaleString()}</span></button>`).join("")).join("")
  +`<hr><div><i style="background:${GOLD}"></i>⭐ Gold seats (special serials: #1, #15, last mint, Dallas #25)<span>${seats.filter(m=>m.gold).length}</span></div><div><i style="background:#9fe3ff"></i>💎 Diamond hands (HODL 5+ yrs)<span>${seats.filter(m=>m.yrs>=5).length.toLocaleString()}</span></div><div><i style="background:${BURN}"></i>🪑 Retired seats<span>${nBurned}</span></div><div><i style="background:${PACK};outline:1px solid #555"></i>Reserved (in packs)<span>${seats.filter(m=>m.pack&&!m.burned).length}</span></div>`;
 
 // ---------- live listings (pushed by the VC sales bot to GitHub) ----------
@@ -724,3 +725,4 @@ requestAnimationFrame(loop);
   VC_MAIN(D);
 })();
 </script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fc4a20ce94824dd2ba5944390faa2ac3"}'></script><!-- End Cloudflare Web Analytics -->
