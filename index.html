@@ -22,9 +22,13 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .brand h1 span{color:var(--gold)}
 .brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
 .sample.live.on{border-color:#2fbf71;color:#2fbf71}
+.sample.live:not(.on){border-color:#6c6a78;color:#9a97a6}
 .sample{display:inline-block;margin-left:6px;padding:1px 7px;border:1px solid var(--fire);color:var(--fire);border-radius:3px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;vertical-align:2px}
-.right{display:flex;gap:8px;align-items:flex-start;width:min(400px,100%)}.right .search{flex:1}
-.statsBtn{white-space:nowrap;font:700 13px var(--body);text-decoration:none;color:#1b1608;background:var(--gold);border-radius:8px;padding:10px 14px}
+.right{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;width:min(560px,100%)}.right .search{flex:1;min-width:200px}
+.statsBtn i{font-style:normal;font:800 9px var(--body);letter-spacing:.08em;background:#ce1141;color:#fff;border-radius:3px;padding:2px 4px;margin-left:4px;vertical-align:1px}
+.soonBtn{white-space:nowrap;font:600 12px var(--body);color:var(--muted);border:1px dashed rgba(255,255,255,.25);border-radius:8px;padding:10px 12px;cursor:default}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(242,201,76,.6)}50%{box-shadow:0 0 0 8px rgba(242,201,76,0)}}
+.statsBtn{animation:pulse 2.2s ease-in-out 6;font:700 13px var(--body);text-decoration:none;color:#1b1608;background:var(--gold);border-radius:8px;padding:10px 14px}
 .search{position:relative;width:min(300px,100%)}
 .search input{width:100%;box-sizing:border-box;font:500 15px var(--body);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px 10px 34px}
 .search input:focus{outline:2px solid var(--gold);outline-offset:1px}
@@ -46,6 +50,7 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .legend .lrow:hover,.legend .lrow:focus-visible{background:rgba(255,255,255,.08);outline:none}
 .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;flex:none}
 .legend span{color:var(--muted);margin-left:auto;padding-left:10px;font-variant-numeric:tabular-nums}
+.legend .lnote{margin:0 0 4px;font-size:11px;color:var(--muted)}
 .legend hr{border:0;border-top:1px solid var(--line);margin:3px 0;width:100%}
 .zoom{position:fixed;z-index:5;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(70px + env(safe-area-inset-bottom,0px));display:grid;gap:6px}
 .zoom button{width:38px;height:38px;border-radius:8px;background:var(--panel);border:1px solid var(--line);color:var(--fg);font:600 18px var(--body);cursor:pointer}
@@ -120,7 +125,7 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
     <h1>The <span>VC</span> Arena</h1>
     <p>15,695 seats, one for every VC moment ever minted.<span class="sample live on" id="asof">Real owners</span><span class="sample live" id="live">Sample listings</span></p>
   </div>
-  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats</a>
+  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><span class="soonBtn" title="Coming soon">🔮 Supply simulator · soon</span>
   <div class="search">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
     <input id="q" type="search" placeholder="Find your seats… try “VinceCarterLast”" autocomplete="off">
@@ -146,7 +151,7 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
   <button data-f="hodl">🤝 HODL</button>
   <button data-f="gold">⭐ Gold seats (special serials)</button>
   <button data-f="burn">🪑 Retired seats</button>
-  <button data-f="notable">🌟 Notable fans</button>
+  <button data-f="notable">📸 Notable fans</button>
   <button data-f="court">Courtside</button>
   <button data-f="debut">Debut Club</button>
   <button data-f="lock">🔒 Locked</button>
@@ -164,13 +169,13 @@ const VC_MAIN=(DATA)=>{
 const SETS=[
  {key:"omega",  name:"Dallas Omega",    tier:"court", minted:1,    burned:0,   color:"#ffffff"},
  {key:"galac",  name:"Dallas Galactic", tier:"court", minted:5,    burned:0,   color:"#bfe9ff"},
+ {key:"dallas", name:"Dallas Standard", tier:"court", minted:44,   burned:1,   color:"#d9a12c"},
  {key:"cosmic", name:"TSD Cosmic",      tier:"court", minted:49,   burned:0,   color:"#f7d774"},
  {key:"asg",    name:"ASG Legendary",   tier:"court", minted:50,   burned:0,   color:"#f0b93a"},
- {key:"dallas", name:"Dallas Standard", tier:"court", minted:44,   burned:1,   color:"#d9a12c"},
  {key:"origin", name:"RIB Origin Rare", tier:"100",   minted:269,  burned:6,   color:"#c2a8ff"},
  {key:"tsd",    name:"TSD Common · Debut Club",tier:"100",minted:3336, burned:1, color:"#e8603c", debut:true},
- {key:"rib",    name:"RIB '05-06 Rare", tier:"200",   minted:990,  burned:38,  color:"#8f6bf0"},
  {key:"fandom", name:"Vintage Vibes Fandom",tier:"200",minted:951, burned:2,   color:"#2fc3b0"},
+ {key:"rib",    name:"RIB '05-06 Rare", tier:"200",   minted:990,  burned:38,  color:"#8f6bf0"},
  {key:"archive",name:"Archive Set",     tier:"300",   minted:10000,burned:329, color:"#525d7c"},
 ];
 const SK=Object.fromEntries(SETS.map(s=>[s.key,s]));
@@ -269,7 +274,7 @@ let r100=buildBand(70,["origin","tsd"]);
 let r200=buildBand(r100+26,["rib","fandom"]);
 let r300=buildBand(r200+30,["archive"],25);
 const OUT=r300;const RING_OUT=OUT+30;
-const WORLD={x0:-(CW+RING_OUT)-30,x1:CW+RING_OUT+30,y0:-(CH+RING_OUT)-370,y1:CH+RING_OUT+30};
+const WORLD={x0:-(CW+RING_OUT)-30,x1:CW+RING_OUT+30,y0:-(CH+RING_OUT)-560,y1:CH+RING_OUT+30};
 
 // spatial hash for clicks
 const GRID=30,hash=new Map();
@@ -290,10 +295,17 @@ const CAREER=[
  {t:"HALL OF FAME",n:"2024",c:"#8a6514",sub:"CLASS OF 2024"},
  {t:"OLYMPIC GOLD",n:"2000",c:"#a07a10",sub:"SYDNEY"},
  {t:"OLYMPIC DUNK",n:"2000",c:"#7a2410",sub:"OVER 7'2\" WEIS"},
- {t:"ALL-STAR",n:"8×",c:"#1f4f8f",sub:"SELECTIONS"},
  {t:"DUNK CONTEST",n:"2000",c:"#5b2a8c",sub:"CHAMPION"},
  {t:"ROOKIE OF THE YEAR",n:"1999",c:"#14504a",sub:"NBA"},
- {t:"FOUR DECADES",n:"4",c:"#2c3550",sub:"ONLY PLAYER EVER"},
+ {t:"ALL-STAR",n:"8×",c:"#1f4f8f",sub:"SELECTIONS"},
+];
+const CAREER2=[
+ {t:"SEASONS",n:"22",c:"#2c3550",sub:"1998 – 2020"},
+ {t:"DECADES PLAYED",n:"'90s–'20s",c:"#3a2f6b",sub:"ONLY PLAYER EVER"},
+ {t:"POINTS",n:"25,728",c:"#1f4f8f",sub:"CAREER"},
+ {t:"THREES MADE",n:"2,290",c:"#14504a",sub:"CAREER"},
+ {t:"GAMES",n:"1,541",c:"#4a3a12",sub:"REGULAR SEASON"},
+ {t:"BUZZER-BEATER 3s",n:"RECORD",c:"#7a2410",sub:"MOST GAME-WINNERS"},
 ];
 const BANNERS=[
  {t:"MINTED",n:nMinted.toLocaleString(),c:"#2c3550",sub:"ALL-TIME"},
@@ -315,7 +327,7 @@ const RING=[];{
 const cv=document.getElementById("arena"),ctx=cv.getContext("2d");
 let setKey=null,joinYear=2020,hodlMin=5,hodlView="long",W=0,H=0,DPR=1,cam={x:0,y:0,s:.3},filter="all",selOwner=null,selSeat=null,anim=null,dirty=true,nearSeat=null;const NEAR=55;
 function resize(){DPR=Math.min(2,window.devicePixelRatio||1);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*DPR;cv.height=H*DPR;dirty=true}
-function fitView(){const top=W<700?90:100,bot=70;const s=Math.min((W-24)/(WORLD.x1-WORLD.x0),(H-top-bot)/(WORLD.y1-WORLD.y0));
+function fitView(){const top=W<700?120:150,bot=70;const s=Math.min((W-24)/(WORLD.x1-WORLD.x0),(H-top-bot)/(WORLD.y1-WORLD.y0));
   return{x:(WORLD.x0+WORLD.x1)/2,y:(WORLD.y0+WORLD.y1)/2-(top-bot)/2/s,s}}
 const toWorld=(sx,sy)=>({x:(sx-W/2)/cam.s+cam.x,y:(sy-H/2)/cam.s+cam.y});
 const clampS=s=>Math.max(fitView().s*.6,Math.min(14,s));
@@ -372,7 +384,7 @@ function drawPlays(){
     ctx.strokeStyle="rgba(0,0,0,.8)";ctx.lineWidth=4;const ty=y+(y>150?-z/2-12:z/2+12),lab=PLAYS[sel].d;ctx.strokeText(lab,x,ty);ctx.fillText(lab,x,ty)}
 }
 function drawRafters(){
-  const rows=[[CAREER,"VINCE CARTER"],[BANNERS,"VINCE CARTER ON TOP SHOT"]],bw=120,bh=150,gap=30;
+  const rows=[[CAREER,"VINCE CARTER · HONOURS"],[CAREER2,"VINCE CARTER · CAREER"],[BANNERS,"VINCE CARTER ON TOP SHOT"]],bw=120,bh=150,gap=30;
   rows.forEach(([list,title],r)=>{const y0=WORLD.y0+30+r*(bh+40),n=list.length,x0=-(n*bw+(n-1)*gap)/2;
     ctx.strokeStyle="rgba(255,255,255,.25)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x0-40,y0);ctx.lineTo(-x0+40,y0);ctx.stroke();
     list.forEach((b,i)=>{const x=x0+i*(bw+gap);
@@ -498,7 +510,7 @@ function showSeat(m,flyTo=true,focus=false){
    <div class="main">
     <div class="ev">VC Arena · ${TIERNAME[S.tier]}${S.debut?" · ★ Debut Club":""}${why?" · ⭐ "+why:""}</div>
     <h2></h2>
-    ${!m.pack&&notableOf(m.seller?{name:m.seller}:o)?`<p class="star">🌟 ${esc(notableOf(m.seller?{name:m.seller}:o).n)} · ${esc(notableOf(m.seller?{name:m.seller}:o).r)}</p>`:""}
+    ${!m.pack&&notableOf(m.seller?{name:m.seller}:o)?`<p class="star">📸 ${esc(notableOf(m.seller?{name:m.seller}:o).n)} · ${esc(notableOf(m.seller?{name:m.seller}:o).r)}</p>`:""}
     <div class="grid"><div><small>Section</small><b>${SHORT[m.set]}</b></div><div><small>Row</small><b>${m.row}</b></div><div><small>Seat</small><b>${m.seat}</b></div></div>
     <p>${S.name.replace(" · Debut Club"," (Series 1)")} <b>#${m.serial}</b> / ${S.minted.toLocaleString()}</p>
     <div class="play"><img src="${PLAYS[m.set].img}" alt=""><div><b>${PLAYS[m.set].d} · ${PLAYS[m.set].s}</b><span>${PLAYS[m.set].p}</span></div></div>
@@ -596,7 +608,7 @@ function renderSale(){
   }
   if(filter==="notable"){
     const list=holders.filter(o=>notableOf(o)).sort((a,b)=>nHeld(b)-nHeld(a));
-    salePanel.innerHTML=`<header><b>🌟 Notable fans</b><small>Public figures known outside Top Shot who hold Vince Carter moments. The coloured squares show which sets they own (same colours as the map legend).</small></header><ul></ul>
+    salePanel.innerHTML=`<header><b>📸 Notable fans</b><small>Public figures known outside Top Shot who hold Vince Carter moments. The coloured squares show which sets they own (same colours as the map legend).</small></header><ul></ul>
       <div class="note">Every collector counts the same in the arena. Know another public figure who collects VC? Tell @VC15Tracker.</div>`;
     panelList(list.map(o=>{const N=notableOf(o);return{a:`${esc(N.n)} ${[...new Set(o.seats.filter(s=>!s.burned).map(s=>s.set))].map(k=>`<span class="dot" title="${esc(SK[k].name)}" style="background:${SK[k].color}"></span>`).join("")}<small style="color:var(--muted)"> @${esc(o.name)}</small>`,b:String(nHeld(o)),c:N.r,go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>SETS.indexOf(SK[a.set])-SETS.indexOf(SK[b.set]))[0];showSeat(best,true,true)}}}));
     return;
@@ -647,7 +659,7 @@ const lg=document.getElementById("legend");
 function goSet(k){setKey=k;setFilter("set");const S=SK[k];match.textContent=`${S.name.replace(" · Debut Club","")} · ${S.minted.toLocaleString()} seats · Rows ${S.list[0].row}–${S.list[S.list.length-1].row}`;
   const xs=S.list.map(m=>m.x),ys=S.list.map(m=>m.y);const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
   const s=clampS(Math.min((W-80)/(x1-x0+80),(H-220)/(y1-y0+80),4));fly({x:(x0+x1)/2,y:(y0+y1)/2,s},900)}
-lg.innerHTML=["court","100","200","300"].map(t=>`<h3>${TIERNAME[t]}</h3>`+SETS.filter(s=>s.tier===t).map(s=>`<button class="lrow" data-set="${s.key}"><i style="background:${s.color}"></i>${s.name}<span>${s.minted.toLocaleString()}</span></button>`).join("")).join("")
+lg.innerHTML=`<p class="lnote">15,695 moments · 10 editions · 7 plays</p>`+["court","100","200","300"].map(t=>`<h3>${TIERNAME[t]}</h3>`+SETS.filter(s=>s.tier===t).map(s=>`<button class="lrow" data-set="${s.key}"><i style="background:${s.color}"></i>${s.name}<span>${s.minted.toLocaleString()}</span></button>`).join("")).join("")
  +`<hr><div><i style="background:${GOLD}"></i>⭐ Gold seats (special serials: #1, #15, last mint, Dallas #25)<span>${seats.filter(m=>m.gold).length}</span></div><div><i style="background:#9fe3ff"></i>💎 Diamond hands (HODL 5+ yrs)<span>${seats.filter(m=>m.yrs>=5).length.toLocaleString()}</span></div><div><i style="background:${BURN}"></i>🪑 Retired seats<span>${nBurned}</span></div><div><i style="background:${PACK};outline:1px solid #555"></i>Reserved (in packs)<span>${seats.filter(m=>m.pack&&!m.burned).length}</span></div>`;
 
 // ---------- live listings (pushed by the VC sales bot to GitHub) ----------
@@ -672,7 +684,7 @@ function applyListings(d,live){
   for(const l of ls){const S=SK[l.set];const m=S&&S.list[l.serial-1];if(!m||!(+l.price>0))continue;
     m.price=+l.price;m.seller=l.seller||null;m.token=l.token||0}
   const when=fmtET(d.updated);
-  liveTag.textContent=`${live?"Live listings":"Listings"} · ${ls.length} · updated ${when}`;
+  liveTag.textContent=`${live?"Live listings":"Listings snapshot"} · ${ls.length} · updated ${when}`;
   liveTag.classList.toggle("on",live);dirty=true;renderSale();
   if(selSeat)showSeat(selSeat,false,focusOwner);return true;
 }
