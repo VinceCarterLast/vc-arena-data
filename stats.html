@@ -50,8 +50,15 @@ tr:last-child td{border-bottom:0}
 .goal .bar{height:14px;background:#22273a;border-radius:7px;overflow:hidden;position:relative}
 .goal .bar i{position:absolute;inset:0 auto 0 0;background:#2f9e6f;border-radius:7px}
 .goal .bar u{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--gold)}
+.bars2{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;margin:4px 0 6px}
+.bars2 .lab{font-size:13px;color:var(--muted);white-space:nowrap}
+.bars2 .track{position:relative;height:22px;background:#22273a;border-radius:6px}
+.bars2 .track i{position:absolute;inset:0 auto 0 0;border-radius:6px}
+.bars2 .track span{position:absolute;right:8px;top:2px;font:800 14px var(--display)}
+.bars2 .track u{position:absolute;top:-5px;bottom:-5px;width:3px;background:var(--gold);border-radius:2px}
 .goal p{margin:8px 0 0;color:var(--muted);font-size:13px}
 tr.future td{color:var(--gold)}
+.explain{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:8px;padding:10px 14px;margin:0 0 12px;font-size:13px;max-width:900px}.explain>b{display:block;margin-bottom:3px}.explain span{color:#cfcbd8}
 .foot{color:var(--muted);font-size:12px;margin-top:30px}
 @media (max-width:520px){.tile b{font-size:26px}}
 </style>
@@ -66,7 +73,9 @@ tr.future td{color:var(--gold)}
   <section class="tiles" id="tiles"></section>
 
   <h2>Every set at a glance</h2>
-  <p class="note">Sorted from rarest to most common. Floor = lowest current ask. "vs avg sale" compares the floor with each set's average sale on Top Shot (Oct 20, 2026). Retired = permanently removed from circulation (burned on Top Shot).</p>
+  <p class="note">Sorted from rarest to most common. Floor = lowest current ask. Retired = permanently removed from circulation (burned on Top Shot).</p>
+  <div class="explain"><b>Moments, editions, plays and parallels</b>
+   <span><b>15,695 moments</b> (each serial is one moment) across <b>10 editions</b>, but only <b>7 different plays</b>. Some plays come in more than one <b>parallel</b>: the TSD Common and TSD Cosmic are the same play (his final shot of the 2020 season), and Dallas Standard, Galactic and Omega are all the same corner three against the Spurs.</span></div>
   <div class="tableWrap"><table id="sets"></table></div>
 
   <h2>Collectors</h2>
@@ -162,7 +171,7 @@ document.getElementById("asof").textContent=`Owners updated ${fmtET(ownersTime)}
 
 // ---- tiles
 const tiles=[
- ["Minted",minted.toLocaleString(),"all-time"],
+ ["Minted",minted.toLocaleString(),"10 editions · 7 plays"],
  ["Existing",(minted-burned).toLocaleString(),`${burned} retired (${pct(burned/minted)})`],
  ["Unique collectors",owners.size.toLocaleString(),`${(held.length/owners.size).toFixed(1)} moments each on average`],
  ["Listed for sale",pct(listings.length/held.length),`${listings.length} of ${held.length.toLocaleString()} held`],
@@ -183,10 +192,9 @@ const rows=SETS.map(S=>{const ss=seats.filter(m=>m.set===S.k),h=ss.filter(m=>!m.
   const hold=new Set(h.map(m=>m.o)).size;
   return `<tr><td><span class="dot" style="background:${S.c}"></span>${S.n}</td><td>${ss.length.toLocaleString()}</td><td>${ss.filter(m=>m.burned).length}</td><td>${hold.toLocaleString()}</td>
    <td>${ls.length} <span style="color:var(--muted)">(${h.length?pct(ls.length/h.length):"–"})</span></td><td>${h.length?pct(h.filter(m=>m.locked).length/h.length):"–"}</td>
-   <td>${floor?money(floor):"<span style='color:var(--muted)'>none</span>"}</td><td>${AVG[S.k]?money(AVG[S.k]):"–"}</td>
-   <td class="${r===null?"":r<=1?"good":r>2?"warn":""}">${r===null?"–":(r<1?Math.round((1-r)*100)+"% below":Math.round((r-1)*100)+"% above")}</td></tr>`}).join("");
-document.getElementById("sets").innerHTML=`<tr><th>Set</th><th>Minted</th><th>Retired</th><th>Collectors</th><th>Listed</th><th>Locked</th><th>Floor</th><th>Avg sale</th><th>Floor vs avg sale</th></tr>${rows}
- <tr><td><b>Cost to own one of every set</b></td><td colspan="5" style="text-align:left;color:var(--muted)">${missing.length?"not counting "+missing.join(", ")+" (nothing listed)":""}</td><td><b>${money(total)}</b></td><td></td><td></td></tr>`;
+   <td>${floor?money(floor):"<span style='color:var(--muted)'>none</span>"}</td></tr>`}).join("");
+document.getElementById("sets").innerHTML=`<tr><th>Set</th><th>Minted</th><th>Retired</th><th>Collectors</th><th>Listed</th><th>Locked</th><th>Floor</th></tr>${rows}
+ <tr><td><b>Cost to own one of every set</b></td><td colspan="5" style="text-align:left;color:var(--muted)">${missing.length?"not counting "+missing.join(", ")+" (nothing listed)":""}</td><td><b>${money(total)}</b></td></tr>`;
 
 // ---- bar chart helper (single series, SVG, hover tooltip)
 const tip=document.getElementById("tip");
@@ -243,8 +251,11 @@ function short(v){return v>=1000?(v/1000).toFixed(v%1000?1:0)+"k":String(v)}
  const ahead=r-mint;
  document.getElementById("goal").innerHTML=`<div class="big">🎯 ${Y} goal: retire more VC moments than are minted</div>
   <div class="row"><div><b>${mint}</b>minted in ${Y}</div><div><b>${r}</b>retired so far</div><div><b>${ahead>0?"+"+ahead:ahead===0?"Tied":need}</b>${ahead>0?"ahead, but the year isn't over":ahead===0?"one more retirement puts us ahead":"more to retire to reach the goal"}</div><div><b>${left}</b>days left in ${Y}</div></div>
-  <div class="bar"><i style="width:${Math.min(100,r/Math.max(1,mint+1)*100*0.85)}%"></i><u style="left:85%"></u></div>
-  <p>The gold line is the goal: <b>${mint+1}</b> retired to beat the ${mint} minted. ${ahead>0?`We're just past it, but it isn't locked in until Dec 31. Any new VC mint before then raises the target, so every extra retirement helps.`:`Top Shot trade-in events and collectors retiring moments on their own both count.`}</p>`;}
+  <div class="bars2">
+   <div class="lab">Minted in ${Y}</div><div class="track"><i style="width:${mint/Math.max(mint+1,r)*100}%;background:#8a8798"></i><span>${mint}</span></div>
+   <div class="lab">Retired in ${Y}</div><div class="track"><i style="width:${r/Math.max(mint+1,r)*100}%;background:#2f9e6f"></i><span>${r}</span><u style="left:${(mint+1)/Math.max(mint+1,r)*100}%"></u></div>
+  </div>
+  <p>The goal is reached when the green <b>Retired</b> bar passes the grey <b>Minted</b> bar. The gold mark shows the finish line: <b>${mint+1}</b> retired. ${ahead>0?`We're just past it, but any new VC mint before Dec 31 raises the target.`:`Top Shot trade-in events and collectors retiring moments on their own both count.`}</p>`;}
 // big retirement events
 document.getElementById("events").innerHTML=`<tr><th>When</th><th style="text-align:left">Event</th><th style="text-align:left">What happened</th><th>Retired</th></tr>`+
  EVENTS.map(e=>`<tr class="${e.future?"future":""}"><td style="text-align:left">${e.when}</td><td style="text-align:left">${e.future?"🎯 ":""}${esc(e.what)}</td><td style="text-align:left;white-space:normal">${esc(e.how)}</td><td>${e.n}</td></tr>`).join("");
@@ -267,7 +278,7 @@ const RELEASE={};for(const m of seats)if(m.t&&!m.burned)RELEASE[m.set]=Math.min(
 function strength(a){let num=0,den=0;for(const m of a){const age=(NOW-(DAY0+RELEASE[m.set]*DAY));if(age<=0||!m.t)continue;num+=Math.min(age,NOW-(DAY0+m.t*DAY));den+=age}return den?num/den:0}
 // top holders
 {const top=[...owners.entries()].sort((a,b)=>b[1].length-a[1].length).slice(0,10);
- document.getElementById("top").innerHTML=`<tr><th>#</th><th style="text-align:left">Collector</th><th>VC moments</th><th>Share of supply</th><th>Collecting VC since</th><th>Joined Top Shot</th></tr>`+
+ document.getElementById("top").innerHTML=`<tr><th>#</th><th style="text-align:left">Collector</th><th>VC moments</th><th>Share of all VC moments held</th><th>Collecting VC since</th><th>Joined Top Shot</th></tr>`+
   top.map(([o,a],i)=>`<tr><td>${i+1}</td><td style="text-align:left"><a href="https://nbatopshot.com/collection/${encodeURIComponent(D.names[o])}" target="_blank" rel="noopener">${esc(disp(D.names[o]))}</a></td><td>${a.length.toLocaleString()}</td><td>${pct(a.length/held.length)}</td><td>${(()=>{const t=Math.min(...a.map(m=>m.t||1e9));if(t>=1e9)return "–";const d=new Date(DAY0+t*DAY);return MON[d.getUTCMonth()]+" "+d.getUTCFullYear()})()}</td><td>${D.joined[o]||"–"}</td></tr>`).join("")}
 })();
 </script>
