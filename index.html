@@ -26,6 +26,7 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .sample{display:inline-block;margin-left:6px;padding:1px 7px;border:1px solid var(--fire);color:var(--fire);border-radius:3px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;vertical-align:2px}
 .right{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;width:min(560px,100%)}.right .search{flex:1;min-width:200px}
 .statsBtn i{font-style:normal;font:800 9px var(--body);letter-spacing:.08em;background:#ce1141;color:#fff;border-radius:3px;padding:2px 4px;margin-left:4px;vertical-align:1px}
+.tlBtn{white-space:nowrap;font:700 13px var(--body);color:#fff;background:#ce1141;border:0;border-radius:8px;padding:10px 14px;cursor:pointer}
 .soonBtn{white-space:nowrap;font:600 12px var(--body);color:var(--muted);border:1px dashed rgba(255,255,255,.25);border-radius:8px;padding:10px 12px;cursor:default}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(242,201,76,.6)}50%{box-shadow:0 0 0 8px rgba(242,201,76,0)}}
 .statsBtn{animation:pulse 2.2s ease-in-out 6;font:700 13px var(--body);text-decoration:none;color:#1b1608;background:var(--gold);border-radius:8px;padding:10px 14px}
@@ -110,6 +111,14 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .ticket .star{margin:-4px 0 6px;font-weight:700;color:#8a5a00}
 .ticket .hold{color:#6b5310;font-weight:600}
 .ticket .who{margin-top:4px;padding-top:4px;border-top:1px dashed #c9bfa8;color:#5a5244}
+.tlbar{position:fixed;z-index:8;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px;width:min(760px,calc(100% - 32px))}
+.tlbar button,.tlbar select{font:700 13px var(--body);color:var(--fg);background:#22273a;border:1px solid var(--line);border-radius:8px;padding:7px 11px;cursor:pointer}
+.tlbar #tlPlay{background:var(--gold);color:#1b1608;min-width:44px}
+.tlbar #tlRec{background:#ce1141;color:#fff;border-color:#ce1141}
+.tlbar input[type=range]{flex:1;min-width:160px;accent-color:#f2c94c}
+.tlbar #tlMsg{width:100%;text-align:center;font-size:12px;color:var(--muted)}
+body.tl .top,body.tl .chips,body.tl .legend,body.tl .sale,body.tl .ticket,body.tl .zoom{display:none!important}
+body.rec #arena{width:1280px!important;height:720px!important;inset:auto!important;left:50%!important;top:calc(50% - 40px)!important;transform:translate(-50%,-50%);box-shadow:0 0 0 2px #ce1141}
 .cert{position:fixed;inset:0;z-index:20;background:rgba(5,6,10,.82);display:grid;place-items:center;padding:16px}
 .cert-in{max-width:min(900px,100%);display:grid;gap:10px}
 .cert img{width:100%;height:auto;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
@@ -126,7 +135,7 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
     <h1>The <span>VC</span> Arena</h1>
     <p>15,695 seats, one for every VC moment ever minted.<span class="sample live on" id="asof">Real owners</span><span class="sample live" id="live">Sample listings</span></p>
   </div>
-  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><span class="soonBtn" title="Coming soon">🔮 Supply simulator · soon</span>
+  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><button class="tlBtn" id="tlOpen">▶ Timelapse</button><span class="soonBtn" title="Coming soon">🔮 Supply simulator · soon</span>
   <div class="search">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
     <input id="q" type="search" placeholder="Find your seats… try “VinceCarterLast”" autocomplete="off">
@@ -144,6 +153,14 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 </div>
 
 <section class="ticket" id="ticket" hidden></section>
+<div class="tlbar" id="tlbar" hidden>
+  <button id="tlPlay" aria-label="Play">▶</button>
+  <input type="range" id="tlScrub" min="0" max="1000" value="0" aria-label="Timeline">
+  <select id="tlSpeed" aria-label="Speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
+  <button id="tlRec">🎬 Record video</button>
+  <button id="tlExit">✕ Exit</button>
+  <span id="tlMsg"></span>
+</div>
 <div class="cert" id="cert" hidden><div class="cert-in"><img id="certimg" alt="Certificate of Retirement"><div class="cert-btns"><a id="certdl" download="vc-arena-certificate.png">Download</a><a id="certx2" target="_blank" rel="noopener" class="xbtn">Share on X</a><button id="certx">Close</button></div></div></div>
 
 <nav class="chips" id="chips">
@@ -386,6 +403,7 @@ function drawPlays(){
 }
 function drawRafters(){
   const rows=[[CAREER,"VINCE CARTER · HONOURS"],[CAREER2,"VINCE CARTER · CAREER"],[BANNERS,"VINCE CARTER ON TOP SHOT"]],bw=120,bh=150,gap=30;
+  if(TL.on)return;
   rows.forEach(([list,title],r)=>{const y0=WORLD.y0+30+r*(bh+40),n=list.length,x0=-(n*bw+(n-1)*gap)/2;
     ctx.strokeStyle="rgba(255,255,255,.25)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x0-40,y0);ctx.lineTo(-x0+40,y0);ctx.stroke();
     list.forEach((b,i)=>{const x=x0+i*(bw+gap);
@@ -407,7 +425,7 @@ function draw(){
   const buckets=new Map(),dimBuckets=new Map();
   for(const m of seats){
     if(m.x<v0.x-10||m.x>v1.x+10||m.y<v0.y-10||m.y>v1.y+10)continue;
-    const c=seatColor(m);const B=(fil&&!matches(m))||(focusOwner&&selOwner&&m.owner!==selOwner)?dimBuckets:buckets;
+    const c=TL.on?tlColor(m):seatColor(m);const B=TL.on?buckets:(fil&&!matches(m))||(focusOwner&&selOwner&&m.owner!==selOwner)?dimBuckets:buckets;
     if(!B.has(c))B.set(c,[]);B.get(c).push(m);
   }
   ctx.globalAlpha=.16;for(const[c,arr]of dimBuckets){ctx.fillStyle=c;for(const m of arr)ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT)}
@@ -424,11 +442,11 @@ function draw(){
   if(cam.s>1.1){ctx.font="600 3.6px Barlow,sans-serif";
     for(const r of RING){if(r.x<v0.x-30||r.x>v1.x+30||r.y<v0.y-30||r.y>v1.y+30)continue;
       ctx.fillStyle=(selOwner===r.o)?GOLD:"rgba(255,140,130,.85)";ctx.save();ctx.translate(r.x,r.y);let a=r.a;if(a>Math.PI/2||a<-Math.PI/2)a+=Math.PI;ctx.rotate(a);ctx.fillText(r.s,0,0);ctx.restore()}}
-  else if(cam.s>.2){const p2=rrPath(CW+OUT+17,CH+OUT+17,70+OUT+17);ctx.font=`700 ${Math.max(9,10/cam.s)}px 'Barlow Condensed',sans-serif`;ctx.fillStyle="rgba(255,140,130,.8)";
+  else if(cam.s>.2&&!TL.on){const p2=rrPath(CW+OUT+17,CH+OUT+17,70+OUT+17);ctx.font=`700 ${Math.max(9,10/cam.s)}px 'Barlow Condensed',sans-serif`;ctx.fillStyle="rgba(255,140,130,.8)";
     for(const u of [.5]){const[x,y]=p2.at(u);ctx.fillText(`RING OF RETIREES · ${retirers.length} COLLECTORS · ZOOM IN`,x,y)}}
   ctx.restore();
   // gold rings on special serials
-  if(cam.s>.8){ctx.strokeStyle=GOLD;ctx.lineWidth=1.2;for(const arr of buckets.values())for(const m of arr)if(m.gold&&!m.burned)ctx.strokeRect(m.x-hs-1.2,m.y-hs-1.2,SEAT+2.4,SEAT+2.4)}
+  if(cam.s>.8&&!TL.on){ctx.strokeStyle=GOLD;ctx.lineWidth=1.2;for(const arr of buckets.values())for(const m of arr)if(m.gold&&!m.burned)ctx.strokeRect(m.x-hs-1.2,m.y-hs-1.2,SEAT+2.4,SEAT+2.4)}
   if(selOwner){ctx.strokeStyle="#fff";ctx.lineWidth=1.6/cam.s*2;ctx.shadowColor="#f2c94c";ctx.shadowBlur=14;
     for(const m of selOwner.seats)ctx.strokeRect(m.x-hs-1,m.y-hs-1,SEAT+2,SEAT+2);ctx.shadowBlur=0}
   if(selSeat){ctx.strokeStyle="#f2c94c";ctx.lineWidth=2.4/cam.s*2;ctx.strokeRect(selSeat.x-hs-2.5,selSeat.y-hs-2.5,SEAT+5,SEAT+5)}
@@ -444,6 +462,7 @@ const ZONES=[];{
 let TAGS=[];
 function drawPriceTags(){
   TAGS=[];
+  if(TL.on){drawTL();return}
   if(!(filter==="all"||filter==="sale")||nearSeat)return;
   const items=[];
   if(cam.s>1.3){const v0=toWorld(0,0),v1=toWorld(W,H);
@@ -464,7 +483,64 @@ function drawPriceTags(){
     ctx.fillStyle="#14161f";ctx.fillText(txt,x0+19,y0+hgt/2+1)}
 }
 function tagAt(cx,cy){const r=cv.getBoundingClientRect(),x=cx-r.left,y=cy-r.top;return TAGS.find(t=>x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h)}
+// ---------- timelapse: 2020 → today, seats appear at each drop and turn red when retired ----------
+const TL={on:false,playing:false,day:0,speed:1,last:0,hold:0,rec:null};
+const DROP={};for(const m of seats){const d=Math.min(m.held||1e9,m.burnedAt||1e9);if(d<1e9)DROP[m.set]=Math.min(DROP[m.set]??1e9,d)}
+for(const S of SETS)S.list.forEach(m=>{m.appear=(DROP[m.set]??0)+Math.floor((m.serial-1)/S.minted*20);if(m.burned&&m.burnedAt&&m.burnedAt<m.appear)m.appear=m.burnedAt})
+const TL_START=Math.min(...Object.values(DROP))-20,TL_END=Math.floor((Date.now()-DAY0)/DAY);
+const dayOfYM=(y,m,d=1)=>Math.floor((Date.UTC(y,m-1,d)-DAY0)/DAY);
+const CAPS=[
+ {day:DROP.tsd,t:"Top Shot beta · TSD Series 1 drops: 3,336 Common + 49 Cosmic"},
+ {day:Math.min(DROP.rib,DROP.fandom,DROP.archive),t:"RIB '05-06, Vintage Vibes and the 10,000 Archive Set drop"},
+ {day:DROP.asg,t:"ASG Legendary drops: the 2000 Dunk Contest"},
+ {day:dayOfYM(2023,8,20),t:"Archive Pack leaderboard · collectors retire VC moments"},
+ {day:DROP.origin,t:"RIB Origins drops: Mount Mutombo"},
+ {day:dayOfYM(2024,11,1),t:"Raptors Legend crafting challenge · 153 retired in a month"},
+ {day:DROP.dallas,t:"Dallas Playoff Classics drop: Standard, Galactic and Omega"},
+ {day:dayOfYM(2026,8,1),t:"RIB Origins trade-ins · 41 retired"},
+].filter(c=>c.day).sort((a,b)=>a.day-b.day);
+function tlColor(m){if(TL.day<m.appear)return "#1a1e2b";if(m.burned&&m.burnedAt&&m.burnedAt<=TL.day)return TL.day-m.burnedAt<25?"#ff7a6b":BURN;return SK[m.set].color}
+function tlCounts(){let minted=0,ret=0;for(const m of seats){if(m.appear<=TL.day)minted++;if(m.burned&&m.burnedAt&&m.burnedAt<=TL.day)ret++}return{minted,ret}}
+function drawTL(){
+  ctx.setTransform(DPR,0,0,DPR,0,0);const d=dateOf(Math.max(TL.day,TL_START)),{minted,ret}=tlCounts(),cx=W/2,big=Math.max(34,Math.min(72,W/16));
+  ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(11,13,20,.72)";ctx.fillRect(0,0,W,big*2.35);
+  ctx.fillStyle="#f2c94c";ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;ctx.fillText(`${MON[d.getUTCMonth()].toUpperCase()} ${d.getUTCFullYear()}`,cx,big*1.05);
+  ctx.fillStyle="#f1ede4";ctx.font=`700 ${big*.42}px Barlow,sans-serif`;ctx.fillText(`${(minted-ret).toLocaleString()} VC moments in circulation`,cx,big*1.62);
+  ctx.fillStyle="#9a97a6";ctx.font=`600 ${big*.27}px Barlow,sans-serif`;ctx.fillText(`${minted.toLocaleString()} minted  ·  ${ret.toLocaleString()} retired`,cx,big*2.05);
+  const cap=[...CAPS].reverse().find(c=>TL.day>=c.day&&TL.day-c.day<75);
+  if(cap){ctx.font=`700 ${Math.max(14,big*.3)}px Barlow,sans-serif`;const w=ctx.measureText(cap.t).width+36,y=H-(document.body.classList.contains("rec")?40:110);
+    ctx.fillStyle="rgba(206,17,65,.92)";ctx.beginPath();ctx.roundRect?ctx.roundRect(cx-w/2,y-22,w,40,20):ctx.rect(cx-w/2,y-22,w,40);ctx.fill();ctx.fillStyle="#fff";ctx.textBaseline="middle";ctx.fillText(cap.t,cx,y-2)}
+  ctx.textAlign="right";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.32)}px 'Barlow Condensed',sans-serif`;ctx.fillText("VC15TRACKER.COM",W-14,H-(document.body.classList.contains("rec")?12:80));
+  scrub.value=Math.round((TL.day-TL_START)/(TL_END-TL_START)*1000);
+}
+const tlbar=document.getElementById("tlbar"),scrub=document.getElementById("tlScrub"),tlPlay=document.getElementById("tlPlay"),tlMsg=document.getElementById("tlMsg");
+function fitBowl(){const big=Math.max(34,Math.min(72,W/16)),top=big*2.35+12,bot=document.body.classList.contains("rec")?50:110,hw=CW+RING_OUT+20,hh=CH+RING_OUT+20;
+  const s=Math.min((W-24)/(2*hw),(H-top-bot)/(2*hh));return{x:0,y:-((top-bot)/2)/s,s}}
+const DAYS_PER_SEC=(TL_END-TL_START)/34;   // whole story in ~34 s at 1×
+function tlOpen(){TL.on=true;TL.day=TL_START;TL.playing=false;document.body.classList.add("tl");tlbar.hidden=false;clearSel();setFilter("all");cam=fitBowl();dirty=true;tlPlay.textContent="▶";tlMsg.textContent="Press ▶ to watch VC supply from 2020 to today."}
+function tlExit(){if(TL.rec)return;TL.on=false;TL.playing=false;document.body.classList.remove("tl");tlbar.hidden=true;cam=fitView();dirty=true}
+function tlTick(t){if(!TL.on||!TL.playing){TL.last=t;return}const dt=Math.min(.1,(t-(TL.last||t))/1000);TL.last=t;
+  if(TL.day<TL_END){TL.day=Math.min(TL_END,TL.day+dt*DAYS_PER_SEC*TL.speed)}else{TL.hold+=dt;if(TL.hold>2.5){TL.playing=false;tlPlay.textContent="↺";if(TL.rec)TL.rec.stop()}}dirty=true}
+document.getElementById("tlOpen").onclick=tlOpen;document.getElementById("tlExit").onclick=tlExit;
+tlPlay.onclick=()=>{if(TL.day>=TL_END){TL.day=TL_START}TL.hold=0;TL.playing=!TL.playing;tlPlay.textContent=TL.playing?"⏸":"▶"};
+scrub.oninput=()=>{TL.day=TL_START+(TL_END-TL_START)*scrub.value/1000;TL.hold=0;dirty=true};
+document.getElementById("tlSpeed").onchange=e=>TL.speed=+e.target.value;
+// record the canvas as a video (1280×720 frame, so it fits X)
+document.getElementById("tlRec").onclick=()=>{
+  if(TL.rec){TL.rec.stop();return}
+  if(!cv.captureStream||!window.MediaRecorder){tlMsg.textContent="Recording isn't supported in this browser. Try Chrome, or screen-record (Windows key + Shift + 5).";return}
+  const types=["video/mp4;codecs=avc1.42E01E","video/mp4","video/webm;codecs=vp9","video/webm"],type=types.find(t=>MediaRecorder.isTypeSupported(t));
+  if(!type){tlMsg.textContent="Recording isn't supported here. Try Chrome.";return}
+  document.body.classList.add("rec");DPR=1.5;resize();DPR=1.5;cv.width=1920;cv.height=1080;W=1280;H=720;cam=fitBowl();
+  const chunks=[],rec=new MediaRecorder(cv.captureStream(30),{mimeType:type,videoBitsPerSecond:8e6});TL.rec=rec;
+  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  rec.onstop=()=>{const ext=type.includes("mp4")?"mp4":"webm",blob=new Blob(chunks,{type:type.split(";")[0]}),fn=`vc-arena-timelapse.${ext}`;TL.rec=null;
+    document.body.classList.remove("rec");resize();cam=fitBowl();dirty=true;document.getElementById("tlRec").textContent="🎬 Record video";
+    if(DLNS){DLNS.save({filename:fn,data:blob}).catch(()=>{})}else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove()}
+    tlMsg.textContent=ext==="mp4"?"Saved! The video is ready to post on X.":"Saved as .webm. X needs .mp4, so convert it first (or use Chrome, which saves .mp4)."};
+  TL.day=TL_START;TL.hold=0;TL.playing=true;tlPlay.textContent="⏸";document.getElementById("tlRec").textContent="⏹ Stop";tlMsg.textContent="Recording… keep this tab open until it finishes.";rec.start(500)};
 function loop(t){
+  tlTick(t);
   if(anim){const k=Math.min(1,(t-anim.t0)/anim.d),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
     cam.x=anim.a.x+(anim.b.x-anim.a.x)*e;cam.y=anim.a.y+(anim.b.y-anim.a.y)*e;cam.s=Math.exp(Math.log(anim.a.s)+(Math.log(anim.b.s)-Math.log(anim.a.s))*e);
     if(k>=1)anim=null;dirty=true}
