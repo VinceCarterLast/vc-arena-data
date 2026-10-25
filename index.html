@@ -247,9 +247,9 @@ const SETS=[
  {key:"galac",  name:"Dallas Galactic", tier:"court", minted:5,    burned:0,   color:"#ffffff"},
  {key:"dallas", name:"Dallas Standard", tier:"court", minted:44,   burned:1,   color:"#3d9be9"},
  {key:"cosmic", name:"TSD Cosmic",      tier:"court", minted:49,   burned:0,   color:"#7b3fe4"},
- {key:"asg",    name:"ASG Legendary",   tier:"court", minted:50,   burned:0,   color:"#c47a2c"},
+ {key:"asg",    name:"ASG Legendary",   tier:"court", minted:50,   burned:0,   color:"#1fb2a6"},
  {key:"origin", name:"RIB Origin Rare", tier:"100",   minted:269,  burned:6,   color:"#8a4fe0"},
- {key:"tsd",    name:"TSD Common · Debut Club",tier:"100",minted:3336, burned:1, color:"#8e2a36", debut:true},
+ {key:"tsd",    name:"TSD Common · Debut Club",tier:"100",minted:3336, burned:1, color:"#2f9a5c", debut:true},
  {key:"fandom", name:"Vintage Vibes Fandom",tier:"200",minted:951, burned:2,   color:"#f7a8cf"},
  {key:"rib",    name:"RIB '05-06 Rare", tier:"200",   minted:990,  burned:38,  color:"#2a4fd6"},
  {key:"archive",name:"Archive Set",     tier:"300",   minted:10000,burned:329, color:"#4f5768"},
@@ -512,9 +512,9 @@ function draw(){
   ctx.globalAlpha=1;for(const[c,arr]of buckets){if(c===BURN&&!TL.on)continue;ctx.fillStyle=c;for(const m of arr)ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT)}
   {const arr=!TL.on&&buckets.get(BURN);if(arr){ctx.save();ctx.shadowColor="#ff1f3a";ctx.shadowBlur=Math.min(16,5+cam.s*4)*DPR;ctx.fillStyle="#ff2a40";
     for(const m of arr)ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT);ctx.restore();ctx.fillStyle="rgba(255,190,195,.9)";const c=SEAT*.34;for(const m of arr)ctx.fillRect(m.x-c/2,m.y-c/2,c,c)}}
-  // Cosmic: purple seat with an orange centre (its set art); ASG: bronze with a shine (the Hall of Fame statue)
+  // Cosmic: purple seat with an orange centre (its set art); ASG: teal with a shine
   {const arr=buckets.get(SK.cosmic.color);if(arr){ctx.fillStyle="#ff7a2a";for(const m of arr)ctx.fillRect(m.x-hs*.42,m.y-hs*.42,SEAT*.42,SEAT*.42)}}
-  {const arr=buckets.get(SK.asg.color);if(arr){ctx.fillStyle="rgba(255,226,170,.85)";for(const m of arr)ctx.fillRect(m.x-hs+SEAT*.14,m.y-hs+SEAT*.14,SEAT*.3,SEAT*.22)}}
+  {const arr=buckets.get(SK.asg.color);if(arr){ctx.fillStyle="rgba(225,255,250,.8)";for(const m of arr)ctx.fillRect(m.x-hs+SEAT*.14,m.y-hs+SEAT*.14,SEAT*.3,SEAT*.22)}}
   // zoomed in close: dark seat, moment picture, thin set-colour border (gold seats get a thick gold frame), serial underneath
   const PIC=cam.s>3.6;
   if(PIC){ctx.textAlign="center";ctx.textBaseline="middle";
@@ -775,7 +775,7 @@ function collectorInfo(o){
    {i:"🔒",n:"Locker",d:"Has at least one VC moment locked",on:locked>0,x:locked?`${locked.toLocaleString()} locked`:""},
    {i:"⭐",n:"Gold seat",d:"Owns a special serial (#1, #15, last mint, Dallas #25)",on:held.some(s=>s.gold),x:""},
    {i:"🌅",n:"OG",d:"Has held a VC moment since 2021 or earlier",on:held.some(s=>s.held&&dateOf(s.held).getUTCFullYear()<=2021),x:""},
-   {i:"🍼",n:"Rookie",d:"Owns the RIB Origin rookie moment (Mount Mutombo, 1999)",on:sets.has("origin"),x:""},
+   {i:"🦖",n:"Rookie",d:"Owns the RIB Origin rookie moment (Raptors, 1999)",on:sets.has("origin"),x:""},
    {i:"★",n:"Debut",d:"Owns a TSD Debut moment from Top Shot's first series",on:sets.has("tsd"),x:""},
    {i:"🎁",n:"Gifter",d:"Gave a VC moment to another collector",on:!!(GIFTS&&GIFTS.sent[o.name]),x:GIFTS&&GIFTS.sent[o.name]?`×${GIFTS.sent[o.name]}`:"",soon:!GIFTS},
    {i:"🤝",n:"Never sold",d:"Has never sold a VC moment (gifts don't count)",on:o.sold===0&&held.length>0,soon:o.sold===null},
