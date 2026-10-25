@@ -154,6 +154,12 @@ body.simu .top,body.simu .chips,body.simu .legend,body.simu .sale:not(.simp),bod
 .ticket .star{margin:-4px 0 6px;font-weight:700;color:#8a5a00}
 .ticket .hold{color:#6b5310;font-weight:600}
 .ticket .who{margin-top:4px;padding-top:4px;border-top:1px dashed #c9bfa8;color:#5a5244}
+#backBtn{position:fixed;z-index:20;top:calc(14px + env(safe-area-inset-top,0px));left:14px;font:800 17px var(--body);color:#1b1608;background:var(--gold);border:0;border-radius:999px;padding:11px 20px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+#recBar{position:fixed;z-index:21;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;background:#141826;border:1px solid var(--line);border-radius:12px;padding:10px 14px;font:600 14px var(--body);color:var(--fg);max-width:calc(100vw - 32px)}
+#recBar button{font:700 13px var(--body);background:var(--gold);color:#1b1608;border:0;border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+body.rec .top,body.rec .chips,body.rec .legend,body.rec .sale,body.rec .ticket,body.rec .zoom{display:none!important}
+#backBtn:hover{filter:brightness(1.08)}body.rec #backBtn{display:none!important}body.simo .top{display:none!important}
+@media (max-width:700px){#backBtn{font-size:15px;padding:9px 16px;top:calc(10px + env(safe-area-inset-top,0px));left:10px}body.tl #backBtn,body.simu #backBtn{display:none!important}}
 .tlbar{position:fixed;z-index:8;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px;width:min(760px,calc(100% - 32px))}
 .tlbar button,.tlbar select{font:700 13px var(--body);color:var(--fg);background:#22273a;border:1px solid var(--line);border-radius:8px;padding:7px 11px;cursor:pointer}
 .tlbar #tlPlay{background:var(--gold);color:#1b1608;min-width:44px}
@@ -242,7 +248,7 @@ body.rec #arena{width:min(1280px,calc(100vw - 40px),calc((100vh - 150px) * 1.777
   <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><button class="tlBtn" id="tlOpen">▶ Timelapse (past)</button><button class="tlBtn simTop" id="simOpen">🔮 Simulator (future)</button>
   <div class="search">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-    <input id="q" type="search" placeholder="Find your seats… try “VinceCarterLast”" autocomplete="off">
+    <input id="q" type="search" placeholder="Find your seats… try “mcuban”" autocomplete="off">
     <div class="results" id="results" hidden></div>
   </div></div>
 </header>
@@ -258,12 +264,14 @@ body.rec #arena{width:min(1280px,calc(100vw - 40px),calc((100vh - 150px) * 1.777
 </div>
 
 <section class="ticket" id="ticket" hidden></section>
+<div id="recBar" hidden><span id="recMsg"></span><button id="recStop"></button></div>
+<button id="backBtn" hidden>← Back to the arena</button>
 <div class="tlbar" id="tlbar" hidden>
   <button id="tlPlay" aria-label="Play">▶</button>
   <input type="range" id="tlScrub" min="0" max="1000" value="0" aria-label="Timeline">
   <select id="tlSpeed" aria-label="Speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
   <select id="tlFmt" aria-label="Video shape"><option value="h">16:9 · X / YouTube</option><option value="v">9:16 · Reels / Shorts</option></select><button id="tlRec">🎬 Record video</button>
-  <button id="tlExit">✕ Exit</button>
+  <button id="tlExit">← Back to the arena</button>
   <span id="tlMsg"></span>
 </div>
 <div class="cert" id="info" hidden><div class="infoBox"><button class="x" id="infoX" aria-label="Close">×</button><b>How fresh is this data?</b>
@@ -391,7 +399,7 @@ function buildBand(inner,keys,wantRows){
       row.forEach((m,i)=>{const[x,y]=p.at(start+(i+.5)*step);m.x=x;m.y=y;m.row=rowName(k);seats.push(m)});
     }
     const mid=lap(R/2-.5),spots=S.share>.6?[0,.25,.5,.75].filter(s=>{const t=((s-ua)%1+1)%1;return t>.03&&t<(ub-ua)-.03}):[(ua+ub)/2];
-    for(const s of spots){const[lx,ly]=mid.at(s);labels.push({k:S.key,t:S.debut?"★ DEBUT CLUB":SHORT[S.key],x:lx,y:ly,debut:!!S.debut})}
+    for(const s of spots){const[lx,ly]=mid.at(s);labels.push({k:S.key,t:S.debut?"🥇 DEBUT CLUB":SHORT[S.key],x:lx,y:ly,debut:!!S.debut})}
     u+=S.share;
   }
   return inner+R*ROWP;
@@ -682,8 +690,12 @@ const tlbar=document.getElementById("tlbar"),scrub=document.getElementById("tlSc
 function fitBowl(){const big=Math.max(34,Math.min(72,W/(H>W?8:16))),top=big*2.35+12,bot=document.body.classList.contains("rec")?50:110,hw=CW+RING_OUT+20,hh=CH+RING_OUT+20;
   const [a,b]=ROT?[hh,hw]:[hw,hh],s=Math.min((W-24)/(2*a),(H-top-bot)/(2*b));return{x:0,y:-((top-bot)/2)/s,s}}
 const DAYS_PER_SEC=(TL_END-TL_START)/34;   // whole story in ~34 s at 1×
-function tlOpen(){TL.on=true;TL.day=TL_START;TL.playing=false;document.body.classList.add("tl");tlbar.hidden=false;clearSel();setFilter("all");cam=fitBowl();dirty=true;tlPlay.textContent="▶";tlMsg.textContent="Press ▶ to watch VC supply from 2020 to today."}
-function tlExit(){if(TL.rec)return;TL.on=false;TL.playing=false;document.body.classList.remove("tl");tlbar.hidden=true;cam=fitView();dirty=true}
+function tlOpen(){TL.on=true;TL.day=TL_START;TL.playing=false;document.body.classList.add("tl");tlbar.hidden=false;clearSel();setFilter("all");cam=fitBowl();dirty=true;tlPlay.textContent="▶";tlMsg.textContent="Press ▶ to watch VC supply from 2020 to today.";backSync()}
+function tlExit(){if(TL.rec)return;TL.on=false;TL.playing=false;document.body.classList.remove("tl");tlbar.hidden=true;cam=fitView();dirty=true;backSync()}
+{const q=document.getElementById("q"),tries=["mcuban","roham","Hbarnes"];let i=0;setInterval(()=>{if(document.activeElement===q||q.value)return;i=(i+1)%tries.length;q.placeholder=`Find your seats… try “${tries[i]}”`},3500)}
+const backBtn=document.getElementById("backBtn"),recBar=document.getElementById("recBar"),recMsg=document.getElementById("recMsg"),recStop=document.getElementById("recStop");
+function backSync(){backBtn.hidden=!(TL.on||SIMU.open);document.body.classList.toggle("simo",!!SIMU.open)}
+backBtn.onclick=()=>{if(SIMU.open){SIMU.open=false;if(SIMU.play)simuStop();renderSimu();cam=fitView();dirty=true}else if(TL.on)tlExit();backSync()};
 function tlTick(t){if(!TL.on||!TL.playing){TL.last=t;return}const dt=Math.min(.1,(t-(TL.last||t))/1000);TL.last=t;
   if(TL.day<TL_END){TL.day=Math.min(TL_END,TL.day+dt*DAYS_PER_SEC*TL.speed)}else{TL.hold+=dt;if(TL.hold>2.5){TL.playing=false;tlPlay.textContent="↺";if(TL.rec)TL.rec.stop()}}dirty=true}
 document.getElementById("tlOpen").onclick=tlOpen;document.getElementById("tlExit").onclick=tlExit;
@@ -708,14 +720,14 @@ document.getElementById("tlRec").onclick=()=>{
 // ---------- arena games: "stand up if…" played out step by step ----------
 let SIM=null;
 let SNAP=false;
-function simCam(){const side=SNAP||W<700?0:320,avail=W-side,top=(SNAP?0:W<700?232:178)+Math.max(20,Math.min(32,avail/32))*2.1+14,bot=SNAP?120:70,ex=SIMU.play?(SIMU.planRows||0)*ROWP+(SIMU.planRows?40:0):0,hw=CW+RING_OUT+10+ex,hh=CH+RING_OUT+10+ex;
+function simCam(){const side=SNAP||W<700?0:320,avail=W-side,top=(SNAP?0:W<700?232:178)+Math.max(20,Math.min(32,avail/32))*2.1+14,bot=SNAP?(REC?36:120):70,ex=SIMU.play?(SIMU.planRows||0)*ROWP+(SIMU.planRows?40:0):0,hw=CW+RING_OUT+10+ex,hh=CH+RING_OUT+10+ex;
   const s=Math.min((avail-24)/(2*hw),(H-top-bot)/(2*hh));return{x:(W/2-avail/2)/s,y:(H/2-(top+H-bot)/2)/s,s}}
 function simStart(steps){SIM={steps,i:0,t0:performance.now()};steps[0].go();dirty=true;renderSale()}
 function simStop(){SIM=null;dirty=true;renderSale();fly(fitView(),600)}
 function simTick(t){if(!SIM)return;const hold=SIM.i>=SIM.steps.length-1?4000:2400;
   if(t-SIM.t0>hold){if(SIM.i>=SIM.steps.length-1){SIM=null;dirty=true;renderSale();return}SIM.i++;SIM.steps[SIM.i].go();SIM.t0=t;renderSale()}dirty=true}
 function drawSim(){if(!SIM)return;const st=SIM.steps[SIM.i];ctx.setTransform(DPR,0,0,DPR,0,0);
-  const side=!salePanel.hidden&&W>=700?320:0,avail=W-side,big=Math.max(20,Math.min(32,avail/32)),y0=W<700?232:178,cx=avail/2;ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;
+  const side=!SNAP&&!salePanel.hidden&&W>=700?320:0,avail=W-side,big=Math.max(20,Math.min(32,avail/32)),y0=SNAP?18:W<700?232:178,cx=avail/2;ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;
   const sub=st.sub(),w=Math.min(avail-32,ctx.measureText(st.t).width+48),h=big*2.1;
   ctx.fillStyle="rgba(11,13,20,.86)";ctx.strokeStyle="#f2c94c";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(cx-w/2,y0,w,h,12):ctx.rect(cx-w/2,y0,w,h);ctx.fill();ctx.stroke();
   ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle="#f2c94c";ctx.fillText(st.t,cx,y0+big*.72,w-24);
@@ -734,8 +746,22 @@ const lockYear=m=>m.lockEnd?dateOf(m.lockEnd-365).getUTCFullYear():2022;   // To
 let lockY=0;
 function lockSteps(){return[2022,2023,2024,2025,2026].map(y=>({t:`🔒 Locked by the end of ${y}`,go:()=>{lockY=y},
   sub:()=>{const L=seats.filter(m=>m.locked&&!m.burned),n=L.filter(m=>lockYear(m)<=y).length,k=L.filter(m=>lockYear(m)===y).length;return `${n.toLocaleString()} moments locked · ${k.toLocaleString()} new in ${y}`}}))}
+// record a game or the simulator as a 1280×720 video for X; stops by itself at the end
+let REC=null;
+function recStart(name,start,done,hold,after){
+  const types=["video/mp4;codecs=avc1.42E01E","video/mp4","video/webm;codecs=vp9","video/webm"],type=window.MediaRecorder&&types.find(t=>MediaRecorder.isTypeSupported(t));
+  if(!cv.captureStream||!type){recBar.hidden=false;recMsg.textContent="Recording isn't supported in this browser. Try Chrome on a computer, or use your phone's screen recorder.";recStop.textContent="OK";recStop.onclick=()=>recBar.hidden=true;return}
+  document.body.classList.add("rec");SNAP=true;resize();DPR=1.5;cv.width=1920;cv.height=1080;W=1280;H=720;start();anim=null;cam=simCam();dirty=true;
+  const chunks=[],rec=new MediaRecorder(cv.captureStream(30),{mimeType:type,videoBitsPerSecond:8e6});REC={rec,done,hold,t:0};
+  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  rec.onstop=()=>{const ext=type.includes("mp4")?"mp4":"webm",blob=new Blob(chunks,{type:type.split(";")[0]}),fn=`${name}.${ext}`;
+    REC=null;SNAP=false;document.body.classList.remove("rec");resize();after();dirty=true;
+    if(DLNS){DLNS.save({filename:fn,data:blob}).catch(()=>{})}else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove()}
+    recMsg.textContent=ext==="mp4"?"✅ Saved! Your video is ready to post on X.":"✅ Saved as .webm. X needs .mp4, so convert it first (Chrome saves .mp4).";recStop.textContent="OK";recStop.onclick=()=>recBar.hidden=true};
+  rec.start();recBar.hidden=false;recMsg.textContent="🔴 Recording… it stops by itself at the end.";recStop.textContent="⏹ Stop recording";recStop.onclick=()=>{if(REC&&!REC.stopping){REC.stopping=true;REC.rec.stop()}}}
+function recTick(t){if(!REC||REC.stopping)return;dirty=true;if(REC.done()){if(!REC.t)REC.t=t;if(t-REC.t>=REC.hold){REC.stopping=true;REC.rec.stop()}}}
 function loop(t){
-  tlTick(t);simTick(t);simuTick(t);
+  tlTick(t);simTick(t);simuTick(t);recTick(t);
   if(anim){const k=Math.min(1,(t-anim.t0)/anim.d),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
     cam.x=anim.a.x+(anim.b.x-anim.a.x)*e;cam.y=anim.a.y+(anim.b.y-anim.a.y)*e;cam.s=Math.exp(Math.log(anim.a.s)+(Math.log(anim.b.s)-Math.log(anim.a.s))*e);
     if(k>=1)anim=null;dirty=true}
@@ -776,7 +802,7 @@ function showSeat(m,flyTo=true,focus=false){
   tk.className="ticket v2";tk.style.setProperty("--ac",accent);
   const chips=[];
   if(why)chips.push(`<span class="chip gold">⭐ ${why}</span>`);
-  if(S.debut)chips.push(`<span class="chip">★ Debut Club</span>`);
+  if(S.debut)chips.push(`<span class="chip">🥇 Debut Club</span>`);
   if(m.burned)chips.push(`<span class="chip red">🟥 Retired</span>`);
   else if(m.pack)chips.push(`<span class="chip">🎁 ${m.packName?"In "+esc(m.packName):"In an unopened pack"}</span>`);
   else{if(m.yrs>=5)chips.push(`<span class="chip">💎 Diamond hands</span>`);
@@ -849,7 +875,7 @@ function collectorInfo(o){
    {i:"⭐",n:"Gold seat",d:"Owns a special serial (#1, #15, last mint, Dallas #25)",on:held.some(s=>s.gold),x:""},
    {i:"🌅",n:"OG",d:"Has held a VC moment since 2021 or earlier",on:held.some(s=>s.held&&dateOf(s.held).getUTCFullYear()<=2021),x:""},
    {i:"🦖",n:"Rookie",d:"Owns the RIB Origin rookie moment (Raptors, 1999)",on:sets.has("origin"),x:""},
-   {i:"★",n:"Debut",d:"Owns a TSD Debut moment from Top Shot's first series",on:sets.has("tsd"),x:""},
+   {i:"🥇",n:"Debut",d:"Owns a TSD Debut moment from Top Shot's first series",on:sets.has("tsd"),x:""},
    {i:"🎁",n:"Gifter",d:"Sent a VC moment to another collector without a Top Shot sale (may include private or Flowty deals)",on:!!(GIFTS&&GIFTS.sent[o.name]),x:GIFTS&&GIFTS.sent[o.name]?`×${GIFTS.sent[o.name]}`:"",soon:!GIFTS},
    {i:"🤝",n:"Never sold",d:"Has never sold a VC moment (gifts don't count)",on:o.sold===0&&held.length>0,soon:o.sold===null},
    {i:"💬",n:"VC Discord",d:(dc=>dc?(dc[0]===0?`Founded the VC Discord in ${dc[1]}`:`Member of the VC Discord since ${dc[1]}`):"Member of the VC Discord community")(discordOf(o)),on:!!discordOf(o),x:discordOf(o)?(discordOf(o)[0]===0?"founder":`member #${discordOf(o)[0]}`):""},
@@ -932,7 +958,7 @@ function renderSale(){
   if(filter==="hodl"){
     const held=seats.filter(m=>!m.burned&&!m.pack),stand=held.filter(m=>m.yrs>=hodlMin).length;
     salePanel.innerHTML=`<header><b>🤝 HODL: held at least…</b><small>Lights up VC moments held by the same collector for at least this long.</small>
-      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: holding after 1, 2, 3+ years"}</button>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: holding after 1, 2, 3+ years"}</button><button class="simBtn alt" data-rec>🎬 Record video for X</button>
       <div class="tabs">${[1,2,3,4,5,6].map(y=>`<button data-y="${y}" class="${hodlMin===y?"on":""}">${y}+ yr</button>`).join("")}</div>
       <span class="stand">${stand.toLocaleString()} of ${held.length.toLocaleString()} ${hodlMin?`moments held ${hodlMin}+ yr${hodlMin===1?"":"s"}`:"moments held today"} (${Math.round(stand/held.length*100)}%)</span>
       <div class="tabs sub"><button data-v="long" class="${hodlView==="long"?"on":""}">Longest holds</button><button data-v="lead" class="${hodlView==="lead"?"on":""}">HODL leaders</button></div>
@@ -941,7 +967,7 @@ function renderSale(){
     if(hodlView==="long")panelList(held.filter(m=>m.yrs>=hodlMin).sort((a,b)=>(b===longest)-(a===longest)||b.yrs-a.yrs).slice(0,60).map(m=>({a:`${esc(SK[m.set].name.replace(" · Debut Club",""))} <b>#${m.serial}</b>`,b:m.yrs.toFixed(1)+" yrs",c:`${disp(m.owner.name)} · since ${fmtMonth(m.held)}`,go:()=>showSeat(m)})));
     else panelList(holders.slice().sort((a,b)=>b.my-a.my).slice(0,60).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:Math.round(o.my).toLocaleString(),c:`HODL score · ${nHeld(o).toLocaleString()} moment${nHeld(o)===1?"":"s"} · avg ${(o.my/Math.max(1,nHeld(o))).toFixed(1)} yrs held`,go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>b.yrs-a.yrs)[0];showSeat(best,true,true)}})));
     salePanel.querySelectorAll("[data-y]").forEach(b=>b.onclick=()=>{SIM=null;hodlMin=+b.dataset.y;dirty=true;renderSale()});
-    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(hodlSteps()));
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(hodlSteps()));salePanel.querySelector("[data-rec]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-hodl",()=>simStart(hodlSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()})};
     salePanel.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{hodlView=b.dataset.v;renderSale()});
     return;
   }
@@ -962,30 +988,30 @@ function renderSale(){
     const yrsList=[2020,2021,2022,2023,2024,2025,2026],by={};for(const y of yrsList)by[y]=holders.filter(o=>o.joined===y);
     const list=by[joinYear].slice().sort((a,b)=>nHeld(b)-nHeld(a)),seatsN=list.reduce((a,o)=>a+nHeld(o),0);
     salePanel.innerHTML=`<header><b>📅 Joined Top Shot in…</b><small>Collectors who joined Top Shot that year and bought a VC moment. Many more people joined Top Shot; this only counts VC collectors.</small>
-      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play 2020 → 2026"}</button>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play 2020 → 2026"}</button><button class="simBtn alt" data-rec>🎬 Record video for X</button>
       <div class="tabs">${yrsList.map(y=>`<button data-j="${y}" class="${joinYear===y?"on":""}">${String(y).slice(2)}</button>`).join("")}</div>
       <span class="stand">${list.length.toLocaleString()} collector${list.length===1?"":"s"} joined in ${joinYear} and bought a VC moment · ${seatsN.toLocaleString()} VC moment${seatsN===1?"":"s"}</span></header><ul></ul>
       <div class="note">Joined = the date the Top Shot account was created (from each profile), not when they bought a VC moment.${joinYear===2026?` Another ${holders.filter(o=>o.firstVc===2026&&o.joined&&o.joined<2026).length} longer-time collectors bought their first VC moment in 2026.`:""} Wallets with no username aren't counted.</div>`;
     panelList(list.slice(0,80).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:nHeld(o).toLocaleString(),c:nHeld(o)>1?"VC moments":"VC moment",go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>SETS.indexOf(SK[a.set])-SETS.indexOf(SK[b.set]))[0];showSeat(best,true,true)}})));
     salePanel.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{SIM=null;joinYear=+b.dataset.j;dirty=true;renderSale()});
-    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(joinSteps()));
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(joinSteps()));salePanel.querySelector("[data-rec]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-join",()=>simStart(joinSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()})};
     return;
   }
   if(filter==="burn"){
     salePanel.innerHTML=`<header><b>🟥 Retired (burned)</b><small>${nBurned} VC moments retired by ${retirers.length} collectors. Each one is gone for good.</small>
-      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: retired moments per year"}</button></header><ul></ul>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: retired moments per year"}</button><button class="simBtn alt" data-rec>🎬 Record video for X</button></header><ul></ul>
       <div class="note">Retired = burned on Top Shot (permanently removed). Zoom into the outer edge to find the Ring of Retirees.</div>`;
     panelList(retirers.slice(0,100).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:String(o.retired),c:o.retired>1?"moments retired":"moment retired",go:()=>{selOwner=o;dirty=true;const s=o.seats.find(x=>x.burned);if(s)showSeat(s,true,true)}})));
-    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(burnSteps()));
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(burnSteps()));salePanel.querySelector("[data-rec]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-burn",()=>simStart(burnSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()})};
     return;
   }
   if(filter==="lock"){
     const lk=seats.filter(m=>m.locked&&!m.burned),heldN=seats.filter(m=>!m.burned&&!m.pack).length,by=new Map();for(const m of lk)by.set(m.owner,(by.get(m.owner)||0)+1);
     salePanel.innerHTML=`<header><b>🔒 Locked moments</b><small>${lk.length.toLocaleString()} of ${heldN.toLocaleString()} held VC moments are locked (${Math.round(lk.length/heldN*100)}%). Locked moments can't be sold or traded.</small>
-      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: moments getting locked, year by year"}</button></header><ul></ul>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: moments getting locked, year by year"}</button><button class="simBtn alt" data-rec>🎬 Record video for X</button></header><ul></ul>
       <div class="note">A Top Shot lock lasts a year, then stays locked until the owner unlocks it. Lock dates are estimated from each lock's end date. Lock one VC moment to earn the 🔒 Locker badge.</div>`;
     panelList([...by.entries()].sort((a,b)=>b[1]-a[1]).slice(0,60).map(([o,n],i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:n.toLocaleString(),c:n>1?"locked moments":"locked moment",go:()=>{const s=o.seats.find(x=>x.locked&&!x.burned);if(s)showSeat(s,true,true)}})));
-    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(lockSteps()));
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(lockSteps()));salePanel.querySelector("[data-rec]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-lock",()=>simStart(lockSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()})};
     return;
   }
   const list=seats.filter(matches);
@@ -1090,11 +1116,11 @@ function simChart(){const r=SIMU.res,W=300,H=140,ml=40,mt=8,mb=20,iw=W-ml-6,ih=H
   for(const j of [0,5,10,15])if(j<Y)s+=`<text x="${X(j)}" y="${H-5}" text-anchor="${j===Y-1?"end":"middle"}" font-size="10" fill="#9a97a6">${SIM_Y0+j}</text>`;
   return s+`</svg>`}
 const simp=document.getElementById("simp");
-function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!salePanel.hidden;if(!SIMU.open){simp.hidden=true;return}simp.hidden=false;
+function renderSimu(){if(typeof backSync==="function")backSync();document.getElementById("legend").hidden=SIMU.open||!salePanel.hidden;if(!SIMU.open){simp.hidden=true;return}simp.hidden=false;
   const o=SIMU.opt,r=SIMU.res,grp=(key,vals)=>`<div class="tabs">${vals.map(([v,l])=>`<button data-k="${key}" data-v="${v}" class="${o[key]===v?"on":""}">${l}</button>`).join("")}</div>`;
   simp.innerHTML=`${SIMU.done?`<div class="done"><b>✅ The simulation is done!</b><span>Save your results image now, before you close it.</span>
      <button class="simBtn" data-shot2>📸 Save results image</button>
-     <button class="simBtn alt" data-close>✕ Close and go back to the arena</button></div>`:""}
+     <button class="simBtn alt" data-close>← Back to the arena</button></div>`:""}
    <header><b>🔮 Supply simulator</b><p class="easy">New here? Press 🎲, watch it play, then save your picture.</p>
    <div class="shareRow"><button class="simBtn real" data-real>🎯 Most realistic</button><button class="simBtn rnd" data-rnd>🎲 Random settings</button></div>
    ${JSON.stringify(o)===JSON.stringify(REALISTIC)?`<small class="hint">Our best guess: Top Shot keeps running about 1 VC event a year; Fast Break players are falling (1,388 → 1,076 this week), so activity is shrinking; VC has had a new Rare or Legendary in most years (2020, 2021, 2024, 2026), so those stay possible; Top Shot has been shrinking mint sizes, so no new Commons.</small>`:""}
@@ -1119,10 +1145,11 @@ function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!saleP
      ${r?`<p>${goalLine(r.c15,15000)}</p><p>${goalLine(r.c14,14000)}</p><p>${goalLine(r.c10,10000)}</p>
      <p class="oracle">🔮 ${fmtPick(pickMs())}: <b>${simOnDate(r.p50,pickMs()).toLocaleString()}</b> VC moments <small>(likely ${simOnDate(r.p10,pickMs()).toLocaleString()}–${simOnDate(r.p90,pickMs()).toLocaleString()})</small></p>
      <p class="sm">Middle outcome in ${SIM_Y1}: <b>${r.p50[r.p50.length-1].toLocaleString()}</b> (likely range ${r.p10[r.p10.length-1].toLocaleString()}–${r.p90[r.p90.length-1].toLocaleString()})</p>${simChart()}`:""}
-     <button class="simBtn" data-play>${SIMU.done?"✕ Close and go back to the arena":SIMU.play?"⏹ Stop":"▶ Play one future on the arena"}</button>
+     <button class="simBtn alt" data-rec>🎬 Record video for X</button>
+     <button class="simBtn" data-play>${SIMU.done?"↺ Play it again":SIMU.play?"⏹ Stop":"▶ Play one future on the arena"}</button>
      ${SIMU.plan?`<div class="mine plan"><b>🎯 You're watching our plan for Top Shot</b><small class="hint">This isn't a giveaway entry: the image says "Our plan" and has no handle. To enter, set the dials your own way.</small><button class="simBtn alt" data-back>↩ Back to my settings</button></div>`:`<div class="mine"><small class="lab">Your entry (printed on your image)</small>
        <label class="fld"><span>Your X handle</span><div class="at"><b>@</b><input id="simHandle" placeholder="VC15Tracker" maxlength="16" autocomplete="off" value="${esc(SIMU.handle||"")}"></div></label>
-       <label class="fld"><span>Predict VC supply on this date</span><input id="simDate" type="date" min="${new Date(NOW).toISOString().slice(0,10)}" max="2041-12-31" value="${SIMU.pick||""}"></label><small class="hint">🔒 Only printed on your image. Never saved or sent anywhere: it stays in your browser.</small><small class="msg"></small><small class="hint">${srcTxt()}</small></div>`}
+       <label class="fld"><span>Pick a date (today to Dec 31, 2041)</span><small class="hint" style="margin:0 0 4px">Your simulation already covers every day from today to 2041. No need to run it again: just pick a date and we'll show the VC supply on that day.</small><input id="simDate" type="date" min="${new Date(NOW).toISOString().slice(0,10)}" max="2041-12-31" value="${SIMU.pick||""}"></label>${SIMU.pick&&r?`<p class="oracle" style="margin-top:6px">📅 On ${fmtPick(pickMs())}: <b>${simOnDate(r.p50,pickMs()).toLocaleString()}</b> VC moments</p>`:""}<small class="hint">🔒 Only printed on your image. Never saved or sent anywhere: it stays in your browser.</small><small class="msg"></small><small class="hint">${srcTxt()}</small></div>`}
      <div class="shareRow"><button class="simBtn alt" data-shot>📸 Save image</button><button class="simBtn alt" data-x>𝕏 Share on X</button></div>
      <small class="hint">Tip: save the image first, then attach it to your X post.</small>
      ${r&&SIMU.busy==null?simReport():""}
@@ -1138,12 +1165,13 @@ function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!saleP
   simp.querySelector("[data-real]").onclick=()=>{SIMU.plan=false;SIMU.src="real";Object.assign(o,REALISTIC);SIMU.n=SIM_N;simRun()};
   const pb=simp.querySelector("[data-plan]");if(pb)pb.onclick=()=>{if(SIMU.play)simuStop();if(!SIMU.plan)SIMU.saved={...o};SIMU.plan=true;Object.assign(o,PLAN());SIMU.run=null;simRun();simuPlay();simp.scrollTop=0};
   const bb=simp.querySelector("[data-back]");if(bb)bb.onclick=()=>{if(SIMU.play)simuStop();SIMU.plan=false;Object.assign(o,SIMU.saved||REALISTIC);simRun()};
-  simp.querySelector("[data-play]").onclick=()=>SIMU.play?simuStop():simuPlay();
+  simp.querySelector("[data-rec]").onclick=()=>{if(SIMU.play)simuStop();recStart("vc-supply-simulation",()=>simuPlay(),()=>SIMU.done,3000,()=>{cam=simCam();renderSimu()})};
+  simp.querySelector("[data-play]").onclick=()=>SIMU.done?simuPlay():SIMU.play?simuStop():simuPlay();
   const hI=simp.querySelector("#simHandle"),dI=simp.querySelector("#simDate");
   if(hI)hI.oninput=()=>{const bx=simp.querySelector(".mine.need");if(bx){bx.classList.remove("need");bx.querySelector(".msg").textContent=""};SIMU.handle=hI.value.replace(/[^A-Za-z0-9_]/g,"").slice(0,15);if(hI.value!==SIMU.handle)hI.value=SIMU.handle};
   if(dI)dI.onchange=()=>{if(dI.value){SIMU.pick=dI.value;renderSimu()}};
   simp.querySelector("[data-shot]").onclick=simShot;
-  const s2=simp.querySelector("[data-shot2]");if(s2)s2.onclick=simShot;const cb=simp.querySelector("[data-close]");if(cb)cb.onclick=simuStop;
+  const s2=simp.querySelector("[data-shot2]");if(s2)s2.onclick=simShot;const cb=simp.querySelector("[data-close]");if(cb)cb.onclick=()=>{simuStop();backBtn.onclick()};
   simp.querySelector("[data-rnd]").onclick=()=>{if(SIMU.play)simuStop();SIMU.plan=false;SIMU.src="rnd";
     // every button on each dial is equally likely; numbers come from the browser's secure random generator
     const pick=a=>{const u=new Uint32Array(1);crypto.getRandomValues(u);return a[u[0]%a.length]};
@@ -1264,9 +1292,10 @@ function drawSimu(){if(!SIMU.play)return;ctx.setTransform(DPR,0,0,DPR,0,0);
   ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(11,13,20,.8)";ctx.fillRect(0,0,avail,big*2.2);
   ctx.fillStyle="#f2c94c";ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;ctx.fillText(SIMU.plan?`🎯 ${y} · THE PLAN`:`🔮 ${y}`,cx,big*1.02);
   ctx.fillStyle=sup<15000?"#5fd38d":"#f1ede4";ctx.font=`700 ${big*.42}px Barlow,sans-serif`;ctx.fillText(`${sup.toLocaleString()} VC moments in circulation (not retired)${sup<14000?" · under 14,000 🎯":sup<15000?" · under 15,000 🎯":""}`,cx,big*1.68);
-  if(SIMU.done&&!SNAP){ctx.fillStyle="#5fd38d";ctx.font=`800 ${Math.max(15,big*.4)}px Barlow,sans-serif`;ctx.fillText(W<700?"✅ Done! Save your results image below":"✅ Done! Save your results image in the panel →",cx,big*2.2+Math.max(15,big*.4)+6)}
+  if(SIMU.done&&!SNAP){ctx.fillStyle="#5fd38d";ctx.font=`800 ${Math.max(15,big*.4)}px Barlow,sans-serif`;ctx.fillText(W<700?"✅ Done! Your arena in "+SIM_Y1+". Save your results image below":"✅ Done! Your arena in "+SIM_Y1+". Save your results image in the panel →",cx,big*2.2+Math.max(15,big*.4)+6)}
   // announcements on centre court
   const c={x:(0-cam.x)*cam.s+W/2,y:(0-cam.y)*cam.s+H/2},fs=Math.max(13,Math.min(20,avail/45));ctx.font=`800 ${fs}px Barlow,sans-serif`;
+  if(SIMU.done)return;
   const lines=SIMU.ann,wmax=Math.max(...lines.map(l=>ctx.measureText(l).width))+30,hh=lines.length*fs*1.5+16;
   ctx.fillStyle="rgba(11,13,20,.88)";ctx.strokeStyle="#f2c94c";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(c.x-wmax/2,c.y-hh/2,wmax,hh,12):ctx.rect(c.x-wmax/2,c.y-hh/2,wmax,hh);ctx.fill();ctx.stroke();
   ctx.fillStyle="#fff";ctx.textBaseline="middle";lines.forEach((l,i)=>ctx.fillText(l,c.x,c.y-hh/2+8+fs*.75+i*fs*1.5));
