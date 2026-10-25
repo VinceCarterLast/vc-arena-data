@@ -791,7 +791,7 @@ function collectorInfo(o){
    {i:"🎁",n:"Gifter",d:"Sent a VC moment to another collector without a Top Shot sale (may include private or Flowty deals)",on:!!(GIFTS&&GIFTS.sent[o.name]),x:GIFTS&&GIFTS.sent[o.name]?`×${GIFTS.sent[o.name]}`:"",soon:!GIFTS},
    {i:"🤝",n:"Never sold",d:"Has never sold a VC moment (gifts don't count)",on:o.sold===0&&held.length>0,soon:o.sold===null},
    {i:"💬",n:"VC Discord",d:(dc=>dc?(dc[0]===0?`Founded the VC Discord in ${dc[1]}`:`Member of the VC Discord since ${dc[1]}`):"Member of the VC Discord community")(discordOf(o)),on:!!discordOf(o),x:discordOf(o)?(discordOf(o)[0]===0?"founder":`member #${discordOf(o)[0]}`):""},
-   {i:"📦",n:"Unopened pack",d:"Holds an unopened VC pack (coming soon)",on:false,soon:true}];
+   {i:"🏀",n:"Courtside",d:"Owns a courtside seat: any ASG, TSD Cosmic or Dallas moment",on:["asg","cosmic","dallas","galac","omega"].some(k=>sets.has(k)),x:""}];
   return{fam,B,earned:B.filter(b=>b.on).length};
 }
 function collectorBlock(o){if(!o)return "";const C=collectorInfo(o);
