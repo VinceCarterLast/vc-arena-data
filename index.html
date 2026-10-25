@@ -115,10 +115,12 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .tlBtn.simTop{background:#5b3fb0}
 .sale.simp{overflow:auto;display:block;max-height:calc(100% - 210px)}
 @media (max-width:700px){.sale.simp{max-height:52%}}
-.simp .lab{display:block;margin:10px 0 0;font:700 10px var(--body)!important;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.simp .lab{display:block;margin:12px 0 2px;font:700 11.5px var(--body)!important;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .simp .simres{padding:10px 12px;overflow:auto}.simp .simres p{margin:0 0 6px;font-size:13.5px}.simp .simres p.sm{font-size:12px;color:var(--muted)}
 .simp .oracle{background:#2a2410;border:1px solid rgba(242,201,76,.5);border-radius:8px;padding:6px 9px;color:#ffe9a8}.simp .oracle small{color:#cfc19a}
 .simp .mine.plan{border:2px solid #f2c94c;border-radius:10px;padding:10px;background:rgba(242,201,76,.08)}.simp .mine.plan .simBtn{margin-top:8px}
+.simp .mine .msg{display:block;margin-top:6px;font-size:14px;font-weight:700;color:#ff8aa0}.simp .mine.need .at,.simp .mine.need input[type=date]{animation:needp 1s 3;border-color:#ff4d6d}
+@keyframes needp{50%{box-shadow:0 0 0 5px rgba(255,77,109,.45)}}
 .simp .mine .fld{display:block;margin-top:7px}.simp .mine .fld>span{display:block;font-size:11.5px;color:#e6e2ee;margin-bottom:3px}
 .simp .mine input{width:100%;box-sizing:border-box;font:500 14px var(--body);color:var(--fg);background:#0f1220;border:2px solid #ce1141;border-radius:7px;padding:7px 9px;color-scheme:dark}
 .simp .mine input:focus{outline:none;border-color:#ff4d6d;box-shadow:0 0 0 3px rgba(206,17,65,.25)}
@@ -131,9 +133,11 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .simp .report li em{font-style:normal;font-weight:800;text-align:right;grid-column:auto;font-size:12px}.simp .report em.dn{color:#5fd38d}.simp .report em.up{color:#ff8a80}
 .simp .report li i{position:absolute;left:16px;bottom:1px;height:2px;border-radius:2px;opacity:.8;max-width:calc(100% - 16px)}
 .simp .report li.tot{border-top:1px solid var(--line);margin-top:4px;padding-top:7px;grid-template-columns:minmax(0,1fr) auto 36px}
-.simp .simBtn.real{margin:8px 0 6px;background:#5b3fb0;color:#fff}
+.simp .simBtn.real{margin:8px 0 6px;background:#5b3fb0;color:#fff}.simp .simBtn.rnd{margin:8px 0 6px;background:#1f8a5a;color:#fff}
+.simp .easy{margin:6px 0 0;font-size:14px;color:#f1ede4}
+.simp .done{margin:10px 12px 0;padding:12px;border-radius:10px;border:2px solid #5fd38d;background:rgba(95,211,141,.1)}.simp .done b{display:block;font-size:17px;color:#5fd38d}.simp .done span{display:block;font-size:14px;margin:4px 0 8px}.simp .done .simBtn.alt{margin-top:6px;width:100%}
 .simp .tabs.runs{margin:0 0 8px}
-.simp .hint{display:block;margin:4px 0 0;font-size:11px;color:var(--muted);line-height:1.35}
+.simp .hint{display:block;margin:4px 0 0;font-size:12.5px;color:var(--muted);line-height:1.35}
 .simp .simBtn.alt{background:#22273a;color:var(--fg);border:1px solid var(--line)}
 .simp .need{margin-top:10px;padding:10px;border-radius:8px;background:#1b2032;border-left:3px solid var(--gold)}.simp .need p{font-size:12.5px;margin:6px 0 0}
 .simp .tabs{flex-wrap:wrap}
@@ -703,7 +707,8 @@ document.getElementById("tlRec").onclick=()=>{
   TL.day=TL_START;TL.hold=0;TL.playing=true;tlPlay.textContent="⏸";document.getElementById("tlRec").textContent="⏹ Stop";tlMsg.textContent="Recording… keep this tab open until it finishes.";rec.start(500)};
 // ---------- arena games: "stand up if…" played out step by step ----------
 let SIM=null;
-function simCam(){const side=W>=700?320:0,avail=W-side,top=(W<700?232:178)+Math.max(20,Math.min(32,avail/32))*2.1+14,bot=70,ex=SIMU.play?(SIMU.planRows||0)*ROWP+(SIMU.planRows?40:0):0,hw=CW+RING_OUT+10+ex,hh=CH+RING_OUT+10+ex;
+let SNAP=false;
+function simCam(){const side=SNAP||W<700?0:320,avail=W-side,top=(SNAP?0:W<700?232:178)+Math.max(20,Math.min(32,avail/32))*2.1+14,bot=SNAP?120:70,ex=SIMU.play?(SIMU.planRows||0)*ROWP+(SIMU.planRows?40:0):0,hw=CW+RING_OUT+10+ex,hh=CH+RING_OUT+10+ex;
   const s=Math.min((avail-24)/(2*hw),(H-top-bot)/(2*hh));return{x:(W/2-avail/2)/s,y:(H/2-(top+H-bot)/2)/s,s}}
 function simStart(steps){SIM={steps,i:0,t0:performance.now()};steps[0].go();dirty=true;renderSale()}
 function simStop(){SIM=null;dirty=true;renderSale();fly(fitView(),600)}
@@ -1087,7 +1092,11 @@ function simChart(){const r=SIMU.res,W=300,H=140,ml=40,mt=8,mb=20,iw=W-ml-6,ih=H
 const simp=document.getElementById("simp");
 function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!salePanel.hidden;if(!SIMU.open){simp.hidden=true;return}simp.hidden=false;
   const o=SIMU.opt,r=SIMU.res,grp=(key,vals)=>`<div class="tabs">${vals.map(([v,l])=>`<button data-k="${key}" data-v="${v}" class="${o[key]===v?"on":""}">${l}</button>`).join("")}</div>`;
-  simp.innerHTML=`<header><b>🔮 Supply simulator</b><button class="simBtn real" data-real>🎯 Most realistic (our best guess)</button>
+  simp.innerHTML=`${SIMU.done?`<div class="done"><b>✅ The simulation is done!</b><span>Save your results image now, before you close it.</span>
+     <button class="simBtn" data-shot2>📸 Save results image</button>
+     <button class="simBtn alt" data-close>✕ Close and go back to the arena</button></div>`:""}
+   <header><b>🔮 Supply simulator</b><p class="easy">New here? Press 🎲, watch it play, then save your picture.</p>
+   <div class="shareRow"><button class="simBtn real" data-real>🎯 Most realistic</button><button class="simBtn rnd" data-rnd>🎲 Random settings</button></div>
    ${JSON.stringify(o)===JSON.stringify(REALISTIC)?`<small class="hint">Our best guess: Top Shot keeps running about 1 VC event a year; Fast Break players are falling (1,388 → 1,076 this week), so activity is shrinking; VC has had a new Rare or Legendary in most years (2020, 2021, 2024, 2026), so those stay possible; Top Shot has been shrinking mint sizes, so no new Commons.</small>`:""}
    <small>Simulated futures for VC supply, ${SIM_Y0}–${SIM_Y1}. Today: ${(nMinted-nBurned).toLocaleString()} in circulation, including ${seats.filter(m=>m.pack&&!m.burned).length} still in unopened packs (opening a pack doesn't change supply).</small>
    <small class="lab">Top Shot trade-in events</small>${grp("ev",[[0,"None"],[0.5,"Every 2 yrs"],[1,"1 a year (now)"],[4,"Every 3 months"],[12,"Every month"]])}
@@ -1110,10 +1119,10 @@ function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!saleP
      ${r?`<p>${goalLine(r.c15,15000)}</p><p>${goalLine(r.c14,14000)}</p><p>${goalLine(r.c10,10000)}</p>
      <p class="oracle">🔮 ${fmtPick(pickMs())}: <b>${simOnDate(r.p50,pickMs()).toLocaleString()}</b> VC moments <small>(likely ${simOnDate(r.p10,pickMs()).toLocaleString()}–${simOnDate(r.p90,pickMs()).toLocaleString()})</small></p>
      <p class="sm">Middle outcome in ${SIM_Y1}: <b>${r.p50[r.p50.length-1].toLocaleString()}</b> (likely range ${r.p10[r.p10.length-1].toLocaleString()}–${r.p90[r.p90.length-1].toLocaleString()})</p>${simChart()}`:""}
-     <button class="simBtn" data-play>${SIMU.play?"⏹ Stop":"▶ Play one future on the arena"}</button>
+     <button class="simBtn" data-play>${SIMU.done?"✕ Close and go back to the arena":SIMU.play?"⏹ Stop":"▶ Play one future on the arena"}</button>
      ${SIMU.plan?`<div class="mine plan"><b>🎯 You're watching our plan for Top Shot</b><small class="hint">This isn't a giveaway entry: the image says "Our plan" and has no handle. To enter, set the dials your own way.</small><button class="simBtn alt" data-back>↩ Back to my settings</button></div>`:`<div class="mine"><small class="lab">Your entry (printed on your image)</small>
        <label class="fld"><span>Your X handle</span><div class="at"><b>@</b><input id="simHandle" placeholder="VC15Tracker" maxlength="16" autocomplete="off" value="${esc(SIMU.handle||"")}"></div></label>
-       <label class="fld"><span>Predict VC supply on this date</span><input id="simDate" type="date" min="${new Date(NOW).toISOString().slice(0,10)}" max="2041-12-31" value="${SIMU.pick||"2028-01-01"}"></label><small class="hint">🔒 Only printed on your image. Never saved or sent anywhere: it stays in your browser.</small></div>`}
+       <label class="fld"><span>Predict VC supply on this date</span><input id="simDate" type="date" min="${new Date(NOW).toISOString().slice(0,10)}" max="2041-12-31" value="${SIMU.pick||""}"></label><small class="hint">🔒 Only printed on your image. Never saved or sent anywhere: it stays in your browser.</small><small class="msg"></small><small class="hint">${srcTxt()}</small></div>`}
      <div class="shareRow"><button class="simBtn alt" data-shot>📸 Save image</button><button class="simBtn alt" data-x>𝕏 Share on X</button></div>
      <small class="hint">Tip: save the image first, then attach it to your X post.</small>
      ${r&&SIMU.busy==null?simReport():""}
@@ -1125,15 +1134,21 @@ function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!saleP
        <p>💡 <b>And:</b> a Debut Club (TSD) trade-in. 3,335 TSD moments exist and Top Shot has never targeted them.</p>
        <button class="simBtn" data-plan>▶ Play the plan for Top Shot</button><small class="hint">Sets the dials to the plan and plays it on the arena. Plan images can't be giveaway entries.</small></div>`:""}</div>
    <div class="note">Retired = permanently removed from Top Shot (Top Shot's term). Based on VC history: Top Shot events in 2023 (~135 retired), 2024 (153) and 2026 (41); collectors retire ~10 a year on their own. At most ~8% of supply is retired in any one year, since holders have to choose to trade in. "Possible" Rare/Legendary drops: a 40% chance each year, sized like VC's past drops and kept within Top Shot's Historical Rules (Rare + Legendary max 998 per two series). Commons have no limit. A simulation, not a guarantee.</div>`;
-  simp.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{SIMU.plan=false;o[b.dataset.k]=+b.dataset.v;SIMU.n=SIM_N;simRun()});
-  simp.querySelector("[data-real]").onclick=()=>{SIMU.plan=false;Object.assign(o,REALISTIC);SIMU.n=SIM_N;simRun()};
+  simp.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{SIMU.plan=false;SIMU.src=SIMU.src&&SIMU.src!=="hand"?SIMU.src.replace("+hand","")+"+hand":"hand";o[b.dataset.k]=+b.dataset.v;SIMU.n=SIM_N;simRun()});
+  simp.querySelector("[data-real]").onclick=()=>{SIMU.plan=false;SIMU.src="real";Object.assign(o,REALISTIC);SIMU.n=SIM_N;simRun()};
   const pb=simp.querySelector("[data-plan]");if(pb)pb.onclick=()=>{if(SIMU.play)simuStop();if(!SIMU.plan)SIMU.saved={...o};SIMU.plan=true;Object.assign(o,PLAN());SIMU.run=null;simRun();simuPlay();simp.scrollTop=0};
   const bb=simp.querySelector("[data-back]");if(bb)bb.onclick=()=>{if(SIMU.play)simuStop();SIMU.plan=false;Object.assign(o,SIMU.saved||REALISTIC);simRun()};
   simp.querySelector("[data-play]").onclick=()=>SIMU.play?simuStop():simuPlay();
   const hI=simp.querySelector("#simHandle"),dI=simp.querySelector("#simDate");
-  if(hI)hI.oninput=()=>{SIMU.handle=hI.value.replace(/[^A-Za-z0-9_]/g,"").slice(0,15);if(hI.value!==SIMU.handle)hI.value=SIMU.handle};
+  if(hI)hI.oninput=()=>{const bx=simp.querySelector(".mine.need");if(bx){bx.classList.remove("need");bx.querySelector(".msg").textContent=""};SIMU.handle=hI.value.replace(/[^A-Za-z0-9_]/g,"").slice(0,15);if(hI.value!==SIMU.handle)hI.value=SIMU.handle};
   if(dI)dI.onchange=()=>{if(dI.value){SIMU.pick=dI.value;renderSimu()}};
-  simp.querySelector("[data-shot]").onclick=simShot;simp.querySelector("[data-x]").onclick=simShareX}
+  simp.querySelector("[data-shot]").onclick=simShot;
+  const s2=simp.querySelector("[data-shot2]");if(s2)s2.onclick=simShot;const cb=simp.querySelector("[data-close]");if(cb)cb.onclick=simuStop;
+  simp.querySelector("[data-rnd]").onclick=()=>{if(SIMU.play)simuStop();SIMU.plan=false;SIMU.src="rnd";
+    // every button on each dial is equally likely; numbers come from the browser's secure random generator
+    const pick=a=>{const u=new Uint32Array(1);crypto.getRandomValues(u);return a[u[0]%a.length]};
+    Object.assign(o,{ev:pick([0,0.5,1,4,12]),tgt:pick([0,1,2]),org:pick([10,25,50,100]),rl:pick([0,1]),com:pick([0,1,2,3]),craft:pick([0,1,2,3]),nu:pick([0,500,1000,5000]),gr:pick([-10,0,5,10,25])});
+    SIMU.n=SIM_N;SIMU.run=null;simRun();simuPlay()};simp.querySelector("[data-x]").onclick=simShareX}
 // supply report: every VC set, today → 2041, for the future we play (like Top Shot's Rookie Ladder)
 // supply on a chosen date: point 0 = today, point j = Jan 1 of (SIM_Y0+1+j)
 const simPointDate=j=>j===0?NOW:Date.UTC(SIM_Y0+1+j,0,1);
@@ -1157,11 +1172,16 @@ function simReport(){const run=SIMU.run;if(!run)return "";const o=SIMU.opt;
     ${added.map(x=>`<li class="new"><span class="dot" style="background:${x.c}"></span><b>${x.e||"🆕"} ${esc(x.n)}</b><small>+${x.a.toLocaleString()}</small><em class="up">new</em></li>`).join("")}
     <li class="tot"><b>All VC moments</b><small>${totNow.toLocaleString()} → ${totEnd.toLocaleString()}</small><em class="${totEnd<totNow?"dn":"up"}">${(totEnd>=totNow?"+":"")+Math.round((totEnd-totNow)/totNow*100)}%</em></li></ul>
     <small class="hint">Same future that ▶ Play shows. Which sets lose moments follows the "Trade-in events target" dial.</small></div>`}
-function simShareX(){const r=SIMU.res;if(!r)return;const f=(cc,g)=>{const i=cc.findIndex(v=>v>=.5);return i<0?`unlikely by ${SIM_Y1}`:`likely by ${SIM_Y0+i}`};
-  const t=SIMU.plan?`🎯 Our plan for Top Shot to shrink Vince Carter supply: ${needTxt(SIMU.opt.ev)}, no new Commons.\n\nUnder 14,000 VC moments: ${f(r.c14,14000)}\nUnder 10,000: ${f(r.c10,10000)}\n\nWatch it play: vc15tracker.com @VC15Tracker @nbatopshot #NBATopShot`:`🔮 I ran the VC supply simulator for Vince Carter on NBA Top Shot.\n\nMy prediction for ${fmtPick(pickMs())}: ${simOnDate(r.p50,pickMs()).toLocaleString()} VC moments\nUnder 15,000 VC moments: ${f(r.c15,15000)}\nUnder 14,000: ${f(r.c14,14000)}\nMiddle outcome in ${SIM_Y1}: ${r.p50[r.p50.length-1].toLocaleString()}\n\nTry the simulator: vc15tracker.com @VC15Tracker #NBATopShot`;
+function simShareX(){const r=SIMU.res;if(!r||!entryOk())return;const f=(cc,g)=>{const i=cc.findIndex(v=>v>=.5);return i<0?`unlikely by ${SIM_Y1}`:`likely by ${SIM_Y0+i}`};
+  const t=SIMU.plan?`🎯 Our plan for Top Shot to shrink Vince Carter supply: ${needTxt(SIMU.opt.ev)}, no new Commons.\n\nUnder 14,000 VC moments: ${f(r.c14,14000)}\nUnder 10,000: ${f(r.c10,10000)}\n\nWatch it play: vc15tracker.com @VC15Tracker @nbatopshot #NBATopShot`:`🔮 I ran the VC supply simulator for Vince Carter on NBA Top Shot.\n\nMy prediction for ${fmtPick(pickMs())}: ${simOnDate(r.p50,pickMs()).toLocaleString()} VC moments\n${srcTxt()}\nUnder 15,000 VC moments: ${f(r.c15,15000)}\nUnder 14,000: ${f(r.c14,14000)}\nMiddle outcome in ${SIM_Y1}: ${r.p50[r.p50.length-1].toLocaleString()}\n\nTry the simulator: vc15tracker.com @VC15Tracker #NBATopShot`;
   window.open("https://x.com/intent/post?text="+encodeURIComponent(t),"_blank","noopener")}
+const srcTxt=()=>({rnd:"🎲 Settings picked by the Random button",real:"🎯 Settings: the Most realistic button","rnd+hand":"🎲 Started from Random, then changed by hand","real+hand":"🎯 Started from Most realistic, then changed by hand"}[SIMU.src]||"🎛️ Settings picked by hand");
+// no image or post until they add their X username and pick a date
+function entryOk(){if(SIMU.plan)return true;const miss=[];if(!SIMU.handle)miss.push("your X username");if(!SIMU.pick)miss.push("a date");if(!miss.length)return true;
+  const box=simp.querySelector(".mine:not(.plan)");if(box){box.classList.add("need");box.scrollIntoView({block:"center",behavior:"smooth"});const m=box.querySelector(".msg");if(m)m.textContent="✋ First add "+miss.join(" and ")+"."}
+  if(!SIMU.handle&&simp.querySelector("#simHandle"))simp.querySelector("#simHandle").focus();return false}
 // share card: the result as a picture for X
-function simShot(){const r=SIMU.res,o=SIMU.opt,c=document.createElement("canvas");c.width=1200;c.height=675;const g=c.getContext("2d");
+function simShot(){if(!entryOk())return;const r=SIMU.res,o=SIMU.opt,c=document.createElement("canvas");c.width=1200;c.height=675;const g=c.getContext("2d");
   g.fillStyle="#0b0d14";g.fillRect(0,0,1200,675);g.strokeStyle="#5b3fb0";g.lineWidth=6;g.strokeRect(3,3,1194,669);
   g.fillStyle="#f2c94c";g.font="800 54px 'Barlow Condensed',sans-serif";g.fillText("🔮 VC SUPPLY · SIMULATION",48,86);
   g.fillStyle="#9a97a6";g.font="600 22px Barlow,sans-serif";g.fillText(`Based on 5,000 simulated futures · today ${(nMinted-nBurned).toLocaleString()} VC moments in circulation`,48,122);
@@ -1169,6 +1189,7 @@ function simShot(){const r=SIMU.res,o=SIMU.opt,c=document.createElement("canvas"
   g.fillStyle="#e6e2ee";g.font="600 18px Barlow,sans-serif";set.forEach((t,i)=>g.fillText("• "+t,48,168+i*27,600));
   const txt=(cc,goal)=>{const i50=cc.findIndex(v=>v>=.5);return i50<0?`Under ${goal.toLocaleString()}: unlikely by ${SIM_Y1}`:`Under ${goal.toLocaleString()}: likely by ${SIM_Y0+i50}`};
   g.font="800 34px 'Barlow Condensed',sans-serif";[[r.c15,15000],[r.c14,14000],[r.c10,10000]].forEach(([cc,go],i)=>{g.fillStyle=cc.findIndex(v=>v>=.5)<0?"#9a97a6":"#5fd38d";g.fillText(txt(cc,go),48,380+i*44)});
+  if(!SIMU.plan){g.fillStyle=SIMU.src&&SIMU.src.startsWith("rnd")?"#7fd6ff":"#e6e2ee";g.font="700 20px Barlow,sans-serif";g.fillText(srcTxt(),48,516)}
   {const who=SIMU.handle?"@"+SIMU.handle:"My",guess=simOnDate(r.p50,pickMs());
    const pt=SIMU.plan?`🎯 Our plan for Top Shot: ${needTxt(o.ev)}, no new Commons`:`🔮 ${who}${SIMU.handle?"'s":""} prediction for ${fmtPick(pickMs())}: ${guess.toLocaleString()} VC moments`;g.font="800 30px 'Barlow Condensed',sans-serif";const pw=g.measureText(pt).width+32;
   g.fillStyle="#2a2410";g.strokeStyle="rgba(242,201,76,.7)";g.lineWidth=2;g.beginPath();g.roundRect?g.roundRect(44,532,pw,48,10):g.rect(44,532,pw,48);g.fill();g.stroke();
@@ -1211,10 +1232,10 @@ function placeNew(kind,n,col){if(kind==="common"){SIMU.commons=SIMU.commons||[];
     const L=newRings(SIMU.commons.length);SIMU.newRows=L.rows;SIMU.newSeats=SIMU.newSeats.filter(m=>!m.ring).concat(L.pts.map((q,i)=>({...q,c:SIMU.commons[i],ring:1})));return}
   const pool=NEWSPOTS[kind]||TUNNEL,used=SIMU.used[kind]=SIMU.used[kind]||0;let k=used;
   for(let i=0;i<n&&k<pool.length;i++,k++)SIMU.newSeats.push({...pool[k],c:col});SIMU.used[kind]=k}
-function simuPlay(){SIMU.used={};SIMU.commons=[];SIMU.newRows=0;if(!SIMU.run)simRun();
+function simuPlay(){SIMU.done=false;SIMU.used={};SIMU.commons=[];SIMU.newRows=0;if(!SIMU.run)simRun();
   {let t=0;for(const ev of SIMU.run.ev)for(const e of ev||[])if(e.k==="craft"||(e.k==="common"&&!e.f))t+=e.n;let k=0,c=0;while(c<t){c+=ringCap(k);k++}SIMU.planRows=k}clearSel();setFilter("all");SIMU.play=true;SIMU.yi=0;SIMU.t0=performance.now();SIMU.burnSet=new Set();SIMU.newSeats=[];SIMU.ann=[];
   document.body.classList.add("simu");cam=simCam();dirty=true;renderSimu()}
-function simuStop(){SIMU.used={};SIMU.commons=[];SIMU.newRows=0;SIMU.play=false;SIMU.burnSet=new Set();SIMU.newSeats=[];SIMU.ann=[];document.body.classList.remove("simu");cam=fitView();dirty=true;renderSimu()}
+function simuStop(){SIMU.done=false;SIMU.used={};SIMU.commons=[];SIMU.newRows=0;SIMU.play=false;SIMU.burnSet=new Set();SIMU.newSeats=[];SIMU.ann=[];document.body.classList.remove("simu");cam=fitView();dirty=true;renderSimu()}
 const SIM_PICK=["archive","archive","archive","archive","archive","archive","archive","archive","rib","origin"];   // past retirements: 87% Archive, 10% RIB
 const pickSet=()=>{const t=SIMU.opt.tgt;if(t===2)return "tsd";
   if(t===1){let r=Math.random()*SIM_SPREAD.tot;for(const[k,n]of SIM_SPREAD.w){if((r-=n)<0)return k}return "archive"}
@@ -1235,14 +1256,15 @@ function simuYear(){const y=SIM_Y0+SIMU.yi,ev=SIMU.run.ev[SIMU.yi-1]||[],ann=[];
   const evs=ev.filter(e=>e.k==="event");if(evs.length>2){const tot=evs.reduce((a,e)=>a+e.n,0),lab=`${SIMU.opt.tgt===2?"Debut Club (TSD) ":""}crafting events`;
     for(let i=ann.length-1;i>=0;i--)if(ann[i].includes("crafting event ·"))ann.splice(i,1);ann.unshift(`🟥 ${evs.length} Top Shot ${lab} · ${tot.toLocaleString()} VC moments retired`)}
   SIMU.ann=ann}
-function simuTick(t){if(!SIMU.play)return;const k=Math.floor((t-SIMU.t0)/2600)+1;
+function simuTick(t){if(!SIMU.play||SIMU.done)return;const k=Math.floor((t-SIMU.t0)/2600)+1;
   if(k!==SIMU.yi&&k<=SIM_Y1-SIM_Y0){SIMU.yi=k;simuYear()}
-  if(k>SIM_Y1-SIM_Y0+1){SIMU.play=false;document.body.classList.remove("simu");renderSimu()}dirty=true}
+  if(k>SIM_Y1-SIM_Y0+1&&!SIMU.done){SIMU.done=true;renderSimu();simp.scrollTop=0}dirty=true}
 function drawSimu(){if(!SIMU.play)return;ctx.setTransform(DPR,0,0,DPR,0,0);
-  const side=W>=700?320:0,avail=W-side,cx=avail/2,big=Math.max(28,Math.min(56,avail/18)),y=Math.min(SIM_Y1,SIM_Y0+SIMU.yi),sup=SIMU.run.sup[Math.min(SIMU.yi,SIMU.run.sup.length-1)];
+  const side=SNAP||W<700?0:320,avail=W-side,cx=avail/2,big=Math.max(28,Math.min(56,avail/18)),y=Math.min(SIM_Y1,SIM_Y0+SIMU.yi),sup=SIMU.run.sup[Math.min(SIMU.yi,SIMU.run.sup.length-1)];
   ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(11,13,20,.8)";ctx.fillRect(0,0,avail,big*2.2);
   ctx.fillStyle="#f2c94c";ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;ctx.fillText(SIMU.plan?`🎯 ${y} · THE PLAN`:`🔮 ${y}`,cx,big*1.02);
   ctx.fillStyle=sup<15000?"#5fd38d":"#f1ede4";ctx.font=`700 ${big*.42}px Barlow,sans-serif`;ctx.fillText(`${sup.toLocaleString()} VC moments in circulation (not retired)${sup<14000?" · under 14,000 🎯":sup<15000?" · under 15,000 🎯":""}`,cx,big*1.68);
+  if(SIMU.done&&!SNAP){ctx.fillStyle="#5fd38d";ctx.font=`800 ${Math.max(15,big*.4)}px Barlow,sans-serif`;ctx.fillText(W<700?"✅ Done! Save your results image below":"✅ Done! Save your results image in the panel →",cx,big*2.2+Math.max(15,big*.4)+6)}
   // announcements on centre court
   const c={x:(0-cam.x)*cam.s+W/2,y:(0-cam.y)*cam.s+H/2},fs=Math.max(13,Math.min(20,avail/45));ctx.font=`800 ${fs}px Barlow,sans-serif`;
   const lines=SIMU.ann,wmax=Math.max(...lines.map(l=>ctx.measureText(l).width))+30,hh=lines.length*fs*1.5+16;
