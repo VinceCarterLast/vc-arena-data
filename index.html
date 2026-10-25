@@ -663,7 +663,7 @@ const heldSeats=()=>seats.filter(m=>!m.burned&&!m.pack);
 function hodlSteps(){const n=y=>heldSeats().filter(m=>m.yrs>=y).length,pct=y=>Math.round(n(y)/heldSeats().length*100);
   return[{y:0,t:"🤝 Every VC moment held today"},{y:1,t:"Still holding after 1+ year"},{y:2,t:"Still holding after 2+ years"},{y:3,t:"Still holding after 3+ years"},{y:4,t:"Still holding after 4+ years"},{y:5,t:"💎 Still holding after 5+ years"},{y:6,t:"🏆 Still holding after 6+ years"}]
    .map(s=>({t:s.t,go:()=>{hodlMin=s.y},sub:()=>`${n(s.y).toLocaleString()} moments${s.y?` · ${pct(s.y)}% of all held`:""}`}))}
-function joinSteps(){return[2020,2021,2022,2023,2024,2025,2026].map(y=>({t:`📅 Joined Top Shot in ${y} and own a VC moment`,go:()=>{joinYear=y},
+function joinSteps(){return[2020,2021,2022,2023,2024,2025,2026].map(y=>({t:`📅 Collectors who joined Top Shot in ${y} and bought a VC moment`,go:()=>{joinYear=y},
   sub:()=>{const l=holders.filter(o=>o.joined===y);return `${l.length.toLocaleString()} collector${l.length===1?"":"s"} · ${l.reduce((a,o)=>a+nHeld(o),0).toLocaleString()} VC moments held`}}))}
 let burnYear=0,lockAfter=0;
 function burnSteps(){return[2021,2022,2023,2024,2025,2026].map(y=>({t:`🪑 Retired (burned) by the end of ${y}`,go:()=>{burnYear=y},
@@ -895,10 +895,10 @@ function renderSale(){
   if(filter==="joined"){
     const yrsList=[2020,2021,2022,2023,2024,2025,2026],by={};for(const y of yrsList)by[y]=holders.filter(o=>o.joined===y);
     const list=by[joinYear].slice().sort((a,b)=>nHeld(b)-nHeld(a)),seatsN=list.reduce((a,o)=>a+nHeld(o),0);
-    salePanel.innerHTML=`<header><b>📅 Joined Top Shot in…</b><small>Lights up VC moments held by collectors who joined Top Shot that year and own a VC moment today. Many more joined Top Shot; this only counts VC collectors.</small>
+    salePanel.innerHTML=`<header><b>📅 Joined Top Shot in…</b><small>Collectors who joined Top Shot that year and bought a VC moment. Many more people joined Top Shot; this only counts VC collectors.</small>
       <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play 2020 → 2026"}</button>
       <div class="tabs">${yrsList.map(y=>`<button data-j="${y}" class="${joinYear===y?"on":""}">${String(y).slice(2)}</button>`).join("")}</div>
-      <span class="stand">${list.length.toLocaleString()} VC collector${list.length===1?"":"s"} joined in ${joinYear} · ${seatsN.toLocaleString()} VC moment${seatsN===1?"":"s"}</span></header><ul></ul>
+      <span class="stand">${list.length.toLocaleString()} collector${list.length===1?"":"s"} joined in ${joinYear} and bought a VC moment · ${seatsN.toLocaleString()} VC moment${seatsN===1?"":"s"}</span></header><ul></ul>
       <div class="note">Joined = the date the Top Shot account was created (from each profile), not when they bought a VC moment.${joinYear===2026?` Another ${holders.filter(o=>o.firstVc===2026&&o.joined&&o.joined<2026).length} longer-time collectors bought their first VC moment in 2026.`:""} Wallets with no username aren't counted.</div>`;
     panelList(list.slice(0,80).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:nHeld(o).toLocaleString(),c:nHeld(o)>1?"VC moments":"VC moment",go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>SETS.indexOf(SK[a.set])-SETS.indexOf(SK[b.set]))[0];showSeat(best,true,true)}})));
     salePanel.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{SIM=null;joinYear=+b.dataset.j;dirty=true;renderSale()});
