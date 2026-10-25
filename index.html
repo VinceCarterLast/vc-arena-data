@@ -1089,7 +1089,7 @@ function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!saleP
   const o=SIMU.opt,r=SIMU.res,grp=(key,vals)=>`<div class="tabs">${vals.map(([v,l])=>`<button data-k="${key}" data-v="${v}" class="${o[key]===v?"on":""}">${l}</button>`).join("")}</div>`;
   simp.innerHTML=`<header><b>🔮 Supply simulator</b><button class="simBtn real" data-real>🎯 Most realistic (our best guess)</button>
    ${JSON.stringify(o)===JSON.stringify(REALISTIC)?`<small class="hint">Our best guess: Top Shot keeps running about 1 VC event a year; Fast Break players are falling (1,388 → 1,076 this week), so activity is shrinking; VC has had a new Rare or Legendary in most years (2020, 2021, 2024, 2026), so those stay possible; Top Shot has been shrinking mint sizes, so no new Commons.</small>`:""}
-   <small>What-if futures for VC supply, ${SIM_Y0}–${SIM_Y1}. Today: ${(nMinted-nBurned).toLocaleString()} in circulation, including ${seats.filter(m=>m.pack&&!m.burned).length} still in unopened packs (opening a pack doesn't change supply).</small>
+   <small>Simulated futures for VC supply, ${SIM_Y0}–${SIM_Y1}. Today: ${(nMinted-nBurned).toLocaleString()} in circulation, including ${seats.filter(m=>m.pack&&!m.burned).length} still in unopened packs (opening a pack doesn't change supply).</small>
    <small class="lab">Top Shot trade-in events</small>${grp("ev",[[0,"None"],[0.5,"Every 2 yrs"],[1,"1 a year (now)"],[4,"Every 3 months"],[12,"Every month"]])}
    <small class="hint">Each event retires (permanently removes) 40–160 VC moments, like the real ones: ~135 in 2023, 153 in 2024, 41 in 2026.</small>
    <small class="lab">Trade-in events target</small>${grp("tgt",[[0,"Like the past"],[1,"All sets"],[2,"Debut Club (TSD)"]])}
@@ -1099,7 +1099,7 @@ function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!saleP
    <small class="lab">New Rare / Legendary VC moments</small>${grp("rl",[[0,"None"],[1,"Possible"]])}
    <small class="hint">Top Shot's rule: a player's new Rare + Legendary moments can't add up to more than 998 in any two seasons (Rare max 899, Legendary max 99). "Possible" = a 40% chance each year, sized like VC's past drops.</small>
    <small class="lab">New Common / Fandom VC drops (packs)</small>${grp("com",[[0,"None"],[1,"+1,000 once"],[2,"+500 every 2 yrs"],[3,"+500 a year"]])}
-   <small class="hint">Commons and Fandoms have no limit under Top Shot's rules. Top Shot has been shrinking mint sizes, so these are what-ifs.</small>
+   <small class="hint">Commons and Fandoms have no limit under Top Shot's rules. Top Shot has been shrinking mint sizes, so these are simulated possibilities.</small>
    <small class="lab">New VC moment by crafting only</small>${grp("craft",[[0,"None"],[1,"+500 once"],[2,"+250 every 2 yrs"],[3,"+250 a year"]])}
    <small class="hint">Trade in 2 VC moments, get 1 new one. Every new mint retires 2, so supply still goes down.</small>
    <small class="lab">Top Shot active users · new users in 2027</small>${grp("nu",[[0,"+0"],[500,"+500"],[1000,"+1,000"],[5000,"+5,000"]])}
@@ -1124,7 +1124,7 @@ function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!saleP
        <p>💡 <b>Our ask:</b> release the next VC moment through crafting (trade in 2, get 1), not packs. Every new moment would shrink supply instead of growing it.</p>
        <p>💡 <b>And:</b> a Debut Club (TSD) trade-in. 3,335 TSD moments exist and Top Shot has never targeted them.</p>
        <button class="simBtn" data-plan>▶ Play the plan for Top Shot</button><small class="hint">Sets the dials to the plan and plays it on the arena. Plan images can't be giveaway entries.</small></div>`:""}</div>
-   <div class="note">Retired = permanently removed from Top Shot (Top Shot's term). Based on VC history: Top Shot events in 2023 (~135 retired), 2024 (153) and 2026 (41); collectors retire ~10 a year on their own. At most ~8% of supply is retired in any one year, since holders have to choose to trade in. "Possible" Rare/Legendary drops: a 40% chance each year, sized like VC's past drops and kept within Top Shot's Historical Rules (Rare + Legendary max 998 per two series). Commons have no limit. A what-if model, not a prediction.</div>`;
+   <div class="note">Retired = permanently removed from Top Shot (Top Shot's term). Based on VC history: Top Shot events in 2023 (~135 retired), 2024 (153) and 2026 (41); collectors retire ~10 a year on their own. At most ~8% of supply is retired in any one year, since holders have to choose to trade in. "Possible" Rare/Legendary drops: a 40% chance each year, sized like VC's past drops and kept within Top Shot's Historical Rules (Rare + Legendary max 998 per two series). Commons have no limit. A simulation, not a guarantee.</div>`;
   simp.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{SIMU.plan=false;o[b.dataset.k]=+b.dataset.v;SIMU.n=SIM_N;simRun()});
   simp.querySelector("[data-real]").onclick=()=>{SIMU.plan=false;Object.assign(o,REALISTIC);SIMU.n=SIM_N;simRun()};
   const pb=simp.querySelector("[data-plan]");if(pb)pb.onclick=()=>{if(SIMU.play)simuStop();if(!SIMU.plan)SIMU.saved={...o};SIMU.plan=true;Object.assign(o,PLAN());SIMU.run=null;simRun();simuPlay();simp.scrollTop=0};
@@ -1163,7 +1163,7 @@ function simShareX(){const r=SIMU.res;if(!r)return;const f=(cc,g)=>{const i=cc.f
 // share card: the result as a picture for X
 function simShot(){const r=SIMU.res,o=SIMU.opt,c=document.createElement("canvas");c.width=1200;c.height=675;const g=c.getContext("2d");
   g.fillStyle="#0b0d14";g.fillRect(0,0,1200,675);g.strokeStyle="#5b3fb0";g.lineWidth=6;g.strokeRect(3,3,1194,669);
-  g.fillStyle="#f2c94c";g.font="800 54px 'Barlow Condensed',sans-serif";g.fillText("🔮 VC SUPPLY · WHAT-IF",48,86);
+  g.fillStyle="#f2c94c";g.font="800 54px 'Barlow Condensed',sans-serif";g.fillText("🔮 VC SUPPLY · SIMULATION",48,86);
   g.fillStyle="#9a97a6";g.font="600 22px Barlow,sans-serif";g.fillText(`Based on 5,000 simulated futures · today ${(nMinted-nBurned).toLocaleString()} VC moments in circulation`,48,122);
   const set=[`Top Shot trade-in events: ${o.ev===0?"none":evTxt(o.ev)}`,`Trade-in events target: ${["mostly Archive (like the past)","all VC sets","Debut Club (TSD)"][o.tgt]}`,`Collectors retiring VC moments on their own: ~${o.org} a year`,`New Rare/Legendary VC moments: ${o.rl?"possible (within the 998 rule)":"none"}`,`New Common/Fandom VC drops: ${dropTxt(o.com,1000,500)}`,`New VC moment by crafting only: ${o.craft?dropTxt(o.craft,500,250)+" (trade in 2, get 1)":"none"}`,`Top Shot active users: 2,300 today → ${simUsers(o,2027).toLocaleString()} in 2027 (+${(o.nu||0).toLocaleString()} new), then ${o.gr>0?"+":""}${o.gr}% a year`];
   g.fillStyle="#e6e2ee";g.font="600 18px Barlow,sans-serif";set.forEach((t,i)=>g.fillText("• "+t,48,168+i*27,600));
@@ -1181,9 +1181,9 @@ function simShot(){const r=SIMU.res,o=SIMU.opt,c=document.createElement("canvas"
   [0,5,10,15].forEach(j=>{g.strokeStyle="rgba(255,255,255,.12)";g.lineWidth=1;g.beginPath();g.moveTo(X(j),Y0);g.lineTo(X(j),Y0+CH2);g.stroke();
     g.fillStyle="#6f9fd8";g.beginPath();g.arc(X(j),Yv(r.p50[j]),6,0,7);g.fill();g.fillStyle="#fff";g.font="800 20px Barlow,sans-serif";g.textAlign=j===15?"right":j===0?"left":"center";g.fillText(r.p50[j].toLocaleString(),X(j)+(j===15?-8:j===0?8:0),Yv(r.p50[j])-14);g.textAlign="left"});
   g.fillStyle="#9a97a6";g.font="600 16px Barlow,sans-serif";[0,5,10,15].forEach(j=>g.fillText(String(SIM_Y0+j),X(j)-20,Y0+CH2+26));
-  g.fillStyle="#6c6a78";g.font="500 17px Barlow,sans-serif";g.fillText("Retired = permanently removed. A what-if model based on VC history and Top Shot's Historical Rules, not a prediction.",48,612);
+  g.fillStyle="#6c6a78";g.font="500 17px Barlow,sans-serif";g.fillText("Retired = permanently removed. A simulation based on VC history and Top Shot's Historical Rules, not a guarantee.",48,612);
   g.fillStyle="#f1ede4";g.font="800 30px 'Barlow Condensed',sans-serif";g.textAlign="right";g.fillText("VC15TRACKER.COM · @VC15Tracker",1150,652);
-  const fn="vc-supply-whatif.png";c.toBlob(b=>{if(DLNS){DLNS.save({filename:fn,data:b}).catch(()=>{})}else{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=fn;document.body.appendChild(a);a.click();a.remove()}},"image/png")}
+  const fn="vc-supply-simulation.png";c.toBlob(b=>{if(DLNS){DLNS.save({filename:fn,data:b}).catch(()=>{})}else{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=fn;document.body.appendChild(a);a.click();a.remove()}},"image/png")}
 // the players' tunnel: empty spots in the V-shaped gap of the 300 level, where new mints come out
 const TUNNEL=(()=>{const S=SK.archive,inner=r200+30,spots=[];
   for(let k=0;k<(S.rows||25);k++){const d=inner+k*ROWP,p=rrPath(CW+d,CH+d,70+d),step=PITCH*1.35/p.L;
@@ -1248,7 +1248,7 @@ function drawSimu(){if(!SIMU.play)return;ctx.setTransform(DPR,0,0,DPR,0,0);
   const lines=SIMU.ann,wmax=Math.max(...lines.map(l=>ctx.measureText(l).width))+30,hh=lines.length*fs*1.5+16;
   ctx.fillStyle="rgba(11,13,20,.88)";ctx.strokeStyle="#f2c94c";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(c.x-wmax/2,c.y-hh/2,wmax,hh,12):ctx.rect(c.x-wmax/2,c.y-hh/2,wmax,hh);ctx.fill();ctx.stroke();
   ctx.fillStyle="#fff";ctx.textBaseline="middle";lines.forEach((l,i)=>ctx.fillText(l,c.x,c.y-hh/2+8+fs*.75+i*fs*1.5));
-  ctx.textAlign="right";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.32)}px 'Barlow Condensed',sans-serif`;ctx.fillText("VC15TRACKER.COM · WHAT-IF SIMULATION",avail-14,H-16)}
+  ctx.textAlign="right";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.32)}px 'Barlow Condensed',sans-serif`;ctx.fillText("VC15TRACKER.COM · SIMULATION",avail-14,H-16)}
 function drawTunnelSeats(){if(!SIMU.play||!SIMU.newSeats.length)return;const hs=SEAT/2;ctx.save();ctx.shadowColor="#f2c94c";ctx.shadowBlur=8*DPR;
   for(const m of SIMU.newSeats){ctx.fillStyle=m.c;ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT)}ctx.restore();
   if(SIMU.newRows){const d=NEW0+SIMU.newRows*ROWP+8;ctx.fillStyle="#f2c94c";ctx.font=`800 ${Math.max(12,14/cam.s)}px 'Barlow Condensed',sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(`NEW SEATS · +${SIMU.commons.length.toLocaleString()} VC MOMENTS`,0,CH+d+4)}}
