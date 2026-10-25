@@ -117,6 +117,8 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 @media (max-width:700px){.sale.simp{max-height:52%}}
 .simp .lab{display:block;margin:10px 0 0;font:700 10px var(--body)!important;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .simp .simres{padding:10px 12px;overflow:auto}.simp .simres p{margin:0 0 6px;font-size:13.5px}.simp .simres p.sm{font-size:12px;color:var(--muted)}
+.simp .simBtn.real{margin:8px 0 6px;background:#5b3fb0;color:#fff}
+.simp .tabs.runs{margin:0 0 8px}
 .simp .hint{display:block;margin:4px 0 0;font-size:11px;color:var(--muted);line-height:1.35}
 .simp .simBtn.alt{background:#22273a;color:var(--fg);border:1px solid var(--line)}
 .simp .need{margin-top:10px;padding:10px;border-radius:8px;background:#1b2032;border-left:3px solid var(--gold)}.simp .need p{font-size:12.5px;margin:6px 0 0}
@@ -1001,7 +1003,7 @@ lg.innerHTML=`<p class="lnote">15,695 moments · 10 editions · 7 plays</p>`+["c
 // History it's based on: Top Shot retirement events Aug–Oct 2023 (~135), Nov 2024 (153), Aug 2026 (41);
 // collectors retire ~10 a year on their own. Minting follows Top Shot's Historical Rules (Aug 19, 2026 update):
 // historical Rare + Legendary combined ≤ 998 across two series (Rare ≤ 899, Legendary ≤ 99); Commons/Fandom no limit.
-const SIMU={open:false,play:false,opt:{ev:1,org:10,rl:0,com:0,comYear:2027,craft:0,act:1},res:null,run:null,yi:0,t0:0,news:[],burnSet:new Set(),newSeats:[],ann:[]};
+const SIMU={n:5000,busy:null,open:false,play:false,opt:{ev:1,org:10,rl:0,com:0,comYear:2027,craft:0,act:1,tgt:0},res:null,run:null,yi:0,t0:0,news:[],burnSet:new Set(),newSeats:[],ann:[]};
 const SIM_Y0=2026,SIM_Y1=2041,SIM_N=5000;
 const poisson=l=>{let L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random()}while(p>L);return k-1};
 const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -1011,7 +1013,8 @@ function simOne(o,keep){
     // Top Shot activity scales how many collectors join in: shrinking 10%/yr, steady, or a boom (4×) from 2031
     const A=o.act===0?Math.pow(.9,y-SIM_Y0):o.act===2&&y>=2031?4:1;
     const nev=o.ev>=1?poisson(o.ev):(Math.random()<o.ev?1:0);
-    for(let i=0;i<nev;i++){const n=Math.max(1,Math.round(rint(40,160)*A));sup-=n;e.push({k:"event",n})}
+    let cap=Math.round(sup*.08);   // realism: at most ~8% of supply retired in a year (holders have to choose to trade in)
+    for(let i=0;i<nev&&cap>0;i++){const n=Math.min(cap,Math.max(1,Math.round(rint(40,160)*A)));cap-=n;sup-=n;e.push({k:"event",n})}
     if(o.craft&&y===o.comYear){sup+=o.craft-2*o.craft;e.push({k:"craft",n:o.craft})}   // trade in 2, get 1: net −1 each
     const org=Math.max(0,Math.round(o.org*A*(0.5+Math.random())));if(org){sup-=org;e.push({k:"org",n:org})}
     if(o.rl&&Math.random()<.4){const room=998-minted[y]-(minted[y-1]||0),leg=Math.random()<.5;   // VC's past drops: Legendary 49–50, Rare 269–990
@@ -1019,15 +1022,20 @@ function simOne(o,keep){
     if(o.com&&y===o.comYear){sup+=o.com;e.push({k:"common",n:o.com})}
     out.push(Math.max(0,sup));if(keep)ev.push(e)}
   return keep?{sup:out,ev}:out}
-function simRun(){
-  const o=SIMU.opt,runs=[];for(let i=0;i<SIM_N;i++)runs.push(simOne(o,false));
-  const Y=SIM_Y1-SIM_Y0+1,pct=(arr,q)=>arr[Math.min(arr.length-1,Math.floor(q*arr.length))];
-  const p10=[],p50=[],p90=[];for(let j=0;j<Y;j++){const col=runs.map(r=>r[j]).sort((a,b)=>a-b);p10.push(pct(col,.1));p50.push(pct(col,.5));p90.push(pct(col,.9))}
-  const chance=g=>{const c=[];for(let j=0;j<Y;j++)c.push(runs.filter(r=>r[j]<g).length/SIM_N);return c};
-  SIMU.res={p10,p50,p90,c15:chance(15000),c14:chance(14000),c10:chance(10000)};
-  if(!SIMU.need)SIMU.need=simNeed();
-  // the future we play on the arena: one run that ends close to the middle outcome
-  let best=null,bd=1e9;for(let i=0;i<300;i++){const r=simOne(o,true),d=Math.abs(r.sup[Y-1]-p50[Y-1]);if(d<bd){bd=d;best=r}}SIMU.run=best}
+// runs the futures in chunks so even 1,000,000 doesn't freeze the page
+let SIM_JOB=0;
+function simRun(N){N=N||SIMU.n||SIM_N;const o={...SIMU.opt},Y=SIM_Y1-SIM_Y0+1,cols=[...Array(Y)].map(()=>new Int32Array(N)),job=++SIM_JOB;let i=0;const t0=performance.now();
+  SIMU.busy=N>20000?0:null;
+  const finish=()=>{const pct=(a,q)=>a[Math.min(a.length-1,Math.floor(q*a.length))],p10=[],p50=[],p90=[],c={15000:[],14000:[],10000:[]};
+    for(let j=0;j<Y;j++){const col=cols[j];for(const g of [15000,14000,10000]){let k=0;for(let x=0;x<N;x++)if(col[x]<g)k++;c[g].push(k/N)}col.sort();p10.push(pct(col,.1));p50.push(pct(col,.5));p90.push(pct(col,.9))}
+    SIMU.res={p10,p50,p90,c15:c[15000],c14:c[14000],c10:c[10000],n:N,secs:(performance.now()-t0)/1000};SIMU.busy=null;
+    if(!SIMU.need)SIMU.need=simNeed();
+    let best=null,bd=1e9;for(let r=0;r<300;r++){const x=simOne(o,true),d=Math.abs(x.sup[Y-1]-p50[Y-1]);if(d<bd){bd=d;best=x}}SIMU.run=best;renderSimu()};
+  const step=()=>{if(job!==SIM_JOB)return;const end=Math.min(N,i+50000);for(;i<end;i++){const r=simOne(o,false);for(let j=0;j<Y;j++)cols[j][i]=r[j]}
+    if(i<N){SIMU.busy=i/N;renderSimu();setTimeout(step,0)}else finish()};
+  if(N<=20000){for(;i<N;i++){const r=simOne(o,false);for(let j=0;j<Y;j++)cols[j][i]=r[j]}finish()}else setTimeout(step,0)}
+// our best guess: the most realistic settings, from VC history and today's Top Shot
+const REALISTIC={ev:1,org:10,rl:1,com:0,comYear:2027,craft:0,act:0,tgt:0};
 // what would it take? fewest Top Shot events a year that gives at least a 50% chance of each goal
 function simNeed(){const opts=[0.5,1,2,3,4,6,8,12],base={ev:1,org:10,rl:0,com:0,comYear:2027,craft:0,act:1},out={};
   for(const [key,g,yr] of [["g5",14000,2031],["g15",10000,2041]]){const j=yr-SIM_Y0;
@@ -1049,9 +1057,13 @@ function simChart(){const r=SIMU.res,W=300,H=140,ml=40,mt=8,mb=20,iw=W-ml-6,ih=H
 const simp=document.getElementById("simp");
 function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!salePanel.hidden;if(!SIMU.open){simp.hidden=true;return}simp.hidden=false;
   const o=SIMU.opt,r=SIMU.res,grp=(key,vals)=>`<div class="tabs">${vals.map(([v,l])=>`<button data-k="${key}" data-v="${v}" class="${o[key]===v?"on":""}">${l}</button>`).join("")}</div>`;
-  simp.innerHTML=`<header><b>🔮 Supply simulator</b><small>${SIM_N.toLocaleString()} what-if futures for VC supply, ${SIM_Y0}–${SIM_Y1}. Today: ${(nMinted-nBurned).toLocaleString()} in circulation.</small>
+  simp.innerHTML=`<header><b>🔮 Supply simulator</b><button class="simBtn real" data-real>🎯 Most realistic (our best guess)</button>
+   ${JSON.stringify(o)===JSON.stringify(REALISTIC)?`<small class="hint">Our best guess: Top Shot keeps running about 1 VC event a year; Fast Break players are falling (1,388 → 1,076 this week), so activity is shrinking; VC has had a new Rare or Legendary in most years (2020, 2021, 2024, 2026), so those stay possible; Top Shot has been shrinking mint sizes, so no new Commons.</small>`:""}
+   <small>What-if futures for VC supply, ${SIM_Y0}–${SIM_Y1}. Today: ${(nMinted-nBurned).toLocaleString()} in circulation, including ${seats.filter(m=>m.pack&&!m.burned).length} still in unopened packs (opening a pack doesn't change supply).</small>
    <small class="lab">Top Shot trade-in / crafting events</small>${grp("ev",[[0,"None"],[0.5,"Every 2 yrs"],[1,"1 a year (now)"],[4,"Every 3 months"],[12,"Every month"]])}
    <small class="hint">Each event retires (permanently removes) 40–160 VC moments, like the real ones: ~135 in 2023, 153 in 2024, 41 in 2026.</small>
+   <small class="lab">Which VC moments the events target</small>${grp("tgt",[[0,"Like the past"],[1,"All sets"],[2,"Debut Club (TSD)"]])}
+   <small class="hint">Past events were almost all Archive (87%) and RIB (10%). Only 1 TSD Debut Club moment has ever been retired, in a community event, not by Top Shot. A TSD-only event needs Top Shot's help.</small>
    <small class="lab">Collectors retiring VC moments on their own</small>${grp("org",[[10,"~10 a yr (now)"],[25,"25"],[50,"50"],[100,"100"]])}
    <small class="hint">Moments a collector permanently removes outside a Top Shot event, e.g. to make the rest rarer.</small>
    <small class="lab">New VC Rare / Legendary drops</small>${grp("rl",[[0,"None"],[1,"Possible"]])}
@@ -1062,7 +1074,10 @@ function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!saleP
    <small class="hint">Trade in 2 VC moments, get 1 new one. Every new mint retires 2, so supply still goes down.</small>
    <small class="lab">Top Shot activity</small>${grp("act",[[0,"Shrinking"],[1,"Steady (now)"],[2,"Boom in 2031"]])}
    <small class="hint">Today about 2,300 people play Fast Break each night and ~2,300 buy on the marketplace each month. More active collectors = bigger events. A boom = 4× from 2031 (2021 had a boom like that).</small></header>
-   <div class="simres">${r?`<p>${goalLine(r.c15,15000)}</p><p>${goalLine(r.c14,14000)}</p><p>${goalLine(r.c10,10000)}</p>
+   <div class="simres">${SIMU.busy!=null?`<p>⏳ Running ${(SIMU.n||SIM_N).toLocaleString()} futures… ${Math.round(SIMU.busy*100)}%</p>`:""}
+     <div class="tabs runs"><button data-n="5000" class="${(SIMU.n||SIM_N)===5000?"on":""}">5,000 futures</button><button data-n="1000000" class="${SIMU.n===1000000?"on":""}">🤯 1,000,000 futures</button></div>
+     ${r&&r.n===1000000&&SIMU.busy==null?`<p class="sm">Ran 1,000,000 futures in ${r.secs.toFixed(1)} seconds. Same answer as 5,000, just more confident 😄</p>`:""}
+     ${r?`<p>${goalLine(r.c15,15000)}</p><p>${goalLine(r.c14,14000)}</p><p>${goalLine(r.c10,10000)}</p>
      <p class="sm">Middle outcome in ${SIM_Y1}: <b>${r.p50[r.p50.length-1].toLocaleString()}</b> (likely range ${r.p10[r.p10.length-1].toLocaleString()}–${r.p90[r.p90.length-1].toLocaleString()})</p>${simChart()}`:""}
      <button class="simBtn" data-play>${SIMU.play?"⏹ Stop":"▶ Play one future on the arena"}</button>
      <button class="simBtn alt" data-shot>📸 Save result as image</button>
@@ -1070,9 +1085,12 @@ function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!saleP
        <p><b>2026 goal</b> (retire more than minted): ${SIMU.need.g1?`${SIMU.need.g1} more VC moment${SIMU.need.g1===1?"":"s"} retired before Dec 31`:"reached ✅"}</p>
        <p><b>5-year goal</b> (under 14,000 by 2031): about <b>${needTxt(SIMU.need.g5)}</b>, no new Commons</p>
        <p><b>15-year goal</b> (under 10,000 by 2041): about <b>${needTxt(SIMU.need.g15)}</b>, no new Commons</p>
-       <p>💡 <b>Our ask:</b> release the next VC moment through crafting (trade in 2, get 1), not packs. Every new moment would shrink supply instead of growing it.</p></div>`:""}</div>
-   <div class="note">Retired = permanently removed from Top Shot (Top Shot's term). Based on VC history: Top Shot events in 2023 (~135 retired), 2024 (153) and 2026 (41); collectors retire ~10 a year on their own. "Possible" Rare/Legendary drops: a 40% chance each year, sized like VC's past drops and kept within Top Shot's Historical Rules (Rare + Legendary max 998 per two series). Commons have no limit. A what-if model, not a prediction.</div>`;
-  simp.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{o[b.dataset.k]=+b.dataset.v;simRun();renderSimu()});
+       <p>💡 <b>Our ask:</b> release the next VC moment through crafting (trade in 2, get 1), not packs. Every new moment would shrink supply instead of growing it.</p>
+       <p>💡 <b>And:</b> a Debut Club (TSD) trade-in. 3,335 TSD moments exist and Top Shot has never targeted them.</p></div>`:""}</div>
+   <div class="note">Retired = permanently removed from Top Shot (Top Shot's term). Based on VC history: Top Shot events in 2023 (~135 retired), 2024 (153) and 2026 (41); collectors retire ~10 a year on their own. At most ~8% of supply is retired in any one year, since holders have to choose to trade in. "Possible" Rare/Legendary drops: a 40% chance each year, sized like VC's past drops and kept within Top Shot's Historical Rules (Rare + Legendary max 998 per two series). Commons have no limit. A what-if model, not a prediction.</div>`;
+  simp.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{o[b.dataset.k]=+b.dataset.v;SIMU.n=SIM_N;simRun()});
+  simp.querySelector("[data-real]").onclick=()=>{Object.assign(o,REALISTIC);SIMU.n=SIM_N;simRun()};
+  simp.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{SIMU.n=+b.dataset.n;simRun()});
   simp.querySelector("[data-play]").onclick=()=>SIMU.play?simuStop():simuPlay();
   simp.querySelector("[data-shot]").onclick=simShot}
 // share card: the result as a picture for X
@@ -1080,7 +1098,7 @@ function simShot(){const r=SIMU.res,o=SIMU.opt,c=document.createElement("canvas"
   g.fillStyle="#0b0d14";g.fillRect(0,0,1200,675);g.strokeStyle="#5b3fb0";g.lineWidth=6;g.strokeRect(3,3,1194,669);
   g.fillStyle="#f2c94c";g.font="800 54px 'Barlow Condensed',sans-serif";g.fillText("🔮 VC SUPPLY · WHAT-IF",48,86);
   g.fillStyle="#9a97a6";g.font="600 22px Barlow,sans-serif";g.fillText(`${SIM_N.toLocaleString()} simulated futures · today ${(nMinted-nBurned).toLocaleString()} VC moments in circulation`,48,122);
-  const set=[`Top Shot events: ${evTxt(o.ev)}${o.ev===0?" (none)":""}`,`Collectors retiring on their own: ~${o.org} a year`,`New Rare/Legendary: ${o.rl?"possible (within the 998 rule)":"none"}`,`New Common drop: ${o.com?"+"+o.com.toLocaleString()+" in "+o.comYear:"none"}`,`New crafted moment: ${o.craft?"+"+o.craft.toLocaleString()+" (trade in 2, get 1)":"none"}`,`Top Shot activity: ${["shrinking","steady (now)","boom in 2031"][o.act]}`];
+  const set=[`Top Shot events: ${evTxt(o.ev)}${o.ev===0?" (none)":""}`,`Collectors retiring on their own: ~${o.org} a year`,`New Rare/Legendary: ${o.rl?"possible (within the 998 rule)":"none"}`,`New Common drop: ${o.com?"+"+o.com.toLocaleString()+" in "+o.comYear:"none"}`,`New crafted moment: ${o.craft?"+"+o.craft.toLocaleString()+" (trade in 2, get 1)":"none"}`,`Top Shot activity: ${["shrinking","steady (now)","boom in 2031"][o.act]}`,`Events target: ${["mostly Archive (like the past)","all sets","Debut Club (TSD)"][o.tgt]}`];
   g.fillStyle="#e6e2ee";g.font="600 20px Barlow,sans-serif";set.forEach((t,i)=>g.fillText("• "+t,48,170+i*28));
   const txt=(cc,goal)=>{const i50=cc.findIndex(v=>v>=.5);return i50<0?`Under ${goal.toLocaleString()}: unlikely by ${SIM_Y1}`:`Under ${goal.toLocaleString()}: likely by ${SIM_Y0+i50}`};
   g.font="800 34px 'Barlow Condensed',sans-serif";[[r.c15,15000],[r.c14,14000],[r.c10,10000]].forEach(([cc,go],i)=>{g.fillStyle=cc.findIndex(v=>v>=.5)<0?"#9a97a6":"#5fd38d";g.fillText(txt(cc,go),48,400+i*48)});
@@ -1101,19 +1119,26 @@ const TUNNEL=(()=>{const S=SK.archive,inner=r200+30,spots=[];
 function simuPlay(){if(!SIMU.run)simRun();clearSel();setFilter("all");SIMU.play=true;SIMU.yi=0;SIMU.t0=performance.now();SIMU.burnSet=new Set();SIMU.newSeats=[];SIMU.ann=[];
   document.body.classList.add("simu");cam=simCam();dirty=true;renderSimu()}
 function simuStop(){SIMU.play=false;SIMU.burnSet=new Set();SIMU.newSeats=[];SIMU.ann=[];document.body.classList.remove("simu");cam=fitView();dirty=true;renderSimu()}
-const SIM_PICK=["archive","archive","archive","archive","archive","archive","archive","archive","rib","origin"];
+const SIM_PICK=["archive","archive","archive","archive","archive","archive","archive","archive","rib","origin"];   // past retirements: 87% Archive, 10% RIB
+const pickSet=()=>{const t=SIMU.opt.tgt;if(t===2)return "tsd";
+  if(t===1){let r=Math.random()*SIM_SPREAD.tot;for(const[k,n]of SIM_SPREAD.w){if((r-=n)<0)return k}return "archive"}
+  return SIM_PICK[rint(0,SIM_PICK.length-1)]};
+const SIM_SPREAD=(()=>{const w=SETS.filter(S=>S.tier!=="court").map(S=>[S.key,S.list.filter(m=>!m.burned&&!m.pack).length]);return{w,tot:w.reduce((a,x)=>a+x[1],0)}})();
 function simuYear(){const y=SIM_Y0+SIMU.yi,ev=SIMU.run.ev[SIMU.yi-1]||[],ann=[];
   const live=k=>SK[k].list.filter(m=>!m.burned&&!m.pack&&!SIMU.burnSet.has(m));
   for(const e of ev){
-    if(e.k==="event"||e.k==="org"){for(let i=0;i<e.n;i++){const pool=live(SIM_PICK[rint(0,SIM_PICK.length-1)]);if(pool.length)SIMU.burnSet.add(pool[rint(0,pool.length-1)])}
-      ann.push(e.k==="event"?`🪑 Top Shot crafting event · ${e.n} VC moments retired`:`🪑 Collectors retired ${e.n} on their own`)}
-    else if(e.k==="craft"){for(let i=0;i<2*e.n;i++){const pool=live(SIM_PICK[rint(0,SIM_PICK.length-1)]);if(pool.length)SIMU.burnSet.add(pool[rint(0,pool.length-1)])}
+    if(e.k==="event"||e.k==="org"){for(let i=0;i<e.n;i++){const pool=live(e.k==="event"?pickSet():SIM_PICK[rint(0,SIM_PICK.length-1)]);if(pool.length)SIMU.burnSet.add(pool[rint(0,pool.length-1)])}
+      ann.push(e.k==="event"?`🪑 Top Shot ${SIMU.opt.tgt===2?"Debut Club (TSD) ":""}crafting event · ${e.n} VC moments retired`:`🪑 Collectors retired ${e.n} on their own`)}
+    else if(e.k==="craft"){for(let i=0;i<2*e.n;i++){const pool=live(pickSet());if(pool.length)SIMU.burnSet.add(pool[rint(0,pool.length-1)])}
       for(let i=0;i<e.n&&SIMU.newSeats.length<TUNNEL.length;i++)SIMU.newSeats.push({...TUNNEL[SIMU.newSeats.length],c:"#f2c94c"});
       ann.push(`🆕 New VC moment, crafted · +${e.n.toLocaleString()} minted`,`🪑 ${(2*e.n).toLocaleString()} VC moments retired to craft it`)}
     else{const col=e.k==="leg"?"#1fb2a6":e.k==="rare"?"#8a4fe0":"#6b7385";
       for(let i=0;i<e.n&&SIMU.newSeats.length<TUNNEL.length;i++)SIMU.newSeats.push({...TUNNEL[SIMU.newSeats.length],c:col});
       ann.push(e.k==="common"?`🆕 New VC Common drop · +${e.n.toLocaleString()} minted`:`🆕 New VC ${e.k==="leg"?"Legendary":"Rare"} · +${e.n} minted`)}}
-  if(!ann.length)ann.push("A quiet year: nothing retired or minted");SIMU.ann=ann}
+  if(!ann.length)ann.push("A quiet year: nothing retired or minted");
+  const evs=ev.filter(e=>e.k==="event");if(evs.length>2){const tot=evs.reduce((a,e)=>a+e.n,0),lab=`${SIMU.opt.tgt===2?"Debut Club (TSD) ":""}crafting events`;
+    for(let i=ann.length-1;i>=0;i--)if(ann[i].includes("crafting event ·"))ann.splice(i,1);ann.unshift(`🪑 ${evs.length} Top Shot ${lab} · ${tot.toLocaleString()} VC moments retired`)}
+  SIMU.ann=ann}
 function simuTick(t){if(!SIMU.play)return;const k=Math.floor((t-SIMU.t0)/2600)+1;
   if(k!==SIMU.yi&&k<=SIM_Y1-SIM_Y0){SIMU.yi=k;simuYear()}
   if(k>SIM_Y1-SIM_Y0+1){SIMU.play=false;document.body.classList.remove("simu");renderSimu()}dirty=true}
