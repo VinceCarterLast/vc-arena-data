@@ -277,7 +277,7 @@ for(const S of SETS){
   for(let i=0;i<S.minted;i++){
     const f=R.f[i]||0,o=R.o[i];
     const m={set:S.key,serial:i+1,owner:o>=0?owners[o]:PACKO,burned:!!(f&2),pack:!!(f&4)||o<0,locked:!!(f&1),
-      held:R.t[i]||0,burnedAt:R.bt[i]||0,lockEnd:R.e[i]||0,price:0,packName:(R.pk&&R.pk[i+1])||"",last:(R.ls&&R.ls[i+1])||null,hist:(R.sh&&R.sh[i+1])||[],stv:(R.stv&&R.stv[i+1])||0,gifts:(R.gh&&R.gh[i+1])||[]};
+      held:R.t[i]||0,burnedAt:R.bt[i]||0,lockEnd:R.e[i]||0,price:0,packName:(R.pk&&R.pk[i+1])||"",packType:(R.pkd&&R.pkd[i+1])||"",last:(R.ls&&R.ls[i+1])||null,hist:(R.sh&&R.sh[i+1])||[],stv:(R.stv&&R.stv[i+1])||0,gifts:(R.gh&&R.gh[i+1])||[]};
     m.yrs=m.held&&!m.burned&&!m.pack?(NOW-(DAY0+m.held*DAY))/(365.25*DAY):0;
     if(m.burned){S.burned++;m.owner.retired++}else if(!m.pack)m.owner.my+=m.yrs;
     S.list.push(m);
@@ -721,7 +721,8 @@ function showSeat(m,flyTo=true,focus=false){
     if(m.locked)chips.push(`<span class="chip">🔒 ${m.lockEnd&&DAY0+m.lockEnd*DAY>NOW?"Locked to "+fmtMonth(m.lockEnd):"Locked"}</span>`)}
   let body="";
   if(m.burned)body=`<div class="sec"><small>Retired by</small><b class="name"></b><p>${m.burnedAt?fmtDate(m.burnedAt)+". ":""}Permanently removed from circulation (burned on Top Shot), making every other moment in this set rarer. This seat keeps their name for good.</p></div>`;
-  else if(m.pack)body=`<div class="sec"><p>This moment hasn't been pulled yet. It's still inside an unopened ${m.packName?"<b>"+esc(m.packName)+"</b> pack":"pack"}.</p></div>`;
+  else if(m.pack){const PT=DATA.packs&&DATA.packs[m.packType];
+    body=`<div class="sec"><p>This moment hasn't been pulled yet. It's still inside an unopened ${m.packName?"<b>"+esc(m.packName)+"</b> pack":"pack"}.</p>${PT&&PT.n?`<p>📦 ${PT.n} of these packs listed · from <b style="color:#3ee07f">${money(PT.low/100)}</b> on Top Shot</p>`:""}</div>`}
   else body=`<div class="sec"><small>${m.seller?"Listed by":"Owned by"}</small><b class="name"></b>${star?`<span class="note">📸 ${esc(star.n)} · ${esc(star.r)}</span>`:""}
      <p>${m.held?`Held since ${fmtMonth(m.held)} (${m.yrs.toFixed(1)} yrs)`:""}${m.held?" · ":""}${n.toLocaleString()} VC moment${n===1?"":"s"}${o.joined?` · on Top Shot since ${o.joined}`:""}${o.retired?` · retired ${o.retired}`:""}${o.sold===0&&!m.seller?" · has never sold a VC moment":""}</p></div>
      ${m.price?`<div class="buyrow"><div><small>For sale</small><b class="price">${money(m.price)}</b>${AVG_SALE[m.set]?`<em class="tv">${m.gold?"⭐ ":""}${dealTxt(m)}</em>`:""}</div><a class="primary" href="${momentUrl(m)}" target="_blank" rel="noopener">Buy on Top Shot ↗</a></div>`:""}`;
@@ -1005,7 +1006,7 @@ requestAnimationFrame(loop);
   let D=DATA_EMBED;
   const [fresh,upd]=await Promise.all([get("arena_owners.json",6000),get("owner_updates.json",4000)]);
   if(fresh&&fresh.sets&&fresh.names&&(fresh.asOfTime||fresh.asOf)>=(D.asOfTime||D.asOf))D=fresh;
-  D={...D,names:D.names.slice(),joined:D.joined.slice(),first:D.first.slice(),sets:Object.fromEntries(Object.entries(D.sets).map(([k,v])=>[k,{o:v.o.slice(),t:v.t.slice(),f:v.f.slice(),bt:v.bt.slice(),e:v.e.slice(),pk:v.pk||{},ls:v.ls||{},sh:v.sh||{},stv:v.stv||{},gh:v.gh||{}}]))};
+  D={...D,names:D.names.slice(),joined:D.joined.slice(),first:D.first.slice(),sets:Object.fromEntries(Object.entries(D.sets).map(([k,v])=>[k,{o:v.o.slice(),t:v.t.slice(),f:v.f.slice(),bt:v.bt.slice(),e:v.e.slice(),pk:v.pk||{},pkd:v.pkd||{},ls:v.ls||{},sh:v.sh||{},stv:v.stv||{},gh:v.gh||{}}]))};
   let applied=0,newest=D.asOfTime||"";
   if(upd&&upd.updates){const ix=new Map(D.names.map((n,i)=>[n,i]));
     for(const[key,u]of Object.entries(upd.updates)){if(!u||(D.asOfTime&&u.at&&u.at<=D.asOfTime))continue;
