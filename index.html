@@ -387,7 +387,7 @@ const CAREER2=[
  {t:"DECADES PLAYED",n:"'90s–'20s",c:"#3a2f6b",sub:"ONLY PLAYER EVER"},
  {t:"POINTS",n:"25,728",c:"#1f4f8f",sub:"24TH ALL-TIME"},
  {t:"THREES MADE",n:"2,290",c:"#14504a",sub:"11TH ALL-TIME"},
- {t:"BLOCKS",n:"888",c:"#5b2a8c",sub:"LUCKY NUMBER"},
+ {t:"BLOCKS",n:"888",c:"#5b2a8c",sub:"T-2ND · 6'6\" & UNDER"},
  {t:"GAMES",n:"1,541",c:"#4a3a12",sub:"REGULAR SEASON"},
  {t:"BUZZER-BEATER 3s",n:"RECORD",c:"#7a2410",sub:"MOST GAME-WINNERS"},
 ];
@@ -418,7 +418,7 @@ const toWorld=(sx,sy)=>({x:(sx-W/2)/cam.s+cam.x,y:(sy-H/2)/cam.s+cam.y});
 const clampS=s=>Math.max(fitView().s*.6,Math.min(14,s));
 function matches(m){switch(filter){
  case"sale":return m.price>0&&(!nearSeat||Math.hypot(m.x-nearSeat.x,m.y-nearSeat.y)<NEAR);
- case"court":return SK[m.set].tier==="court";case"debut":return !!SK[m.set].debut;case"set":return m.set===setKey;case"gold":return m.gold&&!m.burned;case"notable":return !m.burned&&!!notableOf(m.owner);case"hodl":return !m.burned&&!m.pack&&m.yrs>=hodlMin;case"burn":return m.burned;case"lock":return m.locked&&!m.burned;
+ case"court":return SK[m.set].tier==="court";case"debut":return !!SK[m.set].debut;case"set":return m.set===setKey;case"gold":return m.gold&&!m.burned;case"notable":return !m.burned&&!!notableOf(m.owner);case"hodl":return !m.burned&&!m.pack&&m.yrs>=hodlMin;case"burn":return m.burned&&(!SIM||!burnYear||(m.burnedAt&&dateOf(m.burnedAt).getUTCFullYear()<=burnYear));case"lock":return m.locked&&!m.burned&&(!SIM||!lockAfter||(m.lockEnd&&m.lockEnd>=lockAfter));
  case"joined":return !m.burned&&!m.pack&&m.owner.joined===joinYear;default:return true}}
 function seatColor(m){return m.burned?BURN:m.pack?PACK:(filter==="sale"||nearSeat)&&m.price?SALE:filter==="hodl"&&m.yrs>=5?"#9fe3ff":m.gold?GOLD:SK[m.set].color}
 
@@ -470,7 +470,7 @@ function drawPlays(){
     ctx.strokeStyle="rgba(0,0,0,.8)";ctx.lineWidth=4;const ty=y+(y>150?-z/2-12:z/2+12),lab=PLAYS[sel].d;ctx.strokeText(lab,x,ty);ctx.fillText(lab,x,ty)}
 }
 function drawRafters(){
-  if(TL.on)return;
+  if(TL.on||SIM)return;
   const bw=120,bh=150,gap=30;let y=WORLD.y0+30;
   for(const[list,title]of[[CAREER,"VINCE CARTER · HONOURS"],[CAREER2,"VINCE CARTER · CAREER"]]){const n=list.length,x0=-(n*bw+(n-1)*gap)/2,y0=y;
     ctx.strokeStyle="rgba(255,255,255,.25)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x0-40,y0);ctx.lineTo(-x0+40,y0);ctx.stroke();
@@ -659,10 +659,17 @@ function drawSim(){if(!SIM)return;const st=SIM.steps[SIM.i];ctx.setTransform(DPR
   const k=(SIM.i+1)/SIM.steps.length;ctx.fillStyle="rgba(242,201,76,.35)";ctx.fillRect(cx-w/2+12,y0+h-6,(w-24)*k,3)}
 const heldSeats=()=>seats.filter(m=>!m.burned&&!m.pack);
 function hodlSteps(){const n=y=>heldSeats().filter(m=>m.yrs>=y).length,pct=y=>Math.round(n(y)/heldSeats().length*100);
-  return[{y:0,t:"🧍 STAND UP if you own a VC moment"},{y:1,t:"SIT DOWN if you've held it under 1 year"},{y:2,t:"SIT DOWN if under 2 years"},{y:3,t:"SIT DOWN if under 3 years"},{y:5,t:"💎 STILL STANDING: held 5+ years"}]
+  return[{y:0,t:"🧍 STAND UP if you own a VC moment"},{y:1,t:"SIT DOWN if you've held it under 1 year"},{y:2,t:"SIT DOWN if under 2 years"},{y:3,t:"SIT DOWN if under 3 years"},{y:4,t:"SIT DOWN if under 4 years"},{y:5,t:"💎 Diamond hands: held 5+ years"},{y:6,t:"🏆 STILL STANDING: held 6+ years"}]
    .map(s=>({t:s.t,go:()=>{hodlMin=s.y},sub:()=>`${n(s.y).toLocaleString()} seats standing${s.y?` · ${pct(s.y)}%`:""}`}))}
 function joinSteps(){return[2020,2021,2022,2023,2024,2025,2026].map(y=>({t:`📅 STAND UP if you joined Top Shot in ${y}`,go:()=>{joinYear=y},
   sub:()=>{const l=holders.filter(o=>o.joined===y);return `${l.length.toLocaleString()} collector${l.length===1?"":"s"} · ${l.reduce((a,o)=>a+nHeld(o),0).toLocaleString()} seats`}}))}
+let burnYear=0,lockAfter=0;
+function burnSteps(){return[2021,2022,2023,2024,2025,2026].map(y=>({t:`🪑 Retired by the end of ${y}`,go:()=>{burnYear=y},
+  sub:()=>{const n=seats.filter(m=>m.burned&&m.burnedAt&&dateOf(m.burnedAt).getUTCFullYear()<=y).length,k=seats.filter(m=>m.burned&&m.burnedAt&&dateOf(m.burnedAt).getUTCFullYear()===y).length;return `${n.toLocaleString()} seats retired for good · ${k.toLocaleString()} in ${y}`}}))}
+function lockSteps(){const L=()=>seats.filter(m=>m.locked&&!m.burned),T=TL_END;
+  const st=[{a:0,t:"🔒 STAND UP if your VC moment is locked"}];
+  for(const [y,mo] of [[2027,1],[2027,4],[2027,7],[2027,10],[2028,1]])st.push({a:dayOfYM(y,mo),t:`SIT DOWN if it unlocks before ${MON[mo-1]} ${y}`});
+  return st.map(s=>({t:s.t,go:()=>{lockAfter=s.a},sub:()=>{const n=L().filter(m=>!s.a||(m.lockEnd&&m.lockEnd>=s.a)).length;return `${n.toLocaleString()} locked seats still standing`}}))}
 function loop(t){
   tlTick(t);simTick(t);
   if(anim){const k=Math.min(1,(t-anim.t0)/anim.d),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
@@ -777,7 +784,7 @@ function collectorInfo(o){
    {i:"🌅",n:"OG",d:"Has held a VC moment since 2021 or earlier",on:held.some(s=>s.held&&dateOf(s.held).getUTCFullYear()<=2021),x:""},
    {i:"🦖",n:"Rookie",d:"Owns the RIB Origin rookie moment (Raptors, 1999)",on:sets.has("origin"),x:""},
    {i:"★",n:"Debut",d:"Owns a TSD Debut moment from Top Shot's first series",on:sets.has("tsd"),x:""},
-   {i:"🎁",n:"Gifter",d:"Sent a VC moment to another collector outside the marketplace",on:!!(GIFTS&&GIFTS.sent[o.name]),x:GIFTS&&GIFTS.sent[o.name]?`×${GIFTS.sent[o.name]}`:"",soon:!GIFTS},
+   {i:"🎁",n:"Gifter",d:"Sent a VC moment to another collector without a Top Shot sale (may include private or Flowty deals)",on:!!(GIFTS&&GIFTS.sent[o.name]),x:GIFTS&&GIFTS.sent[o.name]?`×${GIFTS.sent[o.name]}`:"",soon:!GIFTS},
    {i:"🤝",n:"Never sold",d:"Has never sold a VC moment (gifts don't count)",on:o.sold===0&&held.length>0,soon:o.sold===null},
    {i:"💬",n:"VC Discord",d:(dc=>dc?(dc[0]===0?`Founded the VC Discord in ${dc[1]}`:`Member of the VC Discord since ${dc[1]}`):"Member of the VC Discord community")(discordOf(o)),on:!!discordOf(o),x:discordOf(o)?(discordOf(o)[0]===0?"founder":`member #${discordOf(o)[0]}`):""},
    {i:"📦",n:"Unopened pack",d:"Holds an unopened VC pack (coming soon)",on:false,soon:true}];
@@ -838,7 +845,7 @@ q.addEventListener("keydown",e=>{if(e.key==="Enter"){const f=res.querySelector("
 const match=document.getElementById("match");
 function setFilter(f){if(SIM&&f!==filter)SIM=null;document.querySelectorAll("#chips button").forEach(x=>x.classList.toggle("on",x.dataset.f===f));
   if(f!=="sale")nearSeat=null;filter=f;selOwner=null;dirty=true;
-  match.textContent=["all","sale","hodl","burn","joined","notable","gold"].includes(f)?"":(n=>`${n.toLocaleString()} seat${n===1?" lights":"s light"} up`)(seats.filter(matches).length);renderSale()}
+  match.textContent=["all","sale","hodl","burn","joined","notable","gold","lock"].includes(f)?"":(n=>`${n.toLocaleString()} seat${n===1?" lights":"s light"} up`)(seats.filter(matches).length);renderSale()}
 document.querySelectorAll("#chips button").forEach(b=>b.onclick=()=>{nearSeat=null;setFilter(b.dataset.f)});
 const salePanel=document.getElementById("sale");let saleSort="low";
 function secName(m){return SHORT[m.set]}
@@ -852,7 +859,7 @@ if(SALES&&SALES.tv)for(const[k,v]of Object.entries(SALES.tv))if(v&&v.v>0)AVG_SAL
 const valueOf=m=>m.gold&&m.stv?m.stv/100:AVG_SALE[m.set];   // special serials use their own value when they've sold
 const dealTxt=m=>{if(m.gold&&!m.stv)return `special serial · true value at least ${money(AVG_SALE[m.set])}`;const r=m.price/valueOf(m);if(r>=5)return `${Math.round(r)}× true value`;const p=Math.round(Math.abs(r-1)*100);return p<1?"at true value":r<1?`${p}% below true value`:`${p}% above true value`};
 function renderSale(){
-  const on=["sale","hodl","burn","joined","notable","gold"].includes(filter);salePanel.hidden=!on;document.getElementById("legend").hidden=on;if(!on)return;
+  const on=["sale","hodl","burn","joined","notable","gold","lock"].includes(filter);salePanel.hidden=!on;document.getElementById("legend").hidden=on;if(!on)return;
   salePanel.className="sale "+filter;
   if(filter==="hodl"){
     const held=seats.filter(m=>!m.burned&&!m.pack),stand=held.filter(m=>m.yrs>=hodlMin).length;
@@ -897,9 +904,20 @@ function renderSale(){
     return;
   }
   if(filter==="burn"){
-    salePanel.innerHTML=`<header><b>🏀 Assist leaders</b><small>${retirers.length} collectors retired ${nBurned} seats. Each one made every other VC moment rarer, and each red seat keeps their name for good.</small></header><ul></ul>
+    salePanel.innerHTML=`<header><b>🏀 Assist leaders</b><small>${retirers.length} collectors retired ${nBurned} seats. Each one made every other VC moment rarer, and each red seat keeps their name for good.</small>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: watch the seats retire, year by year"}</button></header><ul></ul>
       <div class="note">Retired = burned on Top Shot (permanently removed). Zoom into the outer edge to find the Ring of Retirees.</div>`;
     panelList(retirers.slice(0,100).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:String(o.retired),c:o.retired>1?"seats retired":"seat retired",go:()=>{selOwner=o;dirty=true;const s=o.seats.find(x=>x.burned);if(s)showSeat(s,true,true)}})));
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(fitView(),600),simStart(burnSteps()));
+    return;
+  }
+  if(filter==="lock"){
+    const lk=seats.filter(m=>m.locked&&!m.burned),heldN=seats.filter(m=>!m.burned&&!m.pack).length,by=new Map();for(const m of lk)by.set(m.owner,(by.get(m.owner)||0)+1);
+    salePanel.innerHTML=`<header><b>🔒 Locked seats</b><small>${lk.length.toLocaleString()} of ${heldN.toLocaleString()} held VC moments are locked (${Math.round(lk.length/heldN*100)}%). Locked moments can't be sold until the lock ends.</small>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: stand up if locked, sit down as locks end"}</button></header><ul></ul>
+      <div class="note">Lock one VC moment to earn the 🔒 Locker badge.</div>`;
+    panelList([...by.entries()].sort((a,b)=>b[1]-a[1]).slice(0,60).map(([o,n],i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:n.toLocaleString(),c:n>1?"locked seats":"locked seat",go:()=>{const s=o.seats.find(x=>x.locked&&!x.burned);if(s)showSeat(s,true,true)}})));
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(fitView(),600),simStart(lockSteps()));
     return;
   }
   const list=seats.filter(matches);

@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 /* One deliberate dark look to match the VC Arena. */
-:root{--night:#0b0d14;--surface:#141724;--panel:#161a28;--line:rgba(255,255,255,.10);--grid:rgba(255,255,255,.07);
+:root{--night:#0b0d14;--surface:#141724;--panel:#161a28;--line:rgba(255,255,255,.10);--grid:rgba(255,255,255,.13);
   --fg:#f1ede4;--muted:#9a97a6;--gold:#f2c94c;--bar:#6f9fd8;--burn:#ce1141;
   --display:"Barlow Condensed","Arial Narrow",sans-serif;--body:"Barlow",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;color-scheme:dark}
 *{box-sizing:border-box}
@@ -89,14 +89,14 @@ tr.future td{color:var(--gold)}
   <p class="note">Sorted from rarest to most common. Floor = lowest current ask. True value = what one ordinary moment is worth, from its recent completed sales (recent sales count more, highest and lowest left out, special serials excluded); not an appraisal or financial advice. Market cap = true value × moments in circulation. Retired = permanently removed from circulation (burned on Top Shot). Still in packs = inside unopened packs, either held by collectors who never opened them or with Top Shot (it sometimes buys moments back and repacks them, so this number can move up or down).</p>
   <div class="explain"><b>Moments, editions, plays and parallels</b>
    <span><b>15,695 moments</b> (each serial is one moment) across <b>10 editions</b>, but only <b>7 different plays</b>. Some plays come in more than one <b>parallel</b>: the TSD Common and TSD Cosmic are the same play (his final shot of the 2020 season), and Dallas Standard, Galactic and Omega are all the same corner three against the Spurs.</span></div>
-  <div id="snapArea" class="snapArea"><div class="snapHead"><b>VINCE CARTER ON TOP SHOT · SUPPLY</b><span id="snapDate"></span></div><div class="tableWrap"><table id="sets"></table></div><div class="snapFoot">VC15TRACKER.COM · @VC15Tracker</div></div>
+  <div id="snapArea" class="snapArea"><div class="snapHead"><b>VINCE CARTER ON TOP SHOT · SUPPLY</b><span class="snapDate"></span></div><div class="tableWrap"><table id="sets"></table></div><div class="snapFoot">VC15TRACKER.COM · @VC15Tracker</div></div>
 
   <h2>Vince Carter's career</h2>
   <section class="tiles">
    <div class="tile"><small>NBA seasons</small><b>22</b><em>1998 – 2020 · the only NBA player to play in four different decades</em></div>
    <div class="tile"><small>Career points</small><b>25,728</b><em>24th all-time</em></div>
    <div class="tile"><small>Threes made</small><b>2,290</b><em>11th all-time</em></div>
-   <div class="tile"><small>Blocks</small><b>888</b><em>a lucky number 🍀</em></div>
+   <div class="tile"><small>Blocks</small><b>888</b><em>tied 2nd all-time among players 6'6" and under (with Barkley, behind Jordan)</em></div>
    <div class="tile"><small>Games played</small><b>1,541</b><em>regular season</em></div>
    <div class="tile"><small>All-Star</small><b>8×</b><em>2000 – 2007</em></div>
    <div class="tile"><small>Rookie of the Year</small><b>1999</b><em>Toronto Raptors</em></div>
@@ -117,12 +117,12 @@ tr.future td{color:var(--gold)}
     <div class="card"><h3>How many VC moments each collector has</h3><p>Most collectors own just one.</p><div class="chart" id="c_size"></div></div>
   </div>
 
-  <h2>Supply goal</h2>
+  <div class="h2row"><h2>Supply goals</h2><button id="snapGoals" class="snapBtn">📸 Save as image</button></div>
+  <div id="goalArea" class="snapArea"><div class="snapHead"><b>VINCE CARTER ON TOP SHOT · SUPPLY GOALS</b><span class="snapDate"></span></div>
   <div class="goal" id="goal"></div>
-
-  <h2>Long-term supply goals</h2>
+  <h3 style="margin:18px 0 4px">Long-term supply goals</h3>
   <p class="note">Goals for VC moments still in circulation (minted minus retired). New mints raise the mountain, retirements bring it down.</p>
-  <div class="grid2" id="longgoals"></div>
+  <div class="grid2" id="longgoals"></div><div class="snapFoot">VC15TRACKER.COM · @VC15Tracker</div></div>
 
   <h2>Supply</h2>
   <div class="grid2">
@@ -140,7 +140,6 @@ tr.future td{color:var(--gold)}
   <section class="tiles" id="saleTiles"></section>
   <div class="grid2">
     <div class="card"><h3>Sales volume by year</h3><p>Total paid for VC moments each year (hover for the number of sales).</p><div class="chart" id="c_vol"></div></div>
-    <div class="card"><h3>Top VC buyers</h3><p>Collectors who bought the most VC moments on the marketplace.</p><div class="tableWrap" style="border:0"><table id="buyers"></table></div></div>
   </div>
   <h3 style="margin:18px 0 6px">Biggest VC sales ever</h3>
   <div class="tableWrap"><table id="topsales"></table></div>
@@ -229,7 +228,7 @@ const tiles=[
  ["Top 10 own",pct(top10/held.length),`${top10.toLocaleString()} moments`],
  ["OGs still holding",og.toLocaleString(),"collectors holding a VC since 2020–21"],
  ["Own just one",pct(counts.filter(c=>c===1).length/counts.length),"of collectors hold a single VC"],
- ["💝 Gifted or traded",D.gifts&&D.gifts.n?"~"+D.gifts.n.toLocaleString():"–","VC moments sent to another collector outside the marketplace"],
+ ["💝 Gifted or traded",D.gifts&&D.gifts.n?"~"+D.gifts.n.toLocaleString():"–","moved without a Top Shot sale · may include Flowty or private deals"],
 ];
 document.getElementById("tiles").innerHTML=tiles.map(([a,b,c])=>`<div class="tile"><small>${a}</small><b>${b}</b><em>${c}</em></div>`).join("");
 
@@ -256,17 +255,19 @@ document.getElementById("sets").innerHTML=`<tr><th>Set</th><th>Minted</th><th>Re
 
 // ---- bar chart helper (single series, SVG, hover tooltip)
 const tip=document.getElementById("tip");
-function bars(id,data,{color="var(--bar)",fmt=v=>v.toLocaleString(),label=d=>d.label,tipText,log=false}={}){
+function bars(id,data,{color="var(--bar)",fmt=v=>v.toLocaleString(),label=d=>d.label,tipText,log=false,pairs=false}={}){
   const W=560,H=230,ml=44,mr=8,mt=14,mb=34,iw=W-ml-mr,ih=H-mt-mb,max=Math.max(1,...data.map(d=>d.v));
   const step=niceStep(max),top=log?max:Math.ceil(max/step)*step,bw=iw/data.length,gap=Math.min(6,bw*.25);
   const Hs=v=>log?ih*Math.log10(1+v)/Math.log10(1+top):ih*v/top;
   let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(id)}">`;
   for(const v of (log?[0,10,100,1000,10000].filter(x=>x<=top):[...Array(Math.floor(top/step)+1)].map((_,k)=>k*step))){const y=mt+ih-Hs(v);s+=`<line x1="${ml}" x2="${W-mr}" y1="${y}" y2="${y}" stroke="var(--grid)"/><text x="${ml-6}" y="${y+4}" text-anchor="end" font-size="11" fill="#9a97a6">${short(v)}</text>`}
-  const every=Math.ceil(data.length/12);
+  const every=pairs?2:Math.ceil(data.length/12);
+  if(pairs)for(let i=0;i<data.length;i+=2)if((i/2)%2===0)s+=`<rect x="${ml+i*bw}" y="${mt}" width="${bw*2}" height="${ih}" fill="rgba(255,255,255,.035)"/>`;
   data.forEach((d,i)=>{const x=ml+i*bw+gap/2,w=Math.max(1,bw-gap),h=Hs(d.v),y=mt+ih-h,r=Math.min(4,w/2,h);
     s+=`<path d="M${x},${mt+ih} V${y+r} Q${x},${y} ${x+r},${y} H${x+w-r} Q${x+w},${y} ${x+w},${y+r} V${mt+ih} Z" fill="${d.c||color}"/>`;
     s+=`<rect class="hit" x="${ml+i*bw}" y="${mt}" width="${bw}" height="${ih}" fill="transparent" data-i="${i}"/>`;
-    if(i%every===0&&label(d))s+=`<text x="${ml+i*bw+(log?bw:bw/2)}" y="${H-mb+16}" text-anchor="middle" font-size="11" fill="#9a97a6">${esc(label(d))}</text>`});
+    if(pairs)s+=`<text x="${x+w/2}" y="${y-5}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${d.v?"#e8e4da":"#6c6a78"}">${d.v?short(d.v):"0"}</text>`;
+    if(i%every===0&&label(d))s+=`<text x="${ml+i*bw+(log||pairs?bw:bw/2)}" y="${H-mb+16}" text-anchor="middle" font-size="11" fill="#9a97a6">${esc(label(d))}</text>`});
   s+=`<line x1="${ml}" x2="${W-mr}" y1="${mt+ih}" y2="${mt+ih}" stroke="rgba(255,255,255,.25)"/></svg>`;
   const el=document.getElementById(id);el.innerHTML=s;
   el.querySelectorAll(".hit").forEach(r=>{const d=data[+r.dataset.i];
@@ -302,7 +303,7 @@ function short(v){return v>=1e6?(v/1e6).toFixed(v%1e6?1:0)+"M":v>=1000?(v/1000).
 {const ys=[2020,2021,2022,2023,2024,2025,2026],ret=Object.fromEntries(ys.map(y=>[y,0]));let last=0;
  for(const m of seats)if(m.burned&&m.bt){const y=new Date(DAY0+m.bt*DAY).getUTCFullYear();if(ret[y]!==undefined)ret[y]++;last=Math.max(last,m.bt)}
  const data=[];for(const y of ys){data.push({v:MINTED_BY_YEAR[y]||0,label:String(y),full:y+" minted",c:"var(--bar)"});data.push({v:ret[y],label:"",full:y+" retired",c:"var(--burn)"})}
- bars("c_burn",data,{fmt:v=>v.toLocaleString(),log:true});
+ bars("c_burn",data,{fmt:v=>v.toLocaleString(),log:true,pairs:true});
  netBars("c_net",ys.map(y=>({y,v:(MINTED_BY_YEAR[y]||0)-ret[y]})));
  if(last){const days=Math.floor((NOW-(DAY0+last*DAY))/DAY);const d=new Date(DAY0+last*DAY);document.getElementById("burnNote").textContent=`Retired = permanently removed from circulation. Bars use a log scale so small years stay visible. Last retirement: ${MON[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()} (${days} days ago).`}
  const Y=new Date().getUTCFullYear(),mint=MINTED_BY_YEAR[Y]||0,r=ret[Y]||0,need=mint-r+1,end=Date.UTC(Y+1,0,1),left=Math.ceil((end-NOW)/DAY);
@@ -366,7 +367,7 @@ function strength(a){let num=0,den=0;for(const m of a){const age=(NOW-(DAY0+RELE
  ].map(([a,b,c])=>`<div class="tile"><small>${a}</small><b>${b}</b><em>${c}</em></div>`).join("");
  bars("c_vol",yrs.map(y=>({v:Math.round(SL.years[y][1]/100),label:y,n:SL.years[y][0]})),{fmt:v=>money(v),tipText:d=>`${d.label}: <b>${money(d.v)}</b> · ${d.n.toLocaleString()} sales`});
  const byB=D.names.map((n,i)=>[n,SL.bought[i]||0]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,10);
- document.getElementById("buyers").innerHTML=`<tr><th>#</th><th style="text-align:left">Collector</th><th>Bought</th></tr>`+byB.map(([n,c],i)=>`<tr><td>${i+1}</td><td style="text-align:left">${esc(disp(n))}</td><td>${c.toLocaleString()}</td></tr>`).join("");
+ if(document.getElementById("buyers"))document.getElementById("buyers").innerHTML=`<tr><th>#</th><th style="text-align:left">Collector</th><th>Bought</th></tr>`+byB.map(([n,c],i)=>`<tr><td>${i+1}</td><td style="text-align:left">${esc(disp(n))}</td><td>${c.toLocaleString()}</td></tr>`).join("");
  const SN=Object.fromEntries(SETS.map(s=>[s.k,s]));
  document.getElementById("topsales").innerHTML=`<tr><th style="text-align:left">Moment</th><th>Price</th><th>Date</th><th style="text-align:left">Seller → Buyer</th></tr>`+
   SL.top.slice(0,10).map(([p,k,s,day,se,bu])=>{const d=new Date(DAY0+day*DAY);return `<tr><td style="text-align:left"><span class="dot" style="background:${SN[k].c}"></span>${SN[k].n} #${s}</td><td><b>${money(p/100)}</b></td><td>${MON[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}</td><td style="text-align:left">${esc(disp(se))} → ${esc(disp(bu))}</td></tr>`}).join("");
@@ -375,19 +376,20 @@ function strength(a){let num=0,den=0;for(const m of a){const age=(NOW-(DAY0+RELE
 {const top=[...owners.entries()].sort((a,b)=>b[1].length-a[1].length).slice(0,10);
  document.getElementById("top").innerHTML=`<tr><th>#</th><th style="text-align:left">Collector</th><th>VC moments</th><th>Share of all VC moments held</th><th>Collecting VC since</th><th>Joined Top Shot</th></tr>`+
   top.map(([o,a],i)=>`<tr><td>${i+1}</td><td style="text-align:left"><a href="https://nbatopshot.com/collection/${encodeURIComponent(D.names[o])}" target="_blank" rel="noopener">${esc(disp(D.names[o]))}</a></td><td>${a.length.toLocaleString()}</td><td>${pct(a.length/held.length)}</td><td>${(()=>{const t=Math.min(...a.map(m=>m.t||1e9));if(t>=1e9)return "–";const d=new Date(DAY0+t*DAY);return MON[d.getUTCMonth()]+" "+d.getUTCFullYear()})()}</td><td>${D.joined[o]||"–"}</td></tr>`).join("")}
-// snapshot: save the supply table as an image for X
-{const btn=document.getElementById("snapBtn"),area=document.getElementById("snapArea");
- const d=new Date();document.getElementById("snapDate").textContent=d.toLocaleDateString("en-US",{timeZone:"America/Toronto",month:"long",day:"numeric",year:"numeric"});
+// snapshot buttons: save a section as an image for X
+{const d=new Date();document.querySelectorAll(".snapDate").forEach(e=>e.textContent=d.toLocaleDateString("en-US",{timeZone:"America/Toronto",month:"long",day:"numeric",year:"numeric"}));
  let DL=null;try{if(window.claude&&window.claude.use)window.claude.use("downloads").then(x=>DL=x).catch(()=>{})}catch(e){}
- btn.onclick=async()=>{btn.disabled=true;btn.textContent="Saving…";
+ const snap=(btnId,areaId,base)=>{const btn=document.getElementById(btnId),area=document.getElementById(areaId);
+  btn.onclick=async()=>{btn.disabled=true;btn.textContent="Saving…";
   try{if(!window.html2canvas)await new Promise((ok,no)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";s.onload=ok;s.onerror=no;document.head.appendChild(s)});
    area.classList.add("snapping");await new Promise(r=>setTimeout(r,60));
    const c=await html2canvas(area,{backgroundColor:"#0b0d14",scale:2,useCORS:true});area.classList.remove("snapping");
-   const fn=`vc-supply-${d.toISOString().slice(0,10)}.png`;
+   const fn=`${base}-${d.toISOString().slice(0,10)}.png`;
    const blob=await new Promise(r=>c.toBlob(r,"image/png"));
    if(DL)await DL.save({filename:fn,data:blob});else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove()}
    btn.textContent="✅ Saved";}catch(e){area.classList.remove("snapping");btn.textContent="Couldn't save, try again"}
-  setTimeout(()=>{btn.disabled=false;btn.textContent="📸 Save as image"},2500)}}
+  setTimeout(()=>{btn.disabled=false;btn.textContent="📸 Save as image"},2500)}};
+ snap("snapBtn","snapArea","vc-supply");snap("snapGoals","goalArea","vc-supply-goals")}
 })();
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fc4a20ce94824dd2ba5944390faa2ac3"}'></script><!-- End Cloudflare Web Analytics -->
