@@ -101,6 +101,7 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .sale.hodl li strong{color:var(--gold)}
 .sale.burn li strong{color:#ff6b62}
 .sale .tabs.sub button.on{background:#f1ede4;border-color:#f1ede4;color:#14161f}
+.sale .simBtn{display:block;width:100%;margin-top:8px;font:700 13px var(--body);color:#1b1608;background:var(--gold);border:0;border-radius:7px;padding:8px;cursor:pointer}
 .sale .stand{display:block;margin-top:8px;font:700 13px var(--body);color:var(--fg)}
 .sale .note{padding:8px 12px;color:var(--muted);font-size:11px;border-top:1px solid var(--line)}
 .ticket .play{display:grid;grid-template-columns:62px 1fr;gap:8px;align-items:center;margin:6px 0;padding:6px;background:#1d1a14;border-radius:6px;color:#f4efe2}
@@ -175,8 +176,14 @@ body.rec #arena{width:min(1280px,calc(100vw - 40px),calc((100vh - 150px) * 1.777
 .ticket.v2 .bd.on{background:#2a2410;border-color:#f2c94c;box-shadow:0 0 8px rgba(242,201,76,.35)}
 .ticket.v2 .bd.on span{filter:none;opacity:1}
 .ticket.v2 .bd.soon{border-style:dashed}
-.ticket.v2 .tip{margin:6px 0 0;font-size:11.5px;color:#e8e4da;background:#1d2133;border-radius:6px;padding:5px 8px}
+.ticket.v2 .tip{margin:6px 0 0;font-size:11.5px;line-height:16px;height:32px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:#e8e4da;background:#1d2133;border-radius:6px;padding:5px 8px}
+.ticket.v2 .tip.idle{color:var(--muted)}
+.ticket.v2 .bd span.t{font:800 12px var(--display);letter-spacing:.02em}
 .ticket.v2{max-height:calc(100% - 120px);overflow:auto}
+.ticket.v2 .pstats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.ticket.v2 .pstats div{background:#1d2133;border-radius:7px;padding:6px 8px}
+.ticket.v2 .pstats small{display:block;font:700 9.5px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ticket.v2 .pstats b{font:800 17px var(--display)}
 </style>
 
 <canvas id="arena" aria-label="The VC Arena seen from above: one seat per Vince Carter moment"></canvas>
@@ -242,10 +249,10 @@ const SETS=[
  {key:"cosmic", name:"TSD Cosmic",      tier:"court", minted:49,   burned:0,   color:"#7b3fe4"},
  {key:"asg",    name:"ASG Legendary",   tier:"court", minted:50,   burned:0,   color:"#c47a2c"},
  {key:"origin", name:"RIB Origin Rare", tier:"100",   minted:269,  burned:6,   color:"#8a4fe0"},
- {key:"tsd",    name:"TSD Common · Debut Club",tier:"100",minted:3336, burned:1, color:"#f3ede2", debut:true},
+ {key:"tsd",    name:"TSD Common · Debut Club",tier:"100",minted:3336, burned:1, color:"#8e2a36", debut:true},
  {key:"fandom", name:"Vintage Vibes Fandom",tier:"200",minted:951, burned:2,   color:"#f7a8cf"},
  {key:"rib",    name:"RIB '05-06 Rare", tier:"200",   minted:990,  burned:38,  color:"#2a4fd6"},
- {key:"archive",name:"Archive Set",     tier:"300",   minted:10000,burned:329, color:"#9aa1ad"},
+ {key:"archive",name:"Archive Set",     tier:"300",   minted:10000,burned:329, color:"#4f5768"},
 ];
 const SK=Object.fromEntries(SETS.map(s=>[s.key,s]));
 const TIERNAME={court:"Courtside","100":"100 Level","200":"200 Level","300":"300 Level"};
@@ -280,6 +287,8 @@ const yrs=m=>m.yrs;
 // notable fans: public figures known outside Top Shot (usernames checked against Atlas, case-insensitive)
 const NOTABLE={mcuban:{n:"Mark Cuban",r:"Entrepreneur"},hbarnes:{n:"Harrison Barnes",r:"NBA player"},roham:{n:"Roham Gharegozlou",r:"Dapper Labs founder & CEO"}};
 const notableOf=o=>o&&NOTABLE[o.name.toLowerCase()];
+const DISCORD={"vincecarterlast":[0,"Sep 2021"],"jbolger23":[1,"Sep 2021"],"b_st1":[2,"Sep 2021"],"sales":[3,"Sep 2021"],"2weeksaway":[4,"Sep 2021"],"abhishek":[5,"Sep 2021"],"ibrahim":[6,"Sep 2021"],"stunninglittlepenguin":[7,"Sep 2021"],"msilva22":[8,"Sep 2021"],"nickgiles51496":[9,"Sep 2021"],"kentaviouscaldwellpoop":[10,"Sep 2021"],"xxjsxm_":[11,"Sep 2021"],"endlesspostgame":[12,"Oct 2021"],"ravi_eth":[13,"Oct 2021"],"schuckster":[14,"Oct 2021"],"jwild15":[16,"Oct 2021"],"grez":[17,"Oct 2021"],"nftrell":[18,"Nov 2021"],"ndmaynard":[19,"Nov 2021"],"stlbballer33":[20,"Jan 2022"],"njpaternosh":[21,"Jan 2022"],"anta":[23,"Feb 2022"],"mhaydenb":[24,"Feb 2022"],"sneakypete211":[25,"Feb 2022"],"mrelvishpiper":[26,"Feb 2022"],"thollnagel":[27,"Feb 2022"],"wire_stringerbell1980":[28,"Mar 2022"],"russbertino":[29,"Mar 2022"],"matthew_j_sualk_2i5":[30,"Mar 2022"],"goat_racer69":[31,"Mar 2022"],"rippinpacks1":[32,"Mar 2022"],"madchester23":[33,"Mar 2022"],"jack_sparrow":[34,"Mar 2022"],"just_glyding":[35,"Apr 2022"],"mbl267":[37,"Apr 2022"],"1racer77":[38,"Apr 2022"],"herdfan1":[39,"Apr 2022"],"cptcnote11":[40,"Apr 2022"],"andy_mac32":[41,"Apr 2022"],"mikesanity":[43,"Apr 2022"],"studmuffin":[44,"May 2022"],"rrx69":[45,"Jul 2022"],"rhenzokuken":[46,"Jul 2022"],"ywrr":[47,"Aug 2022"],"chilldoc":[48,"Sep 2022"],"velvethoop":[49,"Oct 2022"],"wolfpackballer14":[50,"Oct 2022"],"dan_slawinski":[51,"Oct 2022"],"denverdawg":[52,"Oct 2022"],"awesemo":[53,"Oct 2022"],"ginobilisaurus":[54,"Oct 2022"],"richdmc":[55,"Oct 2022"],"scottybonus":[56,"Oct 2022"],"tabatabezz":[57,"Oct 2022"],"hatedjay":[58,"Oct 2022"],"mccraiger80":[59,"Oct 2022"],"wolfcop":[60,"Oct 2022"],"7costanza":[61,"Nov 2022"],"thetradeshow33":[62,"Nov 2022"],"blakekrek":[63,"Nov 2022"],"jcgvn2fly":[64,"Nov 2022"],"rb_duke":[65,"Nov 2022"],"mitchtotheried":[66,"Nov 2022"],"joeyhammer":[67,"Nov 2022"],"leancuisinelal":[69,"Nov 2022"],"gman1910":[70,"Dec 2022"],"booshtk":[71,"Dec 2022"],"quoththekraven":[72,"Dec 2022"],"ando22":[73,"Dec 2022"],"nickeb505":[74,"Dec 2022"],"mrimportantguy":[75,"Dec 2022"],"biyombo8":[76,"Dec 2022"],"kai_boy":[78,"Jan 2023"],"tsshark":[79,"Jan 2023"],"rundmd":[80,"Feb 2023"],"heizz":[81,"Feb 2023"],"dockdelta":[82,"Feb 2023"],"puddy89":[83,"Feb 2023"],"bergair":[84,"Feb 2023"],"rightmow":[85,"Feb 2023"],"thunderhour":[86,"Feb 2023"],"iammaximus":[87,"Feb 2023"],"dragonmasterdonut":[88,"Mar 2023"],"orion522":[89,"Mar 2023"],"wjf":[90,"Mar 2023"],"ewal":[91,"Mar 2023"],"thedean341":[92,"Mar 2023"],"jreceno":[93,"Mar 2023"],"jammerz":[94,"Mar 2023"],"deekesbrah":[95,"Mar 2023"],"tsiafkas":[96,"Mar 2023"],"jeanclaude":[97,"Mar 2023"],"yolodawg":[98,"Mar 2023"],"vancityspringer":[99,"Mar 2023"],"mikeg503":[100,"Mar 2023"],"bucks_n_six":[101,"Apr 2023"],"alxo":[103,"Apr 2023"],"d_lee":[104,"Apr 2023"],"elrolio":[105,"Apr 2023"],"bamalegre":[106,"Apr 2023"],"rex416":[107,"Apr 2023"],"skeremyjeens":[108,"Apr 2023"],"macnutz":[110,"Jun 2023"],"vinosuas":[111,"Jun 2023"],"waybeyondthearchive":[112,"Jun 2023"],"sl4tt":[113,"Jul 2023"],"project_pat":[114,"Jul 2023"],"giannis":[115,"Aug 2023"],"f8thful":[116,"Sep 2023"],"raptors416":[117,"Oct 2023"],"legendkillerbountyhunter":[118,"Dec 2023"],"coultin":[119,"Dec 2023"],"ghost":[120,"Jan 2024"],"awptical":[121,"Feb 2024"],"coach_p0625":[122,"Dec 2024"],"mrkicker23":[123,"Dec 2024"],"chewiewoolf":[124,"Jan 2026"],"raikan007":[125,"Jan 2026"],"flpx":[126,"Jan 2026"],"mxtthxw":[127,"May 2026"],"jason3555":[128,"May 2026"],"libruary":[129,"May 2026"],"andeizm":[130,"Oct 2026"]};   // VC Discord members (lowercase Top Shot username → [member #, joined])
+const discordOf=o=>o&&DISCORD[o.name.toLowerCase()];
 // ---------- geometry ----------
 const CW=470,CH=250,SEAT=7.6,PITCH=10,ROWP=10.5;
 function rrPath(W,H,R){
@@ -336,9 +345,13 @@ function buildBand(inner,keys,wantRows){
   for(const sd of sides){
     const sets=sd.keys.map(k=>SK[k]);const n=sets.reduce((a,S)=>a+S.list.length,0)+(sets.length-1)*3;
     const sp=Math.min(PITCH*.95,(CW*1.9)/n);let x=-n*sp/2;
+    const fx0=x,dal=sd.keys.includes("dallas"),out=sd.y<0?1:-1;   // labels sit on the court side, so price tags never cover them
     for(const S of sets){S.rows=1;S.perRow=S.list.length;const x0=x;
       for(const m of S.list){m.x=x+sp/2;m.y=sd.y;m.row="AA";seats.push(m);x+=sp}
-      labels.push({k:S.key,t:SHORT[S.key],x:(x0+x)/2,y:sd.y+(sd.y<0?-16:16),court:true});x+=3*sp}
+      // Dallas parallels get small names (OMEGA / GALACTIC / STANDARD) plus one big DALLAS label with the picture
+      labels.push(dal?{k:S.key,t:S.key==="dallas"?"STANDARD":SHORT[S.key],x:(x0+x)/2,y:sd.y+out*14,court:true,small:true}
+                     :{k:S.key,t:S.key==="cosmic"?"TSD COSMIC":"ASG",x:(x0+x)/2,y:sd.y+out*16,court:true,img:true});x+=3*sp}
+    if(dal)labels.push({k:"dallas",t:"DALLAS",x:(fx0+x-3*sp)/2,y:sd.y+out*30,court:true,img:true});
   }
 }
 let r100=buildBand(70,["origin","tsd"]);
@@ -445,8 +458,9 @@ function boardAt(p){return BOARDS.findIndex(b=>Math.abs(p.x-b.x)<=b.w/2+2&&Math.
 const FLOOR_SPOTS={rib:[-438,-62,46],fandom:[-438,0,46],asg:[-438,62,46],origin:[438,-31,46],archive:[438,31,46],
   tsd:[176,-34,50],cosmic:[176,34,50],omega:[-444,214,36],galac:[-402,214,36],dallas:[-360,214,36]};
 const PIMG={};for(const k in PLAYS){const im=new Image();im.onload=()=>dirty=true;im.src=PLAYS[k].img;PIMG[k]=im}
+let playSel=null;
 function drawPlays(){
-  const sel=selSeat?selSeat.set:null;
+  const sel=selSeat?selSeat.set:playSel;
   for(const[k,[x,y,s]]of Object.entries(FLOOR_SPOTS)){if(TL.on&&TL.day<(DROP[k]??0))continue;const on=k===sel,z=on?s*1.25:s,im=PIMG[k];
     ctx.save();if(on){ctx.shadowColor="#f2c94c";ctx.shadowBlur=24}
     ctx.fillStyle="#0b0d14";ctx.fillRect(x-z/2-2,y-z/2-2,z+4,z+4);ctx.restore();
@@ -495,7 +509,9 @@ function draw(){
     if(!B.has(c))B.set(c,[]);B.get(c).push(m);
   }
   ctx.globalAlpha=.16;for(const[c,arr]of dimBuckets){ctx.fillStyle=c;for(const m of arr)ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT)}
-  ctx.globalAlpha=1;for(const[c,arr]of buckets){ctx.fillStyle=c;for(const m of arr)ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT)}
+  ctx.globalAlpha=1;for(const[c,arr]of buckets){if(c===BURN&&!TL.on)continue;ctx.fillStyle=c;for(const m of arr)ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT)}
+  {const arr=!TL.on&&buckets.get(BURN);if(arr){ctx.save();ctx.shadowColor="#ff1f3a";ctx.shadowBlur=Math.min(16,5+cam.s*4)*DPR;ctx.fillStyle="#ff2a40";
+    for(const m of arr)ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT);ctx.restore();ctx.fillStyle="rgba(255,190,195,.9)";const c=SEAT*.34;for(const m of arr)ctx.fillRect(m.x-c/2,m.y-c/2,c,c)}}
   // Cosmic: purple seat with an orange centre (its set art); ASG: bronze with a shine (the Hall of Fame statue)
   {const arr=buckets.get(SK.cosmic.color);if(arr){ctx.fillStyle="#ff7a2a";for(const m of arr)ctx.fillRect(m.x-hs*.42,m.y-hs*.42,SEAT*.42,SEAT*.42)}}
   {const arr=buckets.get(SK.asg.color);if(arr){ctx.fillStyle="rgba(255,226,170,.85)";for(const m of arr)ctx.fillRect(m.x-hs+SEAT*.14,m.y-hs+SEAT*.14,SEAT*.3,SEAT*.22)}}
@@ -517,10 +533,10 @@ function draw(){
   // section labels
   ctx.textAlign="center";ctx.textBaseline="middle";ctx.font=`700 ${Math.max(14,13/cam.s)}px 'Barlow Condensed',sans-serif`;
   ctx.fillStyle="rgba(255,255,255,.75)";ctx.lineWidth=3/cam.s;ctx.strokeStyle="rgba(11,13,20,.85)";
-  if(cam.s>.2)for(const l of labels){if(l.court&&cam.s<.9)continue;if(TL.on&&TL.day<(DROP[l.k]??0))continue;const zf=Math.min(2.4,Math.max(1,Math.sqrt(cam.s)));ctx.font=`800 ${(l.court?11:15)*zf/cam.s}px 'Barlow Condensed',sans-serif`;
+  if(cam.s>.2)for(const l of labels){if(l.small&&cam.s<.9)continue;if(TL.on&&TL.day<(DROP[l.k]??0))continue;const zf=Math.min(2.4,Math.max(1,Math.sqrt(cam.s)));ctx.font=`800 ${(l.small?10:l.court?13:15)*zf/cam.s}px 'Barlow Condensed',sans-serif`;
     ctx.save();ctx.translate(l.x,l.y);if(ROT)ctx.rotate(-ROT);
     ctx.fillStyle=l.debut?"#ffe28a":l.court?"#f7d774":"rgba(255,255,255,.8)";ctx.strokeText(l.t,0,0);ctx.fillText(l.t,0,0);
-    if(!l.court&&PIMG[l.k]&&PIMG[l.k].complete){const z=24*zf/cam.s,tw=ctx.measureText(l.t).width;ctx.drawImage(PIMG[l.k],-tw/2-z-4/cam.s,-z/2,z,z)}ctx.restore()}
+    if((!l.court||l.img)&&PIMG[l.k]&&PIMG[l.k].complete){const z=(l.court?20:24)*zf/cam.s,tw=ctx.measureText(l.t).width;ctx.drawImage(PIMG[l.k],-tw/2-z-4/cam.s,-z/2,z,z)}ctx.restore()}
   // ring of retirees
   ctx.save();ctx.textAlign="center";ctx.textBaseline="middle";
   if(cam.s>1.1){ctx.font="600 3.6px Barlow,sans-serif";
@@ -531,9 +547,10 @@ function draw(){
   ctx.restore();
   // gold rings on special serials
   if(cam.s>.8&&!TL.on){ctx.strokeStyle=GOLD;ctx.lineWidth=1.2;for(const arr of buckets.values())for(const m of arr)if(m.gold&&!m.burned)ctx.strokeRect(m.x-hs-1.2,m.y-hs-1.2,SEAT+2.4,SEAT+2.4)}
+  if(selOwner&&focusOwner){ctx.strokeStyle=GOLD;ctx.lineWidth=Math.max(.6,1.4/cam.s);for(const m of selOwner.seats)ctx.strokeRect(m.x-hs-.9,m.y-hs-.9,SEAT+1.8,SEAT+1.8)}
   if(selOwner&&!PIC){ctx.fillStyle="rgba(255,255,255,.9)";const r=Math.max(.9,1.2/cam.s);for(const m of selOwner.seats)if(m!==selSeat){ctx.beginPath();ctx.arc(m.x,m.y,r,0,7);ctx.fill()}}
   if(selSeat){ctx.save();ctx.shadowColor="#f2c94c";ctx.shadowBlur=18;ctx.strokeStyle="rgba(242,201,76,.95)";ctx.lineWidth=Math.max(.8,2/cam.s);ctx.strokeRect(selSeat.x-hs-.8,selSeat.y-hs-.8,SEAT+1.6,SEAT+1.6);ctx.restore()}
-  drawPriceTags();
+  drawPriceTags();drawSim();
 }
 // ---------- price tags in the stands (lowest ask per area, like a ticket app) ----------
 const ZONES=[];{
@@ -627,8 +644,27 @@ document.getElementById("tlRec").onclick=()=>{
     if(DLNS){DLNS.save({filename:fn,data:blob}).catch(()=>{})}else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove()}
     tlMsg.textContent=ext==="mp4"?"Saved! The video is ready to post on X.":"Saved as .webm. X needs .mp4, so convert it first (or use Chrome, which saves .mp4)."};
   TL.day=TL_START;TL.hold=0;TL.playing=true;tlPlay.textContent="⏸";document.getElementById("tlRec").textContent="⏹ Stop";tlMsg.textContent="Recording… keep this tab open until it finishes.";rec.start(500)};
+// ---------- arena games: "stand up if…" played out step by step ----------
+let SIM=null;
+function simStart(steps){SIM={steps,i:0,t0:performance.now()};steps[0].go();dirty=true;renderSale()}
+function simStop(){SIM=null;dirty=true;renderSale()}
+function simTick(t){if(!SIM)return;const hold=SIM.i>=SIM.steps.length-1?4000:2400;
+  if(t-SIM.t0>hold){if(SIM.i>=SIM.steps.length-1){simStop();return}SIM.i++;SIM.steps[SIM.i].go();SIM.t0=t;renderSale()}dirty=true}
+function drawSim(){if(!SIM)return;const st=SIM.steps[SIM.i];ctx.setTransform(DPR,0,0,DPR,0,0);
+  const side=!salePanel.hidden&&W>=700?320:0,avail=W-side,big=Math.max(20,Math.min(32,avail/32)),y0=W<700?150:178,cx=avail/2;ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;
+  const sub=st.sub(),w=Math.min(avail-32,ctx.measureText(st.t).width+48),h=big*2.1;
+  ctx.fillStyle="rgba(11,13,20,.86)";ctx.strokeStyle="#f2c94c";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(cx-w/2,y0,w,h,12):ctx.rect(cx-w/2,y0,w,h);ctx.fill();ctx.stroke();
+  ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle="#f2c94c";ctx.fillText(st.t,cx,y0+big*.72,w-24);
+  ctx.fillStyle="#f1ede4";ctx.font=`600 ${big*.46}px Barlow,sans-serif`;ctx.fillText(sub,cx,y0+big*1.5,w-24);
+  const k=(SIM.i+1)/SIM.steps.length;ctx.fillStyle="rgba(242,201,76,.35)";ctx.fillRect(cx-w/2+12,y0+h-6,(w-24)*k,3)}
+const heldSeats=()=>seats.filter(m=>!m.burned&&!m.pack);
+function hodlSteps(){const n=y=>heldSeats().filter(m=>m.yrs>=y).length,pct=y=>Math.round(n(y)/heldSeats().length*100);
+  return[{y:0,t:"🧍 STAND UP if you own a VC moment"},{y:1,t:"SIT DOWN if you've held it under 1 year"},{y:2,t:"SIT DOWN if under 2 years"},{y:3,t:"SIT DOWN if under 3 years"},{y:5,t:"💎 STILL STANDING: held 5+ years"}]
+   .map(s=>({t:s.t,go:()=>{hodlMin=s.y},sub:()=>`${n(s.y).toLocaleString()} seats standing${s.y?` · ${pct(s.y)}%`:""}`}))}
+function joinSteps(){return[2020,2021,2022,2023,2024,2025,2026].map(y=>({t:`📅 STAND UP if you joined Top Shot in ${y}`,go:()=>{joinYear=y},
+  sub:()=>{const l=holders.filter(o=>o.joined===y);return `${l.length.toLocaleString()} collector${l.length===1?"":"s"} · ${l.reduce((a,o)=>a+nHeld(o),0).toLocaleString()} seats`}}))}
 function loop(t){
-  tlTick(t);
+  tlTick(t);simTick(t);
   if(anim){const k=Math.min(1,(t-anim.t0)/anim.d),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
     cam.x=anim.a.x+(anim.b.x-anim.a.x)*e;cam.y=anim.a.y+(anim.b.y-anim.a.y)*e;cam.s=Math.exp(Math.log(anim.a.s)+(Math.log(anim.b.s)-Math.log(anim.a.s))*e);
     if(k>=1)anim=null;dirty=true}
@@ -645,7 +681,8 @@ cv.addEventListener("pointermove",e=>{if(!ptrs.has(e.pointerId))return;const p=p
   else if(ptrs.size===1){cam.x-=dx/cam.s;cam.y-=dy/cam.s}dirty=true});
 function up(e){if(!ptrs.has(e.pointerId))return;ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;if(!ptrs.size)cv.classList.remove("drag");
   if(moved<6&&e.type==="pointerup"){const tg=tagAt(e.clientX,e.clientY);if(tg){showSeat(tg.m);return}const wp=toWorld(e.clientX,e.clientY),bi=boardAt(wp);if(bi>=0){const ad=adFor(bi);window.open(ad&&ad.url?ad.url:"https://x.com/VC15Tracker","_blank","noopener");return}if(cam.s>1.1&&!TL.on){let best=null,bd=1e9;for(const r of RING){const d=Math.hypot(r.x-wp.x,r.y-wp.y);if(d<bd){bd=d;best=r}}
-    if(best&&bd<Math.max(6,best.s.length*1.2)){const s0=best.o.seats.find(x=>x.burned);if(s0){showSeat(s0,true,true);return}}}
+    if(best&&bd<Math.max(6,best.s.length*1.2)){const s0=best.o.seats.find(x=>x.burned);if(s0){showSeat(s0,false,true);return}}}
+  if(!TL.on)for(const[k,[x,y,z]]of Object.entries(FLOOR_SPOTS))if(Math.abs(wp.x-x)<=z/2+2&&Math.abs(wp.y-y)<=z/2+2){showPlay(k);return}
   const s=hit(wp);if(s)showSeat(s,false);else clearSel()}}
 cv.addEventListener("pointerup",up);cv.addEventListener("pointercancel",up);
 cv.addEventListener("wheel",e=>{e.preventDefault();anim=null;const bf=toWorld(e.clientX,e.clientY);cam.s=clampS(cam.s*Math.exp(-e.deltaY*.0015));const af=toWorld(e.clientX,e.clientY);cam.x+=bf.x-af.x;cam.y+=bf.y-af.y;dirty=true},{passive:false});
@@ -658,9 +695,9 @@ function hit(p){let best=null,bd=SEAT*.8;const gx=Math.floor(p.x/GRID),gy=Math.f
 // ---------- ticket ----------
 const tk=document.getElementById("ticket");
 let focusOwner=false;
-function clearSel(){selOwner=null;selSeat=null;focusOwner=false;tk.hidden=true;dirty=true}
+function clearSel(){selOwner=null;selSeat=null;focusOwner=false;playSel=null;tk.hidden=true;dirty=true}
 function showSeat(m,flyTo=true,focus=false){
-  focusOwner=focus;selSeat=m;selOwner=m.pack?null:m.owner;dirty=true;const S=SK[m.set],P=PLAYS[m.set];
+  focusOwner=focus;selSeat=m;playSel=null;selOwner=m.pack?null:m.owner;dirty=true;const S=SK[m.set],P=PLAYS[m.set];
   const why=m.gold?GOLDWHY(m,S):"",o=m.owner,n=nHeld(o),who=disp(m.seller||o.name);
   const profUser=m.seller||(/^0x[0-9a-f]{16}$/i.test(o.name)?"":o.name),star=!m.pack&&notableOf(m.seller?{name:m.seller}:o);
   const setName=S.name.replace(" · Debut Club","");
@@ -678,7 +715,7 @@ function showSeat(m,flyTo=true,focus=false){
   else if(m.pack)body=`<div class="sec"><p>This moment hasn't been pulled yet. It's still inside an unopened ${m.packName?"<b>"+esc(m.packName)+"</b> pack":"pack"}.</p></div>`;
   else body=`<div class="sec"><small>${m.seller?"Listed by":"Owned by"}</small><b class="name"></b>${star?`<span class="note">📸 ${esc(star.n)} · ${esc(star.r)}</span>`:""}
      <p>${m.held?`Held since ${fmtMonth(m.held)} (${m.yrs.toFixed(1)} yrs)`:""}${m.held?" · ":""}${n.toLocaleString()} VC moment${n===1?"":"s"}${o.joined?` · on Top Shot since ${o.joined}`:""}${o.retired?` · retired ${o.retired}`:""}${o.sold===0&&!m.seller?" · has never sold a VC moment":""}</p></div>
-     ${m.price?`<div class="buyrow"><div><small>For sale</small><b class="price">${money(m.price)}</b>${AVG_SALE[m.set]&&!m.gold?`<em class="tv">${dealTxt(m)}</em>`:m.gold?`<em class="tv">⭐ special serial · priced above an ordinary one</em>`:""}</div><a class="primary" href="${momentUrl(m)}" target="_blank" rel="noopener">Buy on Top Shot ↗</a></div>`:""}`;
+     ${m.price?`<div class="buyrow"><div><small>For sale</small><b class="price">${money(m.price)}</b>${AVG_SALE[m.set]?`<em class="tv">${m.gold?"⭐ ":""}${dealTxt(m)}</em>`:""}</div><a class="primary" href="${momentUrl(m)}" target="_blank" rel="noopener">Buy on Top Shot ↗</a></div>`:""}`;
   tk.innerHTML=`<button class="x" aria-label="Close">×</button>
    <div class="head"><img src="${P.img}" alt=""><div><small>${esc(setName)}</small><b>#${m.serial}<span> / ${S.minted.toLocaleString()}</span></b></div></div>
    ${chips.length?`<div class="chips2">${chips.join("")}</div>`:""}
@@ -691,8 +728,21 @@ function showSeat(m,flyTo=true,focus=false){
   tk.querySelector(".x").onclick=clearSel;tk.hidden=false;
   const nb=tk.querySelector("[data-near]");if(nb)nb.onclick=()=>{nearSeat=m;setFilter("sale");fly({x:m.x,y:m.y,s:Math.max(cam.s,2.4)},700)};
   const cb=tk.querySelector("[data-cert]");if(cb)cb.onclick=()=>showCert(m);
-  const tip=tk.querySelector(".coll .tip");tk.querySelectorAll(".bd").forEach(b=>{const show=()=>{tip.hidden=false;tip.textContent=b.dataset.tip};b.onmouseenter=show;b.onclick=show;b.onfocus=show});
+  const tip=tk.querySelector(".coll .tip");tk.querySelectorAll(".bd").forEach(b=>{const show=()=>{tip.classList.remove("idle");tip.textContent=b.dataset.tip};b.onmouseenter=show;b.onclick=show;b.onfocus=show});
   if(flyTo)fly({x:m.x,y:m.y+(W<700?60:30),s:Math.max(cam.s,3.2)},1200);
+}
+// ---------- tap a moment picture on the floor: the play + its numbers ----------
+function showPlay(k){
+  const S=SK[k],P=PLAYS[k],live=S.list.filter(m=>!m.burned),listed=live.filter(m=>m.price>0),low=listed.length?Math.min(...listed.map(m=>m.price)):0;
+  const own=new Set(live.filter(m=>!m.pack).map(m=>m.owner)).size,packs=live.filter(m=>m.pack).length,tv=AVG_SALE[k];
+  selSeat=null;selOwner=null;focusOwner=false;playSel=k;tk.className="ticket v2";tk.style.setProperty("--ac",S.color);
+  const cell=(a,b)=>`<div><small>${a}</small><b>${b}</b></div>`;
+  tk.innerHTML=`<button class="x" aria-label="Close">×</button>
+   <div class="head"><img src="${P.img}" alt=""><div><small>${esc(P.s)}</small><b style="font-size:24px">${esc(S.name.replace(" · Debut Club",""))}</b><em>${P.d}</em></div></div>
+   <p class="play2" style="color:#e6e2ee">${esc(P.p)}</p>
+   <div class="pstats">${cell("Minted",S.minted.toLocaleString())}${cell("Retired",S.burned.toLocaleString())}${cell("Collectors",own.toLocaleString())}${packs?cell("In packs",packs.toLocaleString()):""}${cell("Floor",low?money(low):"none listed")}${tv?cell("True value",money(tv)):""}</div>
+   <div class="acts"><button data-go>🪑 Show these seats</button><a href="https://nbatopshot.com/edition/${EDITION[k]}" target="_blank" rel="noopener">Top Shot ↗</a></div>`;
+  tk.querySelector(".x").onclick=clearSel;tk.querySelector("[data-go]").onclick=()=>{tk.hidden=true;goSet(k)};tk.hidden=false;dirty=true;
 }
 // ---------- collector checklist + badges ----------
 const FAMS=[["dallas",["omega","galac","dallas"],"Dallas"],["cosmic",["cosmic"],"TSD Cosmic"],["asg",["asg"],"ASG"],["origin",["origin"],"RIB Origin"],
@@ -713,29 +763,32 @@ function salesBlock(m){
 function collectorInfo(o){
   const held=o.seats.filter(s=>!s.burned&&!s.pack),sets=new Set(held.map(s=>s.set));
   const fam=FAMS.map(([k,ks,n])=>({k,n,img:PLAYS[k].img,have:ks.some(x=>sets.has(x))}));
-  const locked=held.filter(s=>s.locked).length,lockTier=[100,50,10,1].find(t=>locked>=t)||0,rank=RANK.get(o)||1e9,maxY=Math.max(0,...held.map(s=>s.yrs));
+  const locked=held.filter(s=>s.locked).length,rank=RANK.get(o)||1e9,maxY=Math.max(0,...held.map(s=>s.yrs)),nh=held.length;
   const firsts=FIRST_RET.get(o)||[];
   const B=[
    {i:"💎",n:"HODLer",d:"Held a VC moment for 5+ years",on:maxY>=5,x:maxY>=5?`${maxY.toFixed(1)} yrs`:""},
-   {i:"🏆",n:"Complete collection",d:"Owns every VC play (any Dallas parallel counts)",on:fam.every(f=>f.have),x:`${fam.filter(f=>f.have).length}/8`},
-   {i:"🪑",n:"Retired a seat",d:"Removed a VC moment from circulation, making every other one rarer",on:o.retired>0,x:o.retired?`×${o.retired}`:""},
-   {i:"🔟",n:"Top 10 holder",d:"Top 10 by number of VC moments held",on:rank<=10,x:rank<=10?`#${rank}`:""},
-   {i:"💯",n:"Top 100 holder",d:"Top 100 by number of VC moments held",on:rank<=100,x:rank<=100?`#${rank}`:""},
-   {i:"🔒",n:"Locker",d:"Locks VC moments (tiers: 1, 10, 50, 100)",on:lockTier>0,x:lockTier?`${lockTier}+`:""},
+   {i:"🏆",n:"Complete collection",d:"Owns all 8 VC plays (any Dallas counts)",on:fam.every(f=>f.have),x:`${fam.filter(f=>f.have).length}/8`},
+   {i:"🪑",n:"Retired a seat",d:firsts.length?`Retired a VC moment · first ever to retire a ${firsts.join(", ")}`:"Retired a VC moment, making every other one rarer",on:o.retired>0,x:o.retired?`×${o.retired}`:""},
+   {i:"💯",n:"Top 100 holder",d:"Top 100 by VC moments held",on:rank<=100,x:rank<=100?`#${rank}`:""},
+   {i:"15",t:1,n:"VC 15",d:"Holds 15 or more VC moments (his jersey number)",on:nh>=15,x:nh>=15?`${nh.toLocaleString()} held`:""},
+   {i:"🏟️",n:"1,000 club",d:"Holds 1,000 or more VC moments",on:nh>=1000,x:""},
+   {i:"🔒",n:"Locker",d:"Has at least one VC moment locked",on:locked>0,x:locked?`${locked.toLocaleString()} locked`:""},
    {i:"⭐",n:"Gold seat",d:"Owns a special serial (#1, #15, last mint, Dallas #25)",on:held.some(s=>s.gold),x:""},
    {i:"🌅",n:"OG",d:"Has held a VC moment since 2021 or earlier",on:held.some(s=>s.held&&dateOf(s.held).getUTCFullYear()<=2021),x:""},
-   {i:"🥇",n:"First to retire",d:firsts.length?`First collector to retire a ${firsts.join(", ")}`:"First collector to retire a moment from an edition",on:firsts.length>0,x:""},
-   {i:"💬",n:"VC Discord",d:"Member of the VC Discord community (coming soon)",on:false,soon:true},
+   {i:"🍼",n:"Rookie",d:"Owns the RIB Origin rookie moment (Mount Mutombo, 1999)",on:sets.has("origin"),x:""},
+   {i:"★",n:"Debut",d:"Owns a TSD Debut moment from Top Shot's first series",on:sets.has("tsd"),x:""},
    {i:"🎁",n:"Gifter",d:"Gave a VC moment to another collector",on:!!(GIFTS&&GIFTS.sent[o.name]),x:GIFTS&&GIFTS.sent[o.name]?`×${GIFTS.sent[o.name]}`:"",soon:!GIFTS},
-   {i:"🤝",n:"Never sold",d:"Has never sold a VC moment on the marketplace (gifts don't count)",on:o.sold===0&&held.length>0,soon:o.sold===null}];
+   {i:"🤝",n:"Never sold",d:"Has never sold a VC moment (gifts don't count)",on:o.sold===0&&held.length>0,soon:o.sold===null},
+   {i:"💬",n:"VC Discord",d:(dc=>dc?(dc[0]===0?`Founded the VC Discord in ${dc[1]}`:`Member of the VC Discord since ${dc[1]}`):"Member of the VC Discord community")(discordOf(o)),on:!!discordOf(o),x:discordOf(o)?(discordOf(o)[0]===0?"founder":`member #${discordOf(o)[0]}`):""},
+   {i:"📦",n:"Unopened pack",d:"Holds an unopened VC pack (coming soon)",on:false,soon:true}];
   return{fam,B,earned:B.filter(b=>b.on).length};
 }
 function collectorBlock(o){if(!o)return "";const C=collectorInfo(o);
   return `<div class="coll"><div class="ctitle"><small>VC checklist</small><span>${C.fam.filter(f=>f.have).length}/8 plays</span></div>
    <div class="check">${C.fam.map(f=>`<div class="ck ${f.have?"on":""}" title="${esc(f.n)}${f.have?" ✓":" (missing)"}"><img src="${f.img}" alt="">${f.have?"<i>✓</i>":""}</div>`).join("")}</div>
-   <div class="ctitle"><small>Badges</small><span>${C.earned}/${C.B.filter(b=>!b.soon).length}</span></div>
-   <div class="badges">${C.B.map(b=>`<button class="bd ${b.on?"on":""} ${b.soon?"soon":""}" data-tip="${esc(b.n)}${b.x?" · "+esc(b.x):""}: ${esc(b.d)}"><span>${b.i}</span></button>`).join("")}</div>
-   <p class="tip" hidden></p></div>`}
+   <div class="ctitle"><small>Badges</small><span>${C.earned}/${C.B.length}</span></div>
+   <div class="badges">${C.B.map(b=>`<button class="bd ${b.on?"on":""} ${b.soon?"soon":""}" data-tip="${esc(b.n)}${b.x?" · "+esc(b.x):""}: ${esc(b.d)}"><span${b.t?' class="t"':""}>${b.i}</span></button>`).join("")}</div>
+   <p class="tip idle">Tap a badge to see what it means.</p></div>`}
 // Top Shot profile (has the message button)
 const profileUrl=u=>"https://nbatopshot.com/collection/"+encodeURIComponent(u);
 // certificate of retirement (drawn on a canvas, downloadable PNG)
@@ -783,7 +836,7 @@ q.addEventListener("keydown",e=>{if(e.key==="Enter"){const f=res.querySelector("
 
 // ---------- filters + legend ----------
 const match=document.getElementById("match");
-function setFilter(f){document.querySelectorAll("#chips button").forEach(x=>x.classList.toggle("on",x.dataset.f===f));
+function setFilter(f){if(SIM&&f!==filter)SIM=null;document.querySelectorAll("#chips button").forEach(x=>x.classList.toggle("on",x.dataset.f===f));
   if(f!=="sale")nearSeat=null;filter=f;selOwner=null;dirty=true;
   match.textContent=["all","sale","hodl","burn","joined","notable","gold"].includes(f)?"":(n=>`${n.toLocaleString()} seat${n===1?" lights":"s light"} up`)(seats.filter(matches).length);renderSale()}
 document.querySelectorAll("#chips button").forEach(b=>b.onclick=()=>{nearSeat=null;setFilter(b.dataset.f)});
@@ -796,13 +849,15 @@ function panelList(rows){const ul=salePanel.querySelector("ul");
 const AVG_SALE={asg:1577.60,tsd:19.19,origin:58.60,archive:3.08,rib:20.50,fandom:13.80,cosmic:2983,galac:550,dallas:313,omega:750};
 if(SALES&&SALES.market)for(const[k,v]of Object.entries(SALES.market))if(+v.averageSalePriceCents>0)AVG_SALE[k]=v.averageSalePriceCents/100;
 if(SALES&&SALES.tv)for(const[k,v]of Object.entries(SALES.tv))if(v&&v.v>0)AVG_SALE[k]=v.v/100;   // True Value wins when we have it
-const dealTxt=m=>{const r=m.price/AVG_SALE[m.set];if(r>=5)return `${Math.round(r)}× true value`;const p=Math.round(Math.abs(r-1)*100);return p<1?"at true value":r<1?`${p}% below true value`:`${p}% above true value`};
+const valueOf=m=>m.gold&&m.stv?m.stv/100:AVG_SALE[m.set];   // special serials use their own value when they've sold
+const dealTxt=m=>{if(m.gold&&!m.stv)return `special serial · true value at least ${money(AVG_SALE[m.set])}`;const r=m.price/valueOf(m);if(r>=5)return `${Math.round(r)}× true value`;const p=Math.round(Math.abs(r-1)*100);return p<1?"at true value":r<1?`${p}% below true value`:`${p}% above true value`};
 function renderSale(){
   const on=["sale","hodl","burn","joined","notable","gold"].includes(filter);salePanel.hidden=!on;document.getElementById("legend").hidden=on;if(!on)return;
   salePanel.className="sale "+filter;
   if(filter==="hodl"){
     const held=seats.filter(m=>!m.burned&&!m.pack),stand=held.filter(m=>m.yrs>=hodlMin).length;
     salePanel.innerHTML=`<header><b>🤝 HODL: stay standing if…</b><small>Like the arena game: everyone sits down except seats held at least this long.</small>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play the game: stand up, then sit down by years held"}</button>
       <div class="tabs">${[1,2,3,4,5,6].map(y=>`<button data-y="${y}" class="${hodlMin===y?"on":""}">${y}+ yr</button>`).join("")}</div>
       <span class="stand">${stand.toLocaleString()} of ${held.length.toLocaleString()} seats still standing (${Math.round(stand/held.length*100)}%)</span>
       <div class="tabs sub"><button data-v="long" class="${hodlView==="long"?"on":""}">Longest holds</button><button data-v="lead" class="${hodlView==="lead"?"on":""}">HODL leaders</button></div>
@@ -810,7 +865,8 @@ function renderSale(){
       <div class="note">💎 Diamond hands = held 5+ years (light blue on the map). Locking and unlocking doesn't reset the clock; selling or gifting does.</div>`;
     if(hodlView==="long")panelList(held.filter(m=>m.yrs>=hodlMin).sort((a,b)=>(b===longest)-(a===longest)||b.yrs-a.yrs).slice(0,60).map(m=>({a:`${esc(SK[m.set].name.replace(" · Debut Club",""))} <b>#${m.serial}</b>`,b:m.yrs.toFixed(1)+" yrs",c:`${disp(m.owner.name)} · since ${fmtMonth(m.held)}`,go:()=>showSeat(m)})));
     else panelList(holders.slice().sort((a,b)=>b.my-a.my).slice(0,60).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:Math.round(o.my).toLocaleString(),c:`HODL score · ${nHeld(o).toLocaleString()} moment${nHeld(o)===1?"":"s"} · avg ${(o.my/Math.max(1,nHeld(o))).toFixed(1)} yrs held`,go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>b.yrs-a.yrs)[0];showSeat(best,true,true)}})));
-    salePanel.querySelectorAll("[data-y]").forEach(b=>b.onclick=()=>{hodlMin=+b.dataset.y;dirty=true;renderSale()});
+    salePanel.querySelectorAll("[data-y]").forEach(b=>b.onclick=()=>{SIM=null;hodlMin=+b.dataset.y;dirty=true;renderSale()});
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(fitView(),600),simStart(hodlSteps()));
     salePanel.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{hodlView=b.dataset.v;renderSale()});
     return;
   }
@@ -831,11 +887,13 @@ function renderSale(){
     const yrsList=[2020,2021,2022,2023,2024,2025,2026],by={};for(const y of yrsList)by[y]=holders.filter(o=>o.joined===y);
     const list=by[joinYear].slice().sort((a,b)=>nHeld(b)-nHeld(a)),seatsN=list.reduce((a,o)=>a+nHeld(o),0);
     salePanel.innerHTML=`<header><b>📅 Joined Top Shot in…</b><small>Stand up if you joined in this year. Seats light up for collectors who did.</small>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play 2020 → 2026"}</button>
       <div class="tabs">${yrsList.map(y=>`<button data-j="${y}" class="${joinYear===y?"on":""}">${String(y).slice(2)}</button>`).join("")}</div>
       <span class="stand">${list.length.toLocaleString()} collector${list.length===1?"":"s"} joined in ${joinYear} · ${seatsN.toLocaleString()} seat${seatsN===1?"":"s"}</span></header><ul></ul>
       <div class="note">Joined = the date the Top Shot account was created (from each profile), not when they bought a VC moment.${joinYear===2026?` Another ${holders.filter(o=>o.firstVc===2026&&o.joined&&o.joined<2026).length} longer-time collectors bought their first VC moment in 2026.`:""} Wallets with no username aren't counted.</div>`;
     panelList(list.slice(0,80).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:nHeld(o).toLocaleString(),c:nHeld(o)>1?"VC seats":"VC seat",go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>SETS.indexOf(SK[a.set])-SETS.indexOf(SK[b.set]))[0];showSeat(best,true,true)}})));
-    salePanel.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{joinYear=+b.dataset.j;dirty=true;renderSale()});
+    salePanel.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{SIM=null;joinYear=+b.dataset.j;dirty=true;renderSale()});
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(fitView(),600),simStart(joinSteps()));
     return;
   }
   if(filter==="burn"){
@@ -851,13 +909,13 @@ function renderSale(){
   if(saleSort==="low")show=list.slice().sort((a,b)=>a.price-b.price);
   else if(saleSort==="best")show=list.slice().sort((a,b)=>tierRank[SK[a.set].tier]-tierRank[SK[b.set].tier]||b.price-a.price);
   else show=list.filter(m=>m.price<=floor[m.set]*1.15).sort((a,b)=>tierRank[SK[a.set].tier]-tierRank[SK[b.set].tier]||(b.gold-a.gold)||a.serial-b.serial);
-  const ratio=m=>AVG_SALE[m.set]?m.price/AVG_SALE[m.set]:99;
+  const ratio=m=>valueOf(m)?m.price/valueOf(m):99;
   if(saleSort==="deal")show=list.filter(m=>ratio(m)<=2).sort((a,b)=>ratio(a)-ratio(b)||tierRank[SK[a.set].tier]-tierRank[SK[b.set].tier]||a.serial-b.serial);
   const spon=nearSeat?[]:(PROMO.featured||[]).map(f=>SK[f.set]&&SK[f.set].list[f.serial-1]).filter(m=>m&&m.price>0);
   salePanel.innerHTML=`<header><b>${nearSeat?"For sale near "+esc(nearSeat.burned?"this seat":nearSeat.owner.name):"Seats for sale"}</b>
     <small>${list.length.toLocaleString()} listed${nearSeat?" within a few rows":" across the arena"} · green seats on the map</small>
     <div class="tabs"><button data-s="low" class="${saleSort==="low"?"on":""}">Lowest price</button><button data-s="best" class="${saleSort==="best"?"on":""}">Best seats</button><button data-s="deal" class="${saleSort==="deal"?"on":""}">Best deals</button></div>
-    ${saleSort==="deal"?`<small style="display:block;margin-top:6px">Ask compared with each set's true value (from recent completed sales). Lowest % first.</small>`:""}</header><ul></ul>
+    ${saleSort==="deal"?`<small style="display:block;margin-top:6px">Ask compared with true value (recent completed sales; special serials use their own sales). Lowest % first.</small>`:""}</header><ul></ul>
     <div class="note">📣 Want your listing featured at the top? DM <a href="https://x.com/VC15Tracker" target="_blank" rel="noopener" style="color:var(--gold)">@VC15Tracker</a></div>`;
   const ul=salePanel.querySelector("ul");
   for(const m of spon){const li=document.createElement("li");li.className="spon";
