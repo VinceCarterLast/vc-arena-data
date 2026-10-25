@@ -112,6 +112,13 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .sale.hodl li strong{color:var(--gold)}
 .sale.burn li strong{color:#ff6b62}
 .sale .tabs.sub button.on{background:#f1ede4;border-color:#f1ede4;color:#14161f}
+.tlBtn.simTop{background:#5b3fb0}
+.sale.simp{overflow:auto;display:block;max-height:calc(100% - 210px)}
+@media (max-width:700px){.sale.simp{max-height:52%}}
+.simp .lab{display:block;margin:10px 0 0;font:700 10px var(--body)!important;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.simp .simres{padding:10px 12px;overflow:auto}.simp .simres p{margin:0 0 6px;font-size:13.5px}.simp .simres p.sm{font-size:12px;color:var(--muted)}
+.simp .tabs button.on{color:#1b1608;background:var(--gold);border-color:var(--gold)}
+body.simu .top,body.simu .chips,body.simu .legend,body.simu .sale:not(.simp),body.simu .ticket,body.simu .zoom{display:none!important}
 .sale .simBtn{display:block;width:100%;margin-top:8px;font:700 13px var(--body);color:#1b1608;background:var(--gold);border:0;border-radius:7px;padding:8px;cursor:pointer}
 .sale .stand{display:block;margin-top:8px;font:700 13px var(--body);color:var(--fg)}
 .sale .note{padding:8px 12px;color:var(--muted);font-size:11px;border-top:1px solid var(--line)}
@@ -208,7 +215,7 @@ body.rec #arena{width:min(1280px,calc(100vw - 40px),calc((100vh - 150px) * 1.777
     <h1>The <span>VC</span> Arena</h1>
     <p>15,695 seats, one for every VC moment ever minted.<span class="sample live on" id="asof">Real owners</span><span class="sample live" id="live">Sample listings</span></p>
   </div>
-  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><button class="tlBtn" id="tlOpen">▶ Timelapse</button><span class="soonBtn" title="Coming soon">🔮 Supply simulator · soon</span>
+  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><button class="tlBtn" id="tlOpen">▶ Timelapse</button><button class="tlBtn simTop" id="simOpen">🔮 Simulator</button>
   <div class="search">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
     <input id="q" type="search" placeholder="Find your seats… try “VinceCarterLast”" autocomplete="off">
@@ -218,6 +225,7 @@ body.rec #arena{width:min(1280px,calc(100vw - 40px),calc((100vh - 150px) * 1.777
 
 <aside class="legend" id="legend"></aside>
 <aside class="sale" id="sale" hidden></aside>
+<aside class="sale simp" id="simp" hidden></aside>
 
 <div class="zoom">
   <button id="zin" aria-label="Zoom in">+</button>
@@ -495,7 +503,7 @@ function drawPlays(){
     ctx.strokeStyle="rgba(0,0,0,.8)";ctx.lineWidth=4;const ty=y+(y>150?-z/2-12:z/2+12),lab=PLAYS[sel].d;ctx.strokeText(lab,x,ty);ctx.fillText(lab,x,ty)}
 }
 function drawRafters(){
-  if(TL.on||SIM)return;
+  if(TL.on||SIM||SIMU.play)return;
   const bw=120,bh=150,gap=30;let y=WORLD.y0+30;
   for(const[list,title]of[[CAREER,"VINCE CARTER · HONOURS"]]){const n=list.length,x0=-(n*bw+(n-1)*gap)/2,y0=y;
     ctx.strokeStyle="rgba(255,255,255,.25)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x0-40,y0);ctx.lineTo(-x0+40,y0);ctx.stroke();
@@ -530,7 +538,7 @@ function draw(){
   const buckets=new Map(),dimBuckets=new Map();
   for(const m of seats){
     if(m.x<v0.x-10||m.x>v1.x+10||m.y<v0.y-10||m.y>v1.y+10)continue;
-    const c=TL.on?tlColor(m):seatColor(m);const B=TL.on?buckets:(fil&&!matches(m))||(focusOwner&&selOwner&&m.owner!==selOwner)?dimBuckets:buckets;
+    const c=TL.on?tlColor(m):SIMU.play&&SIMU.burnSet.has(m)?BURN:seatColor(m);const B=TL.on?buckets:(fil&&!matches(m))||(focusOwner&&selOwner&&m.owner!==selOwner)?dimBuckets:buckets;
     if(!B.has(c))B.set(c,[]);B.get(c).push(m);
   }
   ctx.globalAlpha=.16;for(const[c,arr]of dimBuckets){ctx.fillStyle=c;for(const m of arr)ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT)}
@@ -572,10 +580,11 @@ function draw(){
   ctx.restore();
   // gold rings on special serials
   if(cam.s>.8&&!TL.on){ctx.strokeStyle=GOLD;ctx.lineWidth=1.2;for(const arr of buckets.values())for(const m of arr)if(m.gold&&!m.burned)ctx.strokeRect(m.x-hs-1.2,m.y-hs-1.2,SEAT+2.4,SEAT+2.4)}
+  drawTunnelSeats();
   if(selOwner&&focusOwner){ctx.strokeStyle=GOLD;ctx.lineWidth=Math.max(.6,1.4/cam.s);for(const m of selOwner.seats)ctx.strokeRect(m.x-hs-.9,m.y-hs-.9,SEAT+1.8,SEAT+1.8)}
   if(selOwner&&!PIC){ctx.fillStyle="rgba(255,255,255,.9)";const r=Math.max(.9,1.2/cam.s);for(const m of selOwner.seats)if(m!==selSeat){ctx.beginPath();ctx.arc(m.x,m.y,r,0,7);ctx.fill()}}
   if(selSeat){ctx.save();ctx.shadowColor="#f2c94c";ctx.shadowBlur=18;ctx.strokeStyle="rgba(242,201,76,.95)";ctx.lineWidth=Math.max(.8,2/cam.s);ctx.strokeRect(selSeat.x-hs-.8,selSeat.y-hs-.8,SEAT+1.6,SEAT+1.6);ctx.restore()}
-  drawPriceTags();drawSim();
+  drawPriceTags();drawSim();drawSimu();
 }
 // ---------- price tags in the stands (lowest ask per area, like a ticket app) ----------
 const ZONES=[];{
@@ -588,6 +597,7 @@ let TAGS=[];
 function drawPriceTags(){
   TAGS=[];
   if(TL.on){drawTL();return}
+  if(SIMU.play)return;
   if(!(filter==="all"||filter==="sale")||nearSeat)return;
   const items=[];
   if(cam.s>1.3){const v0=toWorld(0,0),v1=toWorld(W,H);
@@ -698,7 +708,7 @@ let lockY=0;
 function lockSteps(){return[2022,2023,2024,2025,2026].map(y=>({t:`🔒 Locked by the end of ${y}`,go:()=>{lockY=y},
   sub:()=>{const L=seats.filter(m=>m.locked&&!m.burned),n=L.filter(m=>lockYear(m)<=y).length,k=L.filter(m=>lockYear(m)===y).length;return `${n.toLocaleString()} moments locked · ${k.toLocaleString()} new in ${y}`}}))}
 function loop(t){
-  tlTick(t);simTick(t);
+  tlTick(t);simTick(t);simuTick(t);
   if(anim){const k=Math.min(1,(t-anim.t0)/anim.d),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
     cam.x=anim.a.x+(anim.b.x-anim.a.x)*e;cam.y=anim.a.y+(anim.b.y-anim.a.y)*e;cam.s=Math.exp(Math.log(anim.a.s)+(Math.log(anim.b.s)-Math.log(anim.a.s))*e);
     if(k>=1)anim=null;dirty=true}
@@ -877,7 +887,7 @@ const match=document.getElementById("match");
 function setFilter(f){if(SIM&&f!==filter)SIM=null;document.querySelectorAll("#chips button").forEach(x=>x.classList.toggle("on",x.dataset.f===f));
   if(f!=="sale")nearSeat=null;filter=f;selOwner=null;dirty=true;
   match.textContent=["all","sale","hodl","burn","joined","notable","gold","lock"].includes(f)?"":(n=>`${n.toLocaleString()} seat${n===1?" lights":"s light"} up`)(seats.filter(matches).length);renderSale()}
-document.querySelectorAll("#chips button").forEach(b=>b.onclick=()=>{nearSeat=null;setFilter(b.dataset.f)});
+document.querySelectorAll("#chips button").forEach(b=>b.onclick=()=>{nearSeat=null;if(SIMU.open){SIMU.open=false;if(SIMU.play)simuStop();renderSimu()}setFilter(b.dataset.f)});
 const salePanel=document.getElementById("sale");let saleSort="low";
 function secName(m){return SHORT[m.set]}
 function panelList(rows){const ul=salePanel.querySelector("ul");
@@ -982,6 +992,95 @@ function goSet(k){setKey=k;setFilter("set");const S=SK[k];match.textContent=`${S
   const s=clampS(Math.min((W-80)/(x1-x0+80),(H-220)/(y1-y0+80),4));fly({x:(x0+x1)/2,y:(y0+y1)/2,s},900)}
 lg.innerHTML=`<p class="lnote">15,695 moments · 10 editions · 7 plays</p>`+["court","100","200","300"].map(t=>`<h3>${TIERNAME[t]}</h3>`+SETS.filter(s=>s.tier===t).map(s=>`<button class="lrow" data-set="${s.key}"><img class="lthumb" src="${PLAYS[s.key].img}" alt=""><i style="background:${s.color}"></i>${s.name}<span>${s.minted.toLocaleString()}</span></button>`).join("")).join("")
  +`<hr><div><i style="background:${GOLD}"></i>⭐ Gold seats (special serials: #1, #15, last mint, Dallas #25)<span>${seats.filter(m=>m.gold).length}</span></div><div><i style="background:#9fe3ff"></i>💎 Diamond hands (HODL 5+ yrs)<span>${seats.filter(m=>m.yrs>=5).length.toLocaleString()}</span></div><div><i style="background:${BURN}"></i>🪑 Retired seats<span>${nBurned}</span></div><div><i style="background:${PACK}"></i>🎁 Still in packs (unopened)<span>${seats.filter(m=>m.pack&&!m.burned).length}</span></div>`;
+
+// ---------- 🔮 supply simulator: 5,000 what-if futures, then play one on the arena ----------
+// History it's based on: Top Shot retirement events Aug–Oct 2023 (~135), Nov 2024 (153), Aug 2026 (41);
+// collectors retire ~10 a year on their own. Minting follows Top Shot's Historical Rules (Aug 19, 2026 update):
+// historical Rare + Legendary combined ≤ 998 across two series (Rare ≤ 899, Legendary ≤ 99); Commons/Fandom no limit.
+const SIMU={open:false,play:false,opt:{ev:1,org:10,rl:0,com:0,comYear:2028},res:null,run:null,yi:0,t0:0,news:[],burnSet:new Set(),newSeats:[],ann:[]};
+const SIM_Y0=2026,SIM_Y1=2041,SIM_N=5000;
+const poisson=l=>{let L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random()}while(p>L);return k-1};
+const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function simOne(o,keep){
+  let sup=nMinted-nBurned;const out=[sup],ev=[];const minted={2025:0,2026:50};   // Dallas Legendary (50) this series
+  for(let y=SIM_Y0+1;y<=SIM_Y1;y++){const e=[];minted[y]=0;
+    const nev=o.ev>=1?poisson(o.ev):(Math.random()<o.ev?1:0);
+    for(let i=0;i<nev;i++){const n=rint(40,160);sup-=n;e.push({k:"event",n})}
+    const org=Math.max(0,Math.round(o.org*(0.5+Math.random())));if(org){sup-=org;e.push({k:"org",n:org})}
+    if(o.rl&&Math.random()<.4){const room=998-minted[y]-(minted[y-1]||0),leg=Math.random()<.5;   // VC's past drops: Legendary 49–50, Rare 269–990
+      let n=leg?rint(40,99):rint(150,600);n=Math.min(n,room);if(n>=25){sup+=n;minted[y]+=n;e.push({k:leg?"leg":"rare",n})}}
+    if(o.com&&y===o.comYear){sup+=o.com;e.push({k:"common",n:o.com})}
+    out.push(Math.max(0,sup));if(keep)ev.push(e)}
+  return keep?{sup:out,ev}:out}
+function simRun(){
+  const o=SIMU.opt,runs=[];for(let i=0;i<SIM_N;i++)runs.push(simOne(o,false));
+  const Y=SIM_Y1-SIM_Y0+1,pct=(arr,q)=>arr[Math.min(arr.length-1,Math.floor(q*arr.length))];
+  const p10=[],p50=[],p90=[];for(let j=0;j<Y;j++){const col=runs.map(r=>r[j]).sort((a,b)=>a-b);p10.push(pct(col,.1));p50.push(pct(col,.5));p90.push(pct(col,.9))}
+  const chance=g=>{const c=[];for(let j=0;j<Y;j++)c.push(runs.filter(r=>r[j]<g).length/SIM_N);return c};
+  SIMU.res={p10,p50,p90,c15:chance(15000),c14:chance(14000)};
+  // the future we play on the arena: one run that ends close to the middle outcome
+  let best=null,bd=1e9;for(let i=0;i<300;i++){const r=simOne(o,true),d=Math.abs(r.sup[Y-1]-p50[Y-1]);if(d<bd){bd=d;best=r}}SIMU.run=best}
+function goalLine(c,g){const Y=SIM_Y0,i50=c.findIndex(v=>v>=.5),i80=c.findIndex(v=>v>=.8);
+  if(i50<0)return `<b>Under ${g.toLocaleString()}:</b> unlikely by ${SIM_Y1} (${Math.round(c[c.length-1]*100)}% chance)`;
+  return `<b>Under ${g.toLocaleString()}:</b> likely by <b>${Y+i50}</b>${i80>=0&&i80!==i50?` · very likely by ${Y+i80}`:""}`}
+function simChart(){const r=SIMU.res,W=300,H=140,ml=40,mt=8,mb=20,iw=W-ml-6,ih=H-mt-mb,Y=r.p50.length;
+  const lo=Math.min(13000,...r.p10)-200,hi=Math.max(16000,...r.p90)+200,X=j=>ml+j/(Y-1)*iw,Yv=v=>mt+ih*(1-(v-lo)/(hi-lo));
+  let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">`;
+  for(const g of [14000,15000,16000])if(g>lo&&g<hi)s+=`<line x1="${ml}" x2="${W-6}" y1="${Yv(g)}" y2="${Yv(g)}" stroke="${g===16000?"rgba(255,255,255,.12)":"rgba(242,201,76,.55)"}" stroke-dasharray="${g===16000?"":"4 3"}"/><text x="${ml-4}" y="${Yv(g)+4}" text-anchor="end" font-size="10" fill="#9a97a6">${g/1000}k</text>`;
+  s+=`<path d="${r.p90.map((v,j)=>(j?"L":"M")+X(j)+","+Yv(v)).join("")}${r.p10.map((v,j)=>"L"+X(Y-1-j)+","+Yv(r.p10[Y-1-j])).join("")}Z" fill="rgba(111,159,216,.25)"/>`;
+  s+=`<path d="${r.p50.map((v,j)=>(j?"L":"M")+X(j)+","+Yv(v)).join("")}" fill="none" stroke="#6f9fd8" stroke-width="2.5"/>`;
+  for(const j of [0,5,10,15])if(j<Y)s+=`<text x="${X(j)}" y="${H-5}" text-anchor="${j===Y-1?"end":"middle"}" font-size="10" fill="#9a97a6">${SIM_Y0+j}</text>`;
+  return s+`</svg>`}
+const simp=document.getElementById("simp");
+function renderSimu(){document.getElementById("legend").hidden=SIMU.open||!salePanel.hidden;if(!SIMU.open){simp.hidden=true;return}simp.hidden=false;
+  const o=SIMU.opt,r=SIMU.res,grp=(key,vals)=>`<div class="tabs">${vals.map(([v,l])=>`<button data-k="${key}" data-v="${v}" class="${o[key]===v?"on":""}">${l}</button>`).join("")}</div>`;
+  simp.innerHTML=`<header><b>🔮 Supply simulator</b><small>${SIM_N.toLocaleString()} what-if futures for VC supply, ${SIM_Y0}–${SIM_Y1}. Today: ${(nMinted-nBurned).toLocaleString()} in circulation.</small>
+   <small class="lab">Top Shot trade-in / crafting events per year</small>${grp("ev",[[0,"None"],[0.5,"Every 2 yrs"],[1,"1 a year"],[2,"2 a year"]])}
+   <small class="lab">Collectors retiring on their own, per year</small>${grp("org",[[10,"~10 (now)"],[25,"25"],[50,"50"],[100,"100"]])}
+   <small class="lab">New VC Rare / Legendary drops</small>${grp("rl",[[0,"None"],[1,"Possible"]])}
+   <small class="lab">New VC Common drop (in ${o.comYear})</small>${grp("com",[[0,"None"],[1000,"+1,000"],[5000,"+5,000"],[10000,"+10,000"]])}</header>
+   <div class="simres">${r?`<p>${goalLine(r.c15,15000)}</p><p>${goalLine(r.c14,14000)}</p>
+     <p class="sm">Middle outcome in ${SIM_Y1}: <b>${r.p50[r.p50.length-1].toLocaleString()}</b> (likely range ${r.p10[r.p10.length-1].toLocaleString()}–${r.p90[r.p90.length-1].toLocaleString()})</p>${simChart()}`:""}
+     <button class="simBtn" data-play>${SIMU.play?"⏹ Stop":"▶ Play one future on the arena"}</button></div>
+   <div class="note">Based on VC history: Top Shot retirement events in 2023 (~135), 2024 (153) and 2026 (41); collectors retire ~10 a year on their own. "Possible" Rare/Legendary drops: a 40% chance each year, sized like VC's past drops and kept within Top Shot's Historical Rules (Rare + Legendary max 998 per two series). Commons have no limit. A what-if model, not a prediction.</div>`;
+  simp.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{o[b.dataset.k]=+b.dataset.v;simRun();renderSimu()});
+  simp.querySelector("[data-play]").onclick=()=>SIMU.play?simuStop():simuPlay()}
+// the players' tunnel: empty spots in the V-shaped gap of the 300 level, where new mints come out
+const TUNNEL=(()=>{const S=SK.archive,inner=r200+30,spots=[];
+  for(let k=0;k<(S.rows||25);k++){const d=inner+k*ROWP,p=rrPath(CW+d,CH+d,70+d),step=PITCH*1.35/p.L;
+    for(let u=.42;u<=.58;u+=step){const[x,y]=p.at(u);if(y<CH||Math.abs(x)>170)continue;const h=hit({x,y});if(!h||Math.hypot(h.x-x,h.y-y)>SEAT*1.4)spots.push({x,y,k})}}
+  return spots.sort((a,b)=>a.k-b.k||Math.abs(a.x)-Math.abs(b.x))})();
+function simuPlay(){if(!SIMU.run)simRun();clearSel();setFilter("all");SIMU.play=true;SIMU.yi=0;SIMU.t0=performance.now();SIMU.burnSet=new Set();SIMU.newSeats=[];SIMU.ann=[];
+  document.body.classList.add("simu");cam=simCam();dirty=true;renderSimu()}
+function simuStop(){SIMU.play=false;SIMU.burnSet=new Set();SIMU.newSeats=[];SIMU.ann=[];document.body.classList.remove("simu");cam=fitView();dirty=true;renderSimu()}
+const SIM_PICK=["archive","archive","archive","archive","archive","archive","archive","archive","rib","origin"];
+function simuYear(){const y=SIM_Y0+SIMU.yi,ev=SIMU.run.ev[SIMU.yi-1]||[],ann=[];
+  const live=k=>SK[k].list.filter(m=>!m.burned&&!m.pack&&!SIMU.burnSet.has(m));
+  for(const e of ev){
+    if(e.k==="event"||e.k==="org"){for(let i=0;i<e.n;i++){const pool=live(SIM_PICK[rint(0,SIM_PICK.length-1)]);if(pool.length)SIMU.burnSet.add(pool[rint(0,pool.length-1)])}
+      ann.push(e.k==="event"?`🔥 Top Shot trade-in event · ${e.n} VC moments retired`:`🪑 Collectors retired ${e.n} on their own`)}
+    else{const col=e.k==="leg"?"#1fb2a6":e.k==="rare"?"#8a4fe0":"#6b7385";
+      for(let i=0;i<e.n&&SIMU.newSeats.length<TUNNEL.length;i++)SIMU.newSeats.push({...TUNNEL[SIMU.newSeats.length],c:col});
+      ann.push(e.k==="common"?`🆕 New VC Common drop · +${e.n.toLocaleString()} minted`:`🆕 New VC ${e.k==="leg"?"Legendary":"Rare"} · +${e.n} minted`)}}
+  if(!ann.length)ann.push("A quiet year: no events");SIMU.ann=ann}
+function simuTick(t){if(!SIMU.play)return;const k=Math.floor((t-SIMU.t0)/2600)+1;
+  if(k!==SIMU.yi&&k<=SIM_Y1-SIM_Y0){SIMU.yi=k;simuYear()}
+  if(k>SIM_Y1-SIM_Y0+1){SIMU.play=false;document.body.classList.remove("simu");renderSimu()}dirty=true}
+function drawSimu(){if(!SIMU.play)return;ctx.setTransform(DPR,0,0,DPR,0,0);
+  const side=W>=700?320:0,avail=W-side,cx=avail/2,big=Math.max(28,Math.min(56,avail/18)),y=Math.min(SIM_Y1,SIM_Y0+SIMU.yi),sup=SIMU.run.sup[Math.min(SIMU.yi,SIMU.run.sup.length-1)];
+  ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(11,13,20,.8)";ctx.fillRect(0,0,avail,big*2.2);
+  ctx.fillStyle="#f2c94c";ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;ctx.fillText(`🔮 ${y}`,cx,big*1.02);
+  ctx.fillStyle=sup<15000?"#5fd38d":"#f1ede4";ctx.font=`700 ${big*.42}px Barlow,sans-serif`;ctx.fillText(`${sup.toLocaleString()} VC moments in circulation${sup<14000?" · under 14,000 🎯":sup<15000?" · under 15,000 🎯":""}`,cx,big*1.68);
+  // announcements on centre court
+  const c={x:(0-cam.x)*cam.s+W/2,y:(0-cam.y)*cam.s+H/2},fs=Math.max(13,Math.min(20,avail/45));ctx.font=`800 ${fs}px Barlow,sans-serif`;
+  const lines=SIMU.ann,wmax=Math.max(...lines.map(l=>ctx.measureText(l).width))+30,hh=lines.length*fs*1.5+16;
+  ctx.fillStyle="rgba(11,13,20,.88)";ctx.strokeStyle="#f2c94c";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(c.x-wmax/2,c.y-hh/2,wmax,hh,12):ctx.rect(c.x-wmax/2,c.y-hh/2,wmax,hh);ctx.fill();ctx.stroke();
+  ctx.fillStyle="#fff";ctx.textBaseline="middle";lines.forEach((l,i)=>ctx.fillText(l,c.x,c.y-hh/2+8+fs*.75+i*fs*1.5));
+  ctx.textAlign="right";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.32)}px 'Barlow Condensed',sans-serif`;ctx.fillText("VC15TRACKER.COM · WHAT-IF SIMULATION",avail-14,H-16)}
+function drawTunnelSeats(){if(!SIMU.play||!SIMU.newSeats.length)return;const hs=SEAT/2;ctx.save();ctx.shadowColor="#f2c94c";ctx.shadowBlur=8*DPR;
+  for(const m of SIMU.newSeats){ctx.fillStyle=m.c;ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT)}ctx.restore();
+  ctx.fillStyle="#f2c94c";ctx.font=`800 ${Math.max(12,14/cam.s)}px 'Barlow Condensed',sans-serif`;ctx.textAlign="center";ctx.fillText("🆕 NEW SEATS · PLAYERS' TUNNEL",0,Math.min(...TUNNEL.map(t=>t.y))-12)}
+document.getElementById("simOpen").onclick=()=>{if(!SIMU.open){if(TL.on)tlExit();setFilter("all");SIMU.open=true;if(!SIMU.res)simRun()}else{SIMU.open=false;if(SIMU.play)simuStop()}renderSimu()};
 
 // ---------- live listings (pushed by the VC sales bot to GitHub) ----------
 const EDITION={archive:4022,tsd:672,rib:3826,fandom:3954,origin:10334,asg:4993,cosmic:674,dallas:14989,galac:14969,omega:14993};
