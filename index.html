@@ -358,7 +358,7 @@ let r100=buildBand(70,["origin","tsd"]);
 let r200=buildBand(r100+26,["rib","fandom"]);
 let r300=buildBand(r200+30,["archive"],25);
 const OUT=r300;const RING_OUT=OUT+30;
-const WORLD={x0:-(CW+RING_OUT)-30,x1:CW+RING_OUT+30,y0:-(CH+RING_OUT)-600,y1:CH+RING_OUT+30};
+const WORLD={x0:-(CW+RING_OUT)-30,x1:CW+RING_OUT+30,y0:-(CH+RING_OUT)-406,y1:CH+RING_OUT+30};
 
 // spatial hash for clicks
 const GRID=30,hash=new Map();
@@ -412,7 +412,7 @@ const RING=[];{
 const cv=document.getElementById("arena"),ctx=cv.getContext("2d");
 let setKey=null,joinYear=2020,hodlMin=5,hodlView="long",W=0,H=0,DPR=1,cam={x:0,y:0,s:.3},filter="all",selOwner=null,selSeat=null,anim=null,dirty=true,nearSeat=null;const NEAR=55;
 function resize(){DPR=Math.min(2,window.devicePixelRatio||1);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*DPR;cv.height=H*DPR;dirty=true}
-function fitView(){const top=W<700?120:150,bot=70;const s=Math.min((W-24)/(WORLD.x1-WORLD.x0),(H-top-bot)/(WORLD.y1-WORLD.y0));
+function fitView(){const top=W<700?120:182,bot=70;const s=Math.min((W-24)/(WORLD.x1-WORLD.x0),(H-top-bot)/(WORLD.y1-WORLD.y0));
   return{x:(WORLD.x0+WORLD.x1)/2,y:(WORLD.y0+WORLD.y1)/2-(top-bot)/2/s,s}}
 const toWorld=(sx,sy)=>({x:(sx-W/2)/cam.s+cam.x,y:(sy-H/2)/cam.s+cam.y});
 const clampS=s=>Math.max(fitView().s*.6,Math.min(14,s));
@@ -472,7 +472,7 @@ function drawPlays(){
 function drawRafters(){
   if(TL.on||SIM)return;
   const bw=120,bh=150,gap=30;let y=WORLD.y0+30;
-  for(const[list,title]of[[CAREER,"VINCE CARTER · HONOURS"],[CAREER2,"VINCE CARTER · CAREER"]]){const n=list.length,x0=-(n*bw+(n-1)*gap)/2,y0=y;
+  for(const[list,title]of[[CAREER,"VINCE CARTER · HONOURS"]]){const n=list.length,x0=-(n*bw+(n-1)*gap)/2,y0=y;
     ctx.strokeStyle="rgba(255,255,255,.25)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x0-40,y0);ctx.lineTo(-x0+40,y0);ctx.stroke();
     list.forEach((b,i)=>{const x=x0+i*(bw+gap);
       ctx.fillStyle=b.c;ctx.beginPath();ctx.moveTo(x,y0+6);ctx.lineTo(x+bw,y0+6);ctx.lineTo(x+bw,y0+bh);ctx.lineTo(x+bw/2,y0+bh-18);ctx.lineTo(x,y0+bh);ctx.closePath();ctx.fill();
@@ -646,10 +646,12 @@ document.getElementById("tlRec").onclick=()=>{
   TL.day=TL_START;TL.hold=0;TL.playing=true;tlPlay.textContent="⏸";document.getElementById("tlRec").textContent="⏹ Stop";tlMsg.textContent="Recording… keep this tab open until it finishes.";rec.start(500)};
 // ---------- arena games: "stand up if…" played out step by step ----------
 let SIM=null;
+function simCam(){const side=W>=700?320:0,avail=W-side,top=(W<700?150:178)+Math.max(20,Math.min(32,avail/32))*2.1+14,bot=70,hw=CW+RING_OUT+10,hh=CH+RING_OUT+10;
+  const s=Math.min((avail-24)/(2*hw),(H-top-bot)/(2*hh));return{x:(W/2-avail/2)/s,y:(H/2-(top+H-bot)/2)/s,s}}
 function simStart(steps){SIM={steps,i:0,t0:performance.now()};steps[0].go();dirty=true;renderSale()}
-function simStop(){SIM=null;dirty=true;renderSale()}
+function simStop(){SIM=null;dirty=true;renderSale();fly(fitView(),600)}
 function simTick(t){if(!SIM)return;const hold=SIM.i>=SIM.steps.length-1?4000:2400;
-  if(t-SIM.t0>hold){if(SIM.i>=SIM.steps.length-1){simStop();return}SIM.i++;SIM.steps[SIM.i].go();SIM.t0=t;renderSale()}dirty=true}
+  if(t-SIM.t0>hold){if(SIM.i>=SIM.steps.length-1){SIM=null;dirty=true;renderSale();return}SIM.i++;SIM.steps[SIM.i].go();SIM.t0=t;renderSale()}dirty=true}
 function drawSim(){if(!SIM)return;const st=SIM.steps[SIM.i];ctx.setTransform(DPR,0,0,DPR,0,0);
   const side=!salePanel.hidden&&W>=700?320:0,avail=W-side,big=Math.max(20,Math.min(32,avail/32)),y0=W<700?150:178,cx=avail/2;ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;
   const sub=st.sub(),w=Math.min(avail-32,ctx.measureText(st.t).width+48),h=big*2.1;
@@ -659,17 +661,17 @@ function drawSim(){if(!SIM)return;const st=SIM.steps[SIM.i];ctx.setTransform(DPR
   const k=(SIM.i+1)/SIM.steps.length;ctx.fillStyle="rgba(242,201,76,.35)";ctx.fillRect(cx-w/2+12,y0+h-6,(w-24)*k,3)}
 const heldSeats=()=>seats.filter(m=>!m.burned&&!m.pack);
 function hodlSteps(){const n=y=>heldSeats().filter(m=>m.yrs>=y).length,pct=y=>Math.round(n(y)/heldSeats().length*100);
-  return[{y:0,t:"🧍 STAND UP if you own a VC moment"},{y:1,t:"SIT DOWN if you've held it under 1 year"},{y:2,t:"SIT DOWN if under 2 years"},{y:3,t:"SIT DOWN if under 3 years"},{y:4,t:"SIT DOWN if under 4 years"},{y:5,t:"💎 Diamond hands: held 5+ years"},{y:6,t:"🏆 STILL STANDING: held 6+ years"}]
-   .map(s=>({t:s.t,go:()=>{hodlMin=s.y},sub:()=>`${n(s.y).toLocaleString()} seats standing${s.y?` · ${pct(s.y)}%`:""}`}))}
-function joinSteps(){return[2020,2021,2022,2023,2024,2025,2026].map(y=>({t:`📅 STAND UP if you joined Top Shot in ${y}`,go:()=>{joinYear=y},
-  sub:()=>{const l=holders.filter(o=>o.joined===y);return `${l.length.toLocaleString()} collector${l.length===1?"":"s"} · ${l.reduce((a,o)=>a+nHeld(o),0).toLocaleString()} seats`}}))}
+  return[{y:0,t:"🤝 Every VC moment held today"},{y:1,t:"Still holding after 1+ year"},{y:2,t:"Still holding after 2+ years"},{y:3,t:"Still holding after 3+ years"},{y:4,t:"Still holding after 4+ years"},{y:5,t:"💎 Still holding after 5+ years"},{y:6,t:"🏆 Still holding after 6+ years"}]
+   .map(s=>({t:s.t,go:()=>{hodlMin=s.y},sub:()=>`${n(s.y).toLocaleString()} moments${s.y?` · ${pct(s.y)}% of all held`:""}`}))}
+function joinSteps(){return[2020,2021,2022,2023,2024,2025,2026].map(y=>({t:`📅 Collectors who joined Top Shot in ${y}`,go:()=>{joinYear=y},
+  sub:()=>{const l=holders.filter(o=>o.joined===y);return `${l.length.toLocaleString()} collector${l.length===1?"":"s"} · ${l.reduce((a,o)=>a+nHeld(o),0).toLocaleString()} VC moments held`}}))}
 let burnYear=0,lockAfter=0;
-function burnSteps(){return[2021,2022,2023,2024,2025,2026].map(y=>({t:`🪑 Retired by the end of ${y}`,go:()=>{burnYear=y},
-  sub:()=>{const n=seats.filter(m=>m.burned&&m.burnedAt&&dateOf(m.burnedAt).getUTCFullYear()<=y).length,k=seats.filter(m=>m.burned&&m.burnedAt&&dateOf(m.burnedAt).getUTCFullYear()===y).length;return `${n.toLocaleString()} seats retired for good · ${k.toLocaleString()} in ${y}`}}))}
+function burnSteps(){return[2021,2022,2023,2024,2025,2026].map(y=>({t:`🪑 Retired (burned) by the end of ${y}`,go:()=>{burnYear=y},
+  sub:()=>{const n=seats.filter(m=>m.burned&&m.burnedAt&&dateOf(m.burnedAt).getUTCFullYear()<=y).length,k=seats.filter(m=>m.burned&&m.burnedAt&&dateOf(m.burnedAt).getUTCFullYear()===y).length;return `${n.toLocaleString()} moments retired in total · ${k.toLocaleString()} in ${y}`}}))}
 function lockSteps(){const L=()=>seats.filter(m=>m.locked&&!m.burned),T=TL_END;
-  const st=[{a:0,t:"🔒 STAND UP if your VC moment is locked"}];
-  for(const [y,mo] of [[2027,1],[2027,4],[2027,7],[2027,10],[2028,1]])st.push({a:dayOfYM(y,mo),t:`SIT DOWN if it unlocks before ${MON[mo-1]} ${y}`});
-  return st.map(s=>({t:s.t,go:()=>{lockAfter=s.a},sub:()=>{const n=L().filter(m=>!s.a||(m.lockEnd&&m.lockEnd>=s.a)).length;return `${n.toLocaleString()} locked seats still standing`}}))}
+  const st=[{a:0,t:"🔒 Every locked VC moment today"}];
+  for(const [y,mo] of [[2027,1],[2027,4],[2027,7],[2027,10],[2028,1]])st.push({a:dayOfYM(y,mo),t:`Still locked on ${MON[mo-1]} 1, ${y}`});
+  return st.map(s=>({t:s.t,go:()=>{lockAfter=s.a},sub:()=>{const n=L().filter(m=>!s.a||(m.lockEnd&&m.lockEnd>=s.a)).length;return `${n.toLocaleString()} moments locked`}}))}
 function loop(t){
   tlTick(t);simTick(t);
   if(anim){const k=Math.min(1,(t-anim.t0)/anim.d),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
@@ -863,17 +865,17 @@ function renderSale(){
   salePanel.className="sale "+filter;
   if(filter==="hodl"){
     const held=seats.filter(m=>!m.burned&&!m.pack),stand=held.filter(m=>m.yrs>=hodlMin).length;
-    salePanel.innerHTML=`<header><b>🤝 HODL: stay standing if…</b><small>Like the arena game: everyone sits down except seats held at least this long.</small>
-      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play the game: stand up, then sit down by years held"}</button>
+    salePanel.innerHTML=`<header><b>🤝 HODL: held at least…</b><small>Lights up VC moments held by the same collector for at least this long.</small>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: holding after 1, 2, 3+ years"}</button>
       <div class="tabs">${[1,2,3,4,5,6].map(y=>`<button data-y="${y}" class="${hodlMin===y?"on":""}">${y}+ yr</button>`).join("")}</div>
-      <span class="stand">${stand.toLocaleString()} of ${held.length.toLocaleString()} seats still standing (${Math.round(stand/held.length*100)}%)</span>
+      <span class="stand">${stand.toLocaleString()} of ${held.length.toLocaleString()} ${hodlMin?`moments held ${hodlMin}+ yr${hodlMin===1?"":"s"}`:"moments held today"} (${Math.round(stand/held.length*100)}%)</span>
       <div class="tabs sub"><button data-v="long" class="${hodlView==="long"?"on":""}">Longest holds</button><button data-v="lead" class="${hodlView==="lead"?"on":""}">HODL leaders</button></div>
       ${hodlView==="lead"?`<small style="display:block;margin-top:8px">HODL score = add up the years each VC moment has been held. Example: 2 moments held 3 years each = 6. More moments held longer = higher score.</small>`:""}</header><ul></ul>
       <div class="note">💎 Diamond hands = held 5+ years (light blue on the map). Locking and unlocking doesn't reset the clock; selling or gifting does.</div>`;
     if(hodlView==="long")panelList(held.filter(m=>m.yrs>=hodlMin).sort((a,b)=>(b===longest)-(a===longest)||b.yrs-a.yrs).slice(0,60).map(m=>({a:`${esc(SK[m.set].name.replace(" · Debut Club",""))} <b>#${m.serial}</b>`,b:m.yrs.toFixed(1)+" yrs",c:`${disp(m.owner.name)} · since ${fmtMonth(m.held)}`,go:()=>showSeat(m)})));
     else panelList(holders.slice().sort((a,b)=>b.my-a.my).slice(0,60).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:Math.round(o.my).toLocaleString(),c:`HODL score · ${nHeld(o).toLocaleString()} moment${nHeld(o)===1?"":"s"} · avg ${(o.my/Math.max(1,nHeld(o))).toFixed(1)} yrs held`,go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>b.yrs-a.yrs)[0];showSeat(best,true,true)}})));
     salePanel.querySelectorAll("[data-y]").forEach(b=>b.onclick=()=>{SIM=null;hodlMin=+b.dataset.y;dirty=true;renderSale()});
-    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(fitView(),600),simStart(hodlSteps()));
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(hodlSteps()));
     salePanel.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{hodlView=b.dataset.v;renderSale()});
     return;
   }
@@ -893,31 +895,31 @@ function renderSale(){
   if(filter==="joined"){
     const yrsList=[2020,2021,2022,2023,2024,2025,2026],by={};for(const y of yrsList)by[y]=holders.filter(o=>o.joined===y);
     const list=by[joinYear].slice().sort((a,b)=>nHeld(b)-nHeld(a)),seatsN=list.reduce((a,o)=>a+nHeld(o),0);
-    salePanel.innerHTML=`<header><b>📅 Joined Top Shot in…</b><small>Stand up if you joined in this year. Seats light up for collectors who did.</small>
+    salePanel.innerHTML=`<header><b>📅 Joined Top Shot in…</b><small>Lights up VC moments held by collectors who joined Top Shot that year.</small>
       <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play 2020 → 2026"}</button>
       <div class="tabs">${yrsList.map(y=>`<button data-j="${y}" class="${joinYear===y?"on":""}">${String(y).slice(2)}</button>`).join("")}</div>
-      <span class="stand">${list.length.toLocaleString()} collector${list.length===1?"":"s"} joined in ${joinYear} · ${seatsN.toLocaleString()} seat${seatsN===1?"":"s"}</span></header><ul></ul>
+      <span class="stand">${list.length.toLocaleString()} collector${list.length===1?"":"s"} joined in ${joinYear} · ${seatsN.toLocaleString()} VC moment${seatsN===1?"":"s"}</span></header><ul></ul>
       <div class="note">Joined = the date the Top Shot account was created (from each profile), not when they bought a VC moment.${joinYear===2026?` Another ${holders.filter(o=>o.firstVc===2026&&o.joined&&o.joined<2026).length} longer-time collectors bought their first VC moment in 2026.`:""} Wallets with no username aren't counted.</div>`;
-    panelList(list.slice(0,80).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:nHeld(o).toLocaleString(),c:nHeld(o)>1?"VC seats":"VC seat",go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>SETS.indexOf(SK[a.set])-SETS.indexOf(SK[b.set]))[0];showSeat(best,true,true)}})));
+    panelList(list.slice(0,80).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:nHeld(o).toLocaleString(),c:nHeld(o)>1?"VC moments":"VC moment",go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>SETS.indexOf(SK[a.set])-SETS.indexOf(SK[b.set]))[0];showSeat(best,true,true)}})));
     salePanel.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{SIM=null;joinYear=+b.dataset.j;dirty=true;renderSale()});
-    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(fitView(),600),simStart(joinSteps()));
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(joinSteps()));
     return;
   }
   if(filter==="burn"){
-    salePanel.innerHTML=`<header><b>🏀 Assist leaders</b><small>${retirers.length} collectors retired ${nBurned} seats. Each one made every other VC moment rarer, and each red seat keeps their name for good.</small>
-      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: watch the seats retire, year by year"}</button></header><ul></ul>
+    salePanel.innerHTML=`<header><b>🪑 Retired (burned)</b><small>${nBurned} VC moments retired by ${retirers.length} collectors. Each one is gone for good.</small>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: retired moments per year"}</button></header><ul></ul>
       <div class="note">Retired = burned on Top Shot (permanently removed). Zoom into the outer edge to find the Ring of Retirees.</div>`;
-    panelList(retirers.slice(0,100).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:String(o.retired),c:o.retired>1?"seats retired":"seat retired",go:()=>{selOwner=o;dirty=true;const s=o.seats.find(x=>x.burned);if(s)showSeat(s,true,true)}})));
-    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(fitView(),600),simStart(burnSteps()));
+    panelList(retirers.slice(0,100).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:String(o.retired),c:o.retired>1?"moments retired":"moment retired",go:()=>{selOwner=o;dirty=true;const s=o.seats.find(x=>x.burned);if(s)showSeat(s,true,true)}})));
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(burnSteps()));
     return;
   }
   if(filter==="lock"){
     const lk=seats.filter(m=>m.locked&&!m.burned),heldN=seats.filter(m=>!m.burned&&!m.pack).length,by=new Map();for(const m of lk)by.set(m.owner,(by.get(m.owner)||0)+1);
     salePanel.innerHTML=`<header><b>🔒 Locked seats</b><small>${lk.length.toLocaleString()} of ${heldN.toLocaleString()} held VC moments are locked (${Math.round(lk.length/heldN*100)}%). Locked moments can't be sold until the lock ends.</small>
-      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: stand up if locked, sit down as locks end"}</button></header><ul></ul>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: still locked over the next year"}</button></header><ul></ul>
       <div class="note">Lock one VC moment to earn the 🔒 Locker badge.</div>`;
-    panelList([...by.entries()].sort((a,b)=>b[1]-a[1]).slice(0,60).map(([o,n],i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:n.toLocaleString(),c:n>1?"locked seats":"locked seat",go:()=>{const s=o.seats.find(x=>x.locked&&!x.burned);if(s)showSeat(s,true,true)}})));
-    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(fitView(),600),simStart(lockSteps()));
+    panelList([...by.entries()].sort((a,b)=>b[1]-a[1]).slice(0,60).map(([o,n],i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:n.toLocaleString(),c:n>1?"locked moments":"locked moment",go:()=>{const s=o.seats.find(x=>x.locked&&!x.burned);if(s)showSeat(s,true,true)}})));
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(lockSteps()));
     return;
   }
   const list=seats.filter(matches);
