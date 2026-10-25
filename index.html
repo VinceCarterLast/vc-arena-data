@@ -236,13 +236,14 @@ body.rec #arena{width:min(1280px,calc(100vw - 40px),calc((100vh - 150px) * 1.777
 .ticket.v2 .pstats div{background:#1d2133;border-radius:7px;padding:6px 8px}
 .ticket.v2 .pstats small{display:block;font:700 9.5px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .ticket.v2 .pstats b{font:800 17px var(--display)}
+.pre{display:inline-block;vertical-align:middle;margin-left:10px;font:800 12px/1 'Barlow Condensed',sans-serif;letter-spacing:.12em;font-style:normal;color:#1b1608;background:#f2c94c;border-radius:5px;padding:4px 7px;position:relative;top:-4px}
 </style>
 
 <canvas id="arena" aria-label="The VC Arena seen from above: one seat per Vince Carter moment"></canvas>
 
 <header class="top">
   <div class="brand">
-    <h1>The <span>VC</span> Arena</h1>
+    <h1>The <span>VC</span> Arena<em class="pre" title="Early preview: est. 26·10·26, still being tuned before the full launch">PRESEASON</em></h1>
     <p>15,695 seats, one for every VC moment ever minted.<span class="sample live on" id="asof">Real owners</span><span class="sample live" id="live">Sample listings</span></p>
   </div>
   <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><button class="tlBtn" id="tlOpen">▶ Timelapse (past)</button><button class="tlBtn simTop" id="simOpen">🔮 Simulator (future)</button>
@@ -476,6 +477,7 @@ const RING=[];{
     const um=u+need/2,[x,y]=p.at(um),[x2,y2]=p.at(um+.0005);RING.push({s,o,x,y,a:Math.atan2(y2-y,x2-x)});u+=need}
 }
 // ---------- canvas ----------
+const SITE="VC15TRACKER.COM";
 const cv=document.getElementById("arena"),ctx=cv.getContext("2d");
 let setKey=null,joinYear=2020,hodlMin=5,hodlView="long",W=0,H=0,DPR=1,cam={x:0,y:0,s:.3},filter="all",selOwner=null,selSeat=null,anim=null,dirty=true,nearSeat=null;const NEAR=55;
 function resize(){DPR=Math.min(2,window.devicePixelRatio||1);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*DPR;cv.height=H*DPR;dirty=true}
@@ -519,7 +521,7 @@ const adFor=i=>(PROMO.ads&&PROMO.ads[i%Math.max(1,PROMO.ads.length)])||null;
 function drawBoards(){BOARDS.forEach((b,i)=>{const ad=adFor(i);
   ctx.fillStyle="#0e1018";ctx.fillRect(b.x-b.w/2,b.y-b.h/2,b.w,b.h);ctx.strokeStyle=ad?"#f2c94c":"rgba(242,201,76,.55)";ctx.lineWidth=2;ctx.strokeRect(b.x-b.w/2,b.y-b.h/2,b.w,b.h);
   ctx.save();ctx.translate(b.x,b.y);ctx.rotate(b.sd*Math.PI/2);ctx.fillStyle=ad?"#fff":"#f2c94c";ctx.textAlign="center";ctx.textBaseline="middle";
-  ctx.font="800 16px 'Barlow Condensed',sans-serif";ctx.fillText(ad?ad.text:"VC15TRACKER.COM  ·  @VC15TRACKER",0,1,b.h-16);ctx.restore()})}
+  ctx.font="800 16px 'Barlow Condensed',sans-serif";ctx.fillText(ad?ad.text:SITE+"  ·  @VC15TRACKER",0,1,b.h-16);ctx.restore()})}
 function boardAt(p){return BOARDS.findIndex(b=>Math.abs(p.x-b.x)<=b.w/2+2&&Math.abs(p.y-b.y)<=b.h/2)}
 // moment pictures on the floor, placed where each play happened (no overlaps)
 const FLOOR_SPOTS={rib:[-438,-62,46],fandom:[-438,0,46],asg:[-438,62,46],origin:[438,-31,46],archive:[438,31,46],
@@ -683,7 +685,7 @@ function drawTL(){
   if(cap){const fs=Math.max(13,Math.min(big*.3,W/34));ctx.font=`700 ${fs}px Barlow,sans-serif`;const im=cap.img&&PIMG[cap.img],ih=im?fs*3:0,tw=Math.min(ctx.measureText(cap.t).width,W-60-ih),w=tw+36+(im?ih+10:0),bh=Math.max(40,ih+12),y=H-(document.body.classList.contains("rec")?24:96)-bh/2;
     ctx.fillStyle=cap.img?"rgba(20,24,38,.95)":"rgba(206,17,65,.92)";ctx.strokeStyle=cap.img?"#f2c94c":"transparent";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(cx-w/2,y-bh/2,w,bh,14):ctx.rect(cx-w/2,y-bh/2,w,bh);ctx.fill();ctx.stroke();
     if(im&&im.complete)ctx.drawImage(im,cx-w/2+10,y-ih/2,ih,ih);ctx.fillStyle="#fff";ctx.textBaseline="middle";ctx.textAlign="left";ctx.fillText(cap.t,cx-w/2+18+(im?ih+10:0),y+1,tw);ctx.textAlign="center"}
-  ctx.textAlign="right";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.32)}px 'Barlow Condensed',sans-serif`;ctx.fillText("VC15TRACKER.COM",W-14,H-(document.body.classList.contains("rec")?12:80));
+  ctx.textAlign="right";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.32)}px 'Barlow Condensed',sans-serif`;ctx.fillText(SITE+" · @VC15Tracker",W-14,H-(document.body.classList.contains("rec")?12:80));
   scrub.value=Math.round((TL.day-TL_START)/(TL_END-TL_START)*1000);
 }
 const tlbar=document.getElementById("tlbar"),scrub=document.getElementById("tlScrub"),tlPlay=document.getElementById("tlPlay"),tlMsg=document.getElementById("tlMsg");
@@ -1044,7 +1046,7 @@ function goSet(k){setKey=k;setFilter("set");const S=SK[k];match.textContent=`${S
   const xs=S.list.map(m=>m.x),ys=S.list.map(m=>m.y);const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
   const s=clampS(Math.min((W-80)/(x1-x0+80),(H-220)/(y1-y0+80),4));fly({x:(x0+x1)/2,y:(y0+y1)/2,s},900)}
 lg.innerHTML=`<p class="lnote">15,695 moments · 10 editions · 7 plays</p>`+["court","100","200","300"].map(t=>`<h3>${TIERNAME[t]}</h3>`+SETS.filter(s=>s.tier===t).map(s=>`<button class="lrow" data-set="${s.key}"><img class="lthumb" src="${PLAYS[s.key].img}" alt=""><i style="background:${s.color}"></i>${s.name}<span>${s.minted.toLocaleString()}</span></button>`).join("")).join("")
- +`<hr><div><i style="background:${GOLD}"></i>⭐ Gold seats (special serials: #1, #15, last mint, Dallas #25)<span>${seats.filter(m=>m.gold).length}</span></div><div><i style="background:#9fe3ff"></i>💎 Diamond hands (HODL 5+ yrs)<span>${seats.filter(m=>m.yrs>=5).length.toLocaleString()}</span></div><div><i style="background:${BURN}"></i>🟥 Retired seats<span>${nBurned}</span></div><div><i style="background:${PACK}"></i>🎁 Still in packs (unopened)<span>${seats.filter(m=>m.pack&&!m.burned).length}</span></div>`;
+ +`<hr><div><i style="background:${GOLD}"></i>⭐ Gold seats (special serials: #1, #15, last mint, Dallas #25)<span>${seats.filter(m=>m.gold).length}</span></div><div><i style="background:#9fe3ff"></i>💎 Diamond hands (HODL 5+ yrs)<span>${seats.filter(m=>m.yrs>=5).length.toLocaleString()}</span></div><div><i style="background:${BURN}"></i>🟥 Retired seats<span>${nBurned}</span></div><div><i style="background:${PACK}"></i>🎁 Still in packs (unopened)<span>${seats.filter(m=>m.pack&&!m.burned).length}</span></div><p class="lnote" style="margin:8px 0 0">© 2026 VC15Tracker · All rights reserved<br>Est. 26·10·26<br>Independent fan project, not affiliated with Dapper Labs, NBA Top Shot, the NBA or Vince Carter. Not financial advice.</p>`;
 
 // ---------- 🔮 supply simulator: 5,000 what-if futures, then play one on the arena ----------
 // History it's based on: Top Shot retirement events Aug–Oct 2023 (~135), Nov 2024 (153), Aug 2026 (41);
@@ -1231,7 +1233,7 @@ function simShot(){if(!entryOk())return;const r=SIMU.res,o=SIMU.opt,c=document.c
     g.fillStyle="#6f9fd8";g.beginPath();g.arc(X(j),Yv(r.p50[j]),6,0,7);g.fill();g.fillStyle="#fff";g.font="800 20px Barlow,sans-serif";g.textAlign=j===15?"right":j===0?"left":"center";g.fillText(r.p50[j].toLocaleString(),X(j)+(j===15?-8:j===0?8:0),Yv(r.p50[j])-14);g.textAlign="left"});
   g.fillStyle="#9a97a6";g.font="600 16px Barlow,sans-serif";[0,5,10,15].forEach(j=>g.fillText(String(SIM_Y0+j),X(j)-20,Y0+CH2+26));
   g.fillStyle="#6c6a78";g.font="500 17px Barlow,sans-serif";g.fillText("Retired = permanently removed. A simulation based on VC history and Top Shot's Historical Rules, not a guarantee.",48,612);
-  g.fillStyle="#f1ede4";g.font="800 30px 'Barlow Condensed',sans-serif";g.textAlign="right";g.fillText("VC15TRACKER.COM · @VC15Tracker",1150,652);
+  g.fillStyle="#f1ede4";g.font="800 30px 'Barlow Condensed',sans-serif";g.textAlign="right";g.fillText(SITE+" · @VC15Tracker",1150,652);
   const fn="vc-supply-simulation.png";c.toBlob(b=>{if(DLNS){DLNS.save({filename:fn,data:b}).catch(()=>{})}else{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=fn;document.body.appendChild(a);a.click();a.remove()}},"image/png")}
 // the players' tunnel: empty spots in the V-shaped gap of the 300 level, where new mints come out
 const TUNNEL=(()=>{const S=SK.archive,inner=r200+30,spots=[];
@@ -1299,7 +1301,7 @@ function drawSimu(){if(!SIMU.play)return;ctx.setTransform(DPR,0,0,DPR,0,0);
   const lines=SIMU.ann,wmax=Math.max(...lines.map(l=>ctx.measureText(l).width))+30,hh=lines.length*fs*1.5+16;
   ctx.fillStyle="rgba(11,13,20,.88)";ctx.strokeStyle="#f2c94c";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(c.x-wmax/2,c.y-hh/2,wmax,hh,12):ctx.rect(c.x-wmax/2,c.y-hh/2,wmax,hh);ctx.fill();ctx.stroke();
   ctx.fillStyle="#fff";ctx.textBaseline="middle";lines.forEach((l,i)=>ctx.fillText(l,c.x,c.y-hh/2+8+fs*.75+i*fs*1.5));
-  ctx.textAlign="right";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.32)}px 'Barlow Condensed',sans-serif`;ctx.fillText("VC15TRACKER.COM · SIMULATION",avail-14,H-16)}
+  ctx.textAlign="right";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.32)}px 'Barlow Condensed',sans-serif`;ctx.fillText(SITE+" · @VC15Tracker",avail-14,H-16)}
 function drawTunnelSeats(){if(!SIMU.play||!SIMU.newSeats.length)return;const hs=SEAT/2;ctx.save();ctx.shadowColor="#f2c94c";ctx.shadowBlur=8*DPR;
   for(const m of SIMU.newSeats){ctx.fillStyle=m.c;ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT)}ctx.restore();
   if(SIMU.newRows){const d=NEW0+SIMU.newRows*ROWP+8;ctx.fillStyle="#f2c94c";ctx.font=`800 ${Math.max(12,14/cam.s)}px 'Barlow Condensed',sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(`NEW SEATS · +${SIMU.commons.length.toLocaleString()} VC MOMENTS`,0,CH+d+4)}}
