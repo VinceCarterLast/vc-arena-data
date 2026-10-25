@@ -1,3 +1,10 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="The VC Arena: one seat for every Vince Carter moment on NBA Top Shot. Owners, listings, retired seats and stats.">
+<meta property="og:title" content="The VC Arena"><meta property="og:description" content="One seat for every Vince Carter moment on NBA Top Shot.">
+<meta name="twitter:card" content="summary"><meta name="twitter:site" content="@VC15Tracker">
 <title>The VC Arena</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -127,7 +134,11 @@ body.rec #arena{width:min(1280px,calc(100vw - 40px),calc((100vh - 150px) * 1.777
 .cert-btns{display:flex;gap:8px;justify-content:center}
 .cert-btns a,.cert-btns button{font:700 14px var(--body);padding:9px 16px;border-radius:6px;border:0;cursor:pointer;text-decoration:none}
 .cert-btns a{background:var(--gold);color:#1b1608}.cert-btns a.xbtn{background:#f1ede4;color:#0b0d14}.cert-btns button{background:#2a2e3c;color:var(--fg)}
-@media (max-width:700px){.legend{display:none}.brand p{display:none}.sale{top:auto;bottom:calc(120px + env(safe-area-inset-bottom,0px));max-height:40%}}
+@media (max-width:700px){.legend{display:none}.brand p{display:none}.soonBtn{display:none}.zoom{display:none}
+  .chips{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;pointer-events:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .chips::-webkit-scrollbar{display:none}.chips button{flex:none}.chips .match{display:none}
+  .sale{top:auto;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));width:auto;bottom:calc(62px + env(safe-area-inset-bottom,0px));max-height:42%}
+  .ticket{bottom:calc(62px + env(safe-area-inset-bottom,0px))}}
 
 /* seat card (v2) */
 .ticket.v2{display:block;width:min(340px,calc(100% - 32px));background:#141826;color:var(--fg);border:1px solid var(--line);border-top:4px solid var(--ac);border-radius:12px;padding:14px;box-shadow:0 14px 40px rgba(0,0,0,.6)}
@@ -412,7 +423,7 @@ const RING=[];{
 const cv=document.getElementById("arena"),ctx=cv.getContext("2d");
 let setKey=null,joinYear=2020,hodlMin=5,hodlView="long",W=0,H=0,DPR=1,cam={x:0,y:0,s:.3},filter="all",selOwner=null,selSeat=null,anim=null,dirty=true,nearSeat=null;const NEAR=55;
 function resize(){DPR=Math.min(2,window.devicePixelRatio||1);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*DPR;cv.height=H*DPR;dirty=true}
-function fitView(){const top=W<700?120:182,bot=70;const s=Math.min((W-24)/(WORLD.x1-WORLD.x0),(H-top-bot)/(WORLD.y1-WORLD.y0));
+function fitView(){const top=W<700?232:182,bot=W<700?64:70;const s=Math.min((W-24)/(WORLD.x1-WORLD.x0),(H-top-bot)/(WORLD.y1-WORLD.y0));
   return{x:(WORLD.x0+WORLD.x1)/2,y:(WORLD.y0+WORLD.y1)/2-(top-bot)/2/s,s}}
 const toWorld=(sx,sy)=>({x:(sx-W/2)/cam.s+cam.x,y:(sy-H/2)/cam.s+cam.y});
 const clampS=s=>Math.max(fitView().s*.6,Math.min(14,s));
@@ -646,14 +657,14 @@ document.getElementById("tlRec").onclick=()=>{
   TL.day=TL_START;TL.hold=0;TL.playing=true;tlPlay.textContent="⏸";document.getElementById("tlRec").textContent="⏹ Stop";tlMsg.textContent="Recording… keep this tab open until it finishes.";rec.start(500)};
 // ---------- arena games: "stand up if…" played out step by step ----------
 let SIM=null;
-function simCam(){const side=W>=700?320:0,avail=W-side,top=(W<700?150:178)+Math.max(20,Math.min(32,avail/32))*2.1+14,bot=70,hw=CW+RING_OUT+10,hh=CH+RING_OUT+10;
+function simCam(){const side=W>=700?320:0,avail=W-side,top=(W<700?232:178)+Math.max(20,Math.min(32,avail/32))*2.1+14,bot=70,hw=CW+RING_OUT+10,hh=CH+RING_OUT+10;
   const s=Math.min((avail-24)/(2*hw),(H-top-bot)/(2*hh));return{x:(W/2-avail/2)/s,y:(H/2-(top+H-bot)/2)/s,s}}
 function simStart(steps){SIM={steps,i:0,t0:performance.now()};steps[0].go();dirty=true;renderSale()}
 function simStop(){SIM=null;dirty=true;renderSale();fly(fitView(),600)}
 function simTick(t){if(!SIM)return;const hold=SIM.i>=SIM.steps.length-1?4000:2400;
   if(t-SIM.t0>hold){if(SIM.i>=SIM.steps.length-1){SIM=null;dirty=true;renderSale();return}SIM.i++;SIM.steps[SIM.i].go();SIM.t0=t;renderSale()}dirty=true}
 function drawSim(){if(!SIM)return;const st=SIM.steps[SIM.i];ctx.setTransform(DPR,0,0,DPR,0,0);
-  const side=!salePanel.hidden&&W>=700?320:0,avail=W-side,big=Math.max(20,Math.min(32,avail/32)),y0=W<700?150:178,cx=avail/2;ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;
+  const side=!salePanel.hidden&&W>=700?320:0,avail=W-side,big=Math.max(20,Math.min(32,avail/32)),y0=W<700?232:178,cx=avail/2;ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;
   const sub=st.sub(),w=Math.min(avail-32,ctx.measureText(st.t).width+48),h=big*2.1;
   ctx.fillStyle="rgba(11,13,20,.86)";ctx.strokeStyle="#f2c94c";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(cx-w/2,y0,w,h,12):ctx.rect(cx-w/2,y0,w,h);ctx.fill();ctx.stroke();
   ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle="#f2c94c";ctx.fillText(st.t,cx,y0+big*.72,w-24);
