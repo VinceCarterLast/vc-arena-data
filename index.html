@@ -208,7 +208,7 @@ body.rec #arena{width:min(1280px,calc(100vw - 40px),calc((100vh - 150px) * 1.777
     <h1>The <span>VC</span> Arena</h1>
     <p>15,695 seats, one for every VC moment ever minted.<span class="sample live on" id="asof">Real owners</span><span class="sample live" id="live">Sample listings</span></p>
   </div>
-  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><button class="tlBtn" id="tlOpen">▶ Timelapse</button><button class="infoBtn" id="infoOpen" aria-label="About the data">ⓘ Data</button><span class="soonBtn" title="Coming soon">🔮 Supply simulator · soon</span>
+  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><button class="tlBtn" id="tlOpen">▶ Timelapse</button><span class="soonBtn" title="Coming soon">🔮 Supply simulator · soon</span>
   <div class="search">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
     <input id="q" type="search" placeholder="Find your seats… try “VinceCarterLast”" autocomplete="off">
@@ -855,7 +855,6 @@ function showCert(m){const pi=PIMG[m.set];if(!(pi.complete&&pi.naturalWidth)){pi
 let DLNS=null,certCanvas=null;try{if(window.claude&&window.claude.use)window.claude.use("downloads").then(d=>DLNS=d).catch(()=>{})}catch(e){}
 document.getElementById("certdl").addEventListener("click",e=>{if(!DLNS||!certCanvas)return;e.preventDefault();const fn=document.getElementById("certdl").download;
   certCanvas.toBlob(b=>{DLNS.save({filename:fn,data:b}).catch(()=>{})},"image/png")});
-document.getElementById("infoOpen").onclick=()=>document.getElementById("info").hidden=false;
 document.getElementById("infoX").onclick=()=>document.getElementById("info").hidden=true;
 document.getElementById("info").onclick=e=>{if(e.target.id==="info")e.currentTarget.hidden=true};
 document.getElementById("certx").onclick=()=>document.getElementById("cert").hidden=true;
