@@ -24,14 +24,14 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .sample.live.on{border-color:#2fbf71;color:#2fbf71}
 .sample.live:not(.on){border-color:#6c6a78;color:#9a97a6}
 .sample{display:inline-block;margin-left:6px;padding:1px 7px;border:1px solid var(--fire);color:var(--fire);border-radius:3px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;vertical-align:2px}
-.right{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;width:min(560px,100%)}.right .search{flex:1;min-width:200px}
+.right{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;width:min(560px,100%)}.right .search{flex:0 1 300px;min-width:200px}
 .statsBtn i{font-style:normal;font:800 9px var(--body);letter-spacing:.08em;background:#ce1141;color:#fff;border-radius:3px;padding:2px 4px;margin-left:4px;vertical-align:1px}
 .tlBtn{white-space:nowrap;font:700 13px var(--body);color:#fff;background:#ce1141;border:0;border-radius:8px;padding:10px 14px;cursor:pointer}
 .soonBtn{white-space:nowrap;font:600 12px var(--body);color:var(--muted);border:1px dashed rgba(255,255,255,.25);border-radius:8px;padding:10px 12px;cursor:default}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(242,201,76,.6)}50%{box-shadow:0 0 0 8px rgba(242,201,76,0)}}
 .statsBtn{animation:pulse 2.2s ease-in-out 6;font:700 13px var(--body);text-decoration:none;color:#1b1608;background:var(--gold);border-radius:8px;padding:10px 14px}
 .search{position:relative;width:min(300px,100%)}
-.search input{width:100%;box-sizing:border-box;font:500 15px var(--body);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px 10px 34px}
+.search input{width:100%;box-sizing:border-box;font:500 15px var(--body);color:var(--fg);background:#161a28;border:1.5px solid rgba(255,255,255,.6);border-radius:8px;padding:10px 12px 10px 34px}
 .search input:focus{outline:2px solid var(--gold);outline-offset:1px}
 .search svg{position:absolute;left:11px;top:12px;width:15px;height:15px;stroke:var(--muted)}
 .results{position:absolute;left:0;right:0;top:calc(100% + 4px);background:#161925;border:1px solid var(--line);border-radius:8px;overflow:hidden}
@@ -378,7 +378,7 @@ const CAREER=[
  {t:"NETS",n:"#15",c:"#232323",sub:"RETIRED 2025"},
  {t:"HALL OF FAME",n:"2024",c:"#8a6514",sub:"CLASS OF 2024"},
  {t:"OLYMPIC GOLD",n:"2000",c:"#a07a10",sub:"SYDNEY"},
- {t:"OLYMPIC DUNK",n:"2000",c:"#7a2410",sub:"OVER 7'2\" WEIS"},
+ {t:"NBA DUNK CHAMPION",n:"2000",c:"#7a2410",sub:"SLAM DUNK CONTEST"},
  {t:"ROOKIE OF THE YEAR",n:"1999",c:"#14504a",sub:"NBA"},
  {t:"ALL-STAR",n:"8×",c:"#1f4f8f",sub:"SELECTIONS"},
 ];
@@ -418,7 +418,7 @@ const toWorld=(sx,sy)=>({x:(sx-W/2)/cam.s+cam.x,y:(sy-H/2)/cam.s+cam.y});
 const clampS=s=>Math.max(fitView().s*.6,Math.min(14,s));
 function matches(m){switch(filter){
  case"sale":return m.price>0&&(!nearSeat||Math.hypot(m.x-nearSeat.x,m.y-nearSeat.y)<NEAR);
- case"court":return SK[m.set].tier==="court";case"debut":return !!SK[m.set].debut;case"set":return m.set===setKey;case"gold":return m.gold&&!m.burned;case"notable":return !m.burned&&!!notableOf(m.owner);case"hodl":return !m.burned&&!m.pack&&m.yrs>=hodlMin;case"burn":return m.burned&&(!SIM||!burnYear||(m.burnedAt&&dateOf(m.burnedAt).getUTCFullYear()<=burnYear));case"lock":return m.locked&&!m.burned&&(!SIM||!lockAfter||(m.lockEnd&&m.lockEnd>=lockAfter));
+ case"court":return SK[m.set].tier==="court";case"debut":return !!SK[m.set].debut;case"set":return m.set===setKey;case"gold":return m.gold&&!m.burned;case"notable":return !m.burned&&!!notableOf(m.owner);case"hodl":return !m.burned&&!m.pack&&m.yrs>=hodlMin;case"burn":return m.burned&&(!SIM||!burnYear||(m.burnedAt&&dateOf(m.burnedAt).getUTCFullYear()<=burnYear));case"lock":return m.locked&&!m.burned&&(!SIM||!lockY||lockYear(m)<=lockY);
  case"joined":return !m.burned&&!m.pack&&m.owner.joined===joinYear;default:return true}}
 function seatColor(m){return m.burned?BURN:m.pack?PACK:(filter==="sale"||nearSeat)&&m.price?SALE:filter==="hodl"&&m.yrs>=5?"#9fe3ff":m.gold?GOLD:SK[m.set].color}
 
@@ -663,15 +663,15 @@ const heldSeats=()=>seats.filter(m=>!m.burned&&!m.pack);
 function hodlSteps(){const n=y=>heldSeats().filter(m=>m.yrs>=y).length,pct=y=>Math.round(n(y)/heldSeats().length*100);
   return[{y:0,t:"🤝 Every VC moment held today"},{y:1,t:"Still holding after 1+ year"},{y:2,t:"Still holding after 2+ years"},{y:3,t:"Still holding after 3+ years"},{y:4,t:"Still holding after 4+ years"},{y:5,t:"💎 Still holding after 5+ years"},{y:6,t:"🏆 Still holding after 6+ years"}]
    .map(s=>({t:s.t,go:()=>{hodlMin=s.y},sub:()=>`${n(s.y).toLocaleString()} moments${s.y?` · ${pct(s.y)}% of all held`:""}`}))}
-function joinSteps(){return[2020,2021,2022,2023,2024,2025,2026].map(y=>({t:`📅 Collectors who joined Top Shot in ${y}`,go:()=>{joinYear=y},
+function joinSteps(){return[2020,2021,2022,2023,2024,2025,2026].map(y=>({t:`📅 Joined Top Shot in ${y} and own a VC moment`,go:()=>{joinYear=y},
   sub:()=>{const l=holders.filter(o=>o.joined===y);return `${l.length.toLocaleString()} collector${l.length===1?"":"s"} · ${l.reduce((a,o)=>a+nHeld(o),0).toLocaleString()} VC moments held`}}))}
 let burnYear=0,lockAfter=0;
 function burnSteps(){return[2021,2022,2023,2024,2025,2026].map(y=>({t:`🪑 Retired (burned) by the end of ${y}`,go:()=>{burnYear=y},
   sub:()=>{const n=seats.filter(m=>m.burned&&m.burnedAt&&dateOf(m.burnedAt).getUTCFullYear()<=y).length,k=seats.filter(m=>m.burned&&m.burnedAt&&dateOf(m.burnedAt).getUTCFullYear()===y).length;return `${n.toLocaleString()} moments retired in total · ${k.toLocaleString()} in ${y}`}}))}
-function lockSteps(){const L=()=>seats.filter(m=>m.locked&&!m.burned),T=TL_END;
-  const st=[{a:0,t:"🔒 Every locked VC moment today"}];
-  for(const [y,mo] of [[2027,1],[2027,4],[2027,7],[2027,10],[2028,1]])st.push({a:dayOfYM(y,mo),t:`Still locked on ${MON[mo-1]} 1, ${y}`});
-  return st.map(s=>({t:s.t,go:()=>{lockAfter=s.a},sub:()=>{const n=L().filter(m=>!s.a||(m.lockEnd&&m.lockEnd>=s.a)).length;return `${n.toLocaleString()} moments locked`}}))}
+const lockYear=m=>m.lockEnd?dateOf(m.lockEnd-365).getUTCFullYear():2022;   // Top Shot locks run a year, so start ≈ end − 1 yr
+let lockY=0;
+function lockSteps(){return[2022,2023,2024,2025,2026].map(y=>({t:`🔒 Locked by the end of ${y}`,go:()=>{lockY=y},
+  sub:()=>{const L=seats.filter(m=>m.locked&&!m.burned),n=L.filter(m=>lockYear(m)<=y).length,k=L.filter(m=>lockYear(m)===y).length;return `${n.toLocaleString()} moments locked · ${k.toLocaleString()} new in ${y}`}}))}
 function loop(t){
   tlTick(t);simTick(t);
   if(anim){const k=Math.min(1,(t-anim.t0)/anim.d),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
@@ -895,10 +895,10 @@ function renderSale(){
   if(filter==="joined"){
     const yrsList=[2020,2021,2022,2023,2024,2025,2026],by={};for(const y of yrsList)by[y]=holders.filter(o=>o.joined===y);
     const list=by[joinYear].slice().sort((a,b)=>nHeld(b)-nHeld(a)),seatsN=list.reduce((a,o)=>a+nHeld(o),0);
-    salePanel.innerHTML=`<header><b>📅 Joined Top Shot in…</b><small>Lights up VC moments held by collectors who joined Top Shot that year.</small>
+    salePanel.innerHTML=`<header><b>📅 Joined Top Shot in…</b><small>Lights up VC moments held by collectors who joined Top Shot that year and own a VC moment today. Many more joined Top Shot; this only counts VC collectors.</small>
       <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play 2020 → 2026"}</button>
       <div class="tabs">${yrsList.map(y=>`<button data-j="${y}" class="${joinYear===y?"on":""}">${String(y).slice(2)}</button>`).join("")}</div>
-      <span class="stand">${list.length.toLocaleString()} collector${list.length===1?"":"s"} joined in ${joinYear} · ${seatsN.toLocaleString()} VC moment${seatsN===1?"":"s"}</span></header><ul></ul>
+      <span class="stand">${list.length.toLocaleString()} VC collector${list.length===1?"":"s"} joined in ${joinYear} · ${seatsN.toLocaleString()} VC moment${seatsN===1?"":"s"}</span></header><ul></ul>
       <div class="note">Joined = the date the Top Shot account was created (from each profile), not when they bought a VC moment.${joinYear===2026?` Another ${holders.filter(o=>o.firstVc===2026&&o.joined&&o.joined<2026).length} longer-time collectors bought their first VC moment in 2026.`:""} Wallets with no username aren't counted.</div>`;
     panelList(list.slice(0,80).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:nHeld(o).toLocaleString(),c:nHeld(o)>1?"VC moments":"VC moment",go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>SETS.indexOf(SK[a.set])-SETS.indexOf(SK[b.set]))[0];showSeat(best,true,true)}})));
     salePanel.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{SIM=null;joinYear=+b.dataset.j;dirty=true;renderSale()});
@@ -915,9 +915,9 @@ function renderSale(){
   }
   if(filter==="lock"){
     const lk=seats.filter(m=>m.locked&&!m.burned),heldN=seats.filter(m=>!m.burned&&!m.pack).length,by=new Map();for(const m of lk)by.set(m.owner,(by.get(m.owner)||0)+1);
-    salePanel.innerHTML=`<header><b>🔒 Locked seats</b><small>${lk.length.toLocaleString()} of ${heldN.toLocaleString()} held VC moments are locked (${Math.round(lk.length/heldN*100)}%). Locked moments can't be sold until the lock ends.</small>
-      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: still locked over the next year"}</button></header><ul></ul>
-      <div class="note">Lock one VC moment to earn the 🔒 Locker badge.</div>`;
+    salePanel.innerHTML=`<header><b>🔒 Locked moments</b><small>${lk.length.toLocaleString()} of ${heldN.toLocaleString()} held VC moments are locked (${Math.round(lk.length/heldN*100)}%). Locked moments can't be sold or traded.</small>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: moments getting locked, year by year"}</button></header><ul></ul>
+      <div class="note">A Top Shot lock lasts a year, then stays locked until the owner unlocks it. Lock dates are estimated from each lock's end date. Lock one VC moment to earn the 🔒 Locker badge.</div>`;
     panelList([...by.entries()].sort((a,b)=>b[1]-a[1]).slice(0,60).map(([o,n],i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:n.toLocaleString(),c:n>1?"locked moments":"locked moment",go:()=>{const s=o.seats.find(x=>x.locked&&!x.burned);if(s)showSeat(s,true,true)}})));
     salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(lockSteps()));
     return;
