@@ -74,12 +74,13 @@ tr.future td{color:var(--gold)}
 .nck{display:inline-flex;gap:3px}.nck img{width:26px;height:26px;border-radius:4px;opacity:.15;filter:grayscale(1)}.nck img.on{opacity:1;filter:none;box-shadow:0 0 0 1px #2fbf71}
 .foot{color:var(--muted);font-size:12px;margin-top:30px}
 @media (max-width:520px){.tile b{font-size:26px}}
+.explain.about ul{margin:6px 0 8px;padding-left:18px}.explain.about li{margin:4px 0}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <div><h1>The <span>VC</span> Arena · Stats</h1><div class="sub" id="asof">Loading…</div></div>
+    <div><h1>The <span>VC</span> Arena · Stats</h1><div class="sub" id="asof">Loading…</div><div class="sub"><a href="#about">ⓘ How fresh is this data?</a></div></div>
     <nav class="nav"><a href="./">← Back to the Arena</a></nav>
   </header>
 
@@ -156,10 +157,21 @@ tr.future td{color:var(--gold)}
   <div class="tableWrap"><table id="gold"></table></div>
 
   <h2>Top 10 holders</h2>
-  <p class="note">"Collecting VC since" = the oldest VC moment they still hold. A "never sold" stat is coming once we add sales history.</p>
+  <p class="note">"Collecting VC since" = the oldest VC moment they still hold.</p>
   <div class="tableWrap"><table id="top"></table></div>
 
-  <p class="foot">Data: Top Shot (Atlas API) via the VC15Tracker collector and sales bot. Owners and listings refresh automatically. Built for the VC community by @VC15Tracker.</p>
+  <h2 id="about">About the data</h2>
+  <div class="explain about"><b>How fresh is this data?</b>
+<ul>
+<li>🏷️ <b>Listings (for sale):</b> live. Our bot watches the blockchain and updates within minutes.</li>
+<li>👤 <b>Owners, locks, retired seats, packs:</b> fully refreshed about once a week. A moment sold or gifted since the last refresh may still show its previous owner for a few days.</li>
+<li>💵 <b>Sales history and true value:</b> refreshed about once a week from completed Top Shot marketplace sales.</li>
+<li>💝 <b>Gifts:</b> any VC moment that moved between two collectors without a Top Shot sale. This can include Flowty or private deals and moves between someone's own accounts.</li>
+<li>📅 <b>Joined Top Shot:</b> from each collector's public profile, as of the last refresh.</li>
+</ul>
+<p>Each page shows when owners and listings were last updated. This is an unofficial fan site, not affiliated with NBA Top Shot, Dapper Labs or the NBA. Spot something wrong? <a href="https://x.com/VC15Tracker" target="_blank" rel="noopener">DM @VC15Tracker on X</a>.</p>
+</div>
+  <p class="foot">Built for the VC community by @VC15Tracker.</p>
 </div>
 <div class="tip" id="tip" hidden></div>
 

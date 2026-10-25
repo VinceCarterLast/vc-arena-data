@@ -34,6 +34,10 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .right{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;width:min(560px,100%)}.right .search{flex:0 1 300px;min-width:200px}
 .statsBtn i{font-style:normal;font:800 9px var(--body);letter-spacing:.08em;background:#ce1141;color:#fff;border-radius:3px;padding:2px 4px;margin-left:4px;vertical-align:1px}
 .tlBtn{white-space:nowrap;font:700 13px var(--body);color:#fff;background:#ce1141;border:0;border-radius:8px;padding:10px 14px;cursor:pointer}
+.infoBtn{white-space:nowrap;font:700 13px var(--body);color:var(--fg);background:var(--panel);border:1.5px solid rgba(255,255,255,.6);border-radius:8px;padding:9px 12px;cursor:pointer}
+.infoBox{position:relative;max-width:560px;background:#141826;border:1px solid var(--line);border-radius:12px;padding:18px 20px;font-size:14px;line-height:1.5;color:#e6e2ee}
+.infoBox ul{padding-left:18px;margin:8px 0}.infoBox li{margin:6px 0}.infoBox a{color:var(--gold)}.infoBox p{color:var(--muted);font-size:13px;margin:8px 0 0}
+.infoBox .x{position:absolute;right:10px;top:6px;background:none;border:0;color:var(--muted);font-size:22px;cursor:pointer}
 .soonBtn{white-space:nowrap;font:600 12px var(--body);color:var(--muted);border:1px dashed rgba(255,255,255,.25);border-radius:8px;padding:10px 12px;cursor:default}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(242,201,76,.6)}50%{box-shadow:0 0 0 8px rgba(242,201,76,0)}}
 .statsBtn{animation:pulse 2.2s ease-in-out 6;font:700 13px var(--body);text-decoration:none;color:#1b1608;background:var(--gold);border-radius:8px;padding:10px 14px}
@@ -204,7 +208,7 @@ body.rec #arena{width:min(1280px,calc(100vw - 40px),calc((100vh - 150px) * 1.777
     <h1>The <span>VC</span> Arena</h1>
     <p>15,695 seats, one for every VC moment ever minted.<span class="sample live on" id="asof">Real owners</span><span class="sample live" id="live">Sample listings</span></p>
   </div>
-  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><button class="tlBtn" id="tlOpen">▶ Timelapse</button><span class="soonBtn" title="Coming soon">🔮 Supply simulator · soon</span>
+  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><button class="tlBtn" id="tlOpen">▶ Timelapse</button><button class="infoBtn" id="infoOpen" aria-label="About the data">ⓘ Data</button><span class="soonBtn" title="Coming soon">🔮 Supply simulator · soon</span>
   <div class="search">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
     <input id="q" type="search" placeholder="Find your seats… try “VinceCarterLast”" autocomplete="off">
@@ -230,6 +234,16 @@ body.rec #arena{width:min(1280px,calc(100vw - 40px),calc((100vh - 150px) * 1.777
   <button id="tlExit">✕ Exit</button>
   <span id="tlMsg"></span>
 </div>
+<div class="cert" id="info" hidden><div class="infoBox"><button class="x" id="infoX" aria-label="Close">×</button><b>How fresh is this data?</b>
+<ul>
+<li>🏷️ <b>Listings (for sale):</b> live. Our bot watches the blockchain and updates within minutes.</li>
+<li>👤 <b>Owners, locks, retired seats, packs:</b> fully refreshed about once a week. A moment sold or gifted since the last refresh may still show its previous owner for a few days.</li>
+<li>💵 <b>Sales history and true value:</b> refreshed about once a week from completed Top Shot marketplace sales.</li>
+<li>💝 <b>Gifts:</b> any VC moment that moved between two collectors without a Top Shot sale. This can include Flowty or private deals and moves between someone's own accounts.</li>
+<li>📅 <b>Joined Top Shot:</b> from each collector's public profile, as of the last refresh.</li>
+</ul>
+<p>Each page shows when owners and listings were last updated. This is an unofficial fan site, not affiliated with NBA Top Shot, Dapper Labs or the NBA. Spot something wrong? <a href="https://x.com/VC15Tracker" target="_blank" rel="noopener">DM @VC15Tracker on X</a>.</p>
+</div></div>
 <div class="cert" id="cert" hidden><div class="cert-in"><img id="certimg" alt="Certificate of Retirement"><div class="cert-btns"><a id="certdl" download="vc-arena-certificate.png">Download</a><a id="certx2" target="_blank" rel="noopener" class="xbtn">Share on X</a><button id="certx">Close</button></div></div></div>
 
 <nav class="chips" id="chips">
@@ -841,6 +855,9 @@ function showCert(m){const pi=PIMG[m.set];if(!(pi.complete&&pi.naturalWidth)){pi
 let DLNS=null,certCanvas=null;try{if(window.claude&&window.claude.use)window.claude.use("downloads").then(d=>DLNS=d).catch(()=>{})}catch(e){}
 document.getElementById("certdl").addEventListener("click",e=>{if(!DLNS||!certCanvas)return;e.preventDefault();const fn=document.getElementById("certdl").download;
   certCanvas.toBlob(b=>{DLNS.save({filename:fn,data:b}).catch(()=>{})},"image/png")});
+document.getElementById("infoOpen").onclick=()=>document.getElementById("info").hidden=false;
+document.getElementById("infoX").onclick=()=>document.getElementById("info").hidden=true;
+document.getElementById("info").onclick=e=>{if(e.target.id==="info")e.currentTarget.hidden=true};
 document.getElementById("certx").onclick=()=>document.getElementById("cert").hidden=true;
 document.getElementById("cert").onclick=e=>{if(e.target.id==="cert")e.currentTarget.hidden=true};
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
