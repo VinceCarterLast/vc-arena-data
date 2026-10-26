@@ -128,6 +128,7 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .simp .mine input:focus{outline:none;border-color:#ff4d6d;box-shadow:0 0 0 3px rgba(206,17,65,.25)}
 .simp .mine .at{display:flex;align-items:center;background:#0f1220;border:2px solid #ce1141;border-radius:7px}.simp .mine .at:focus-within{border-color:#ff4d6d;box-shadow:0 0 0 3px rgba(206,17,65,.25)}
 .simp .mine .at b{padding:0 2px 0 10px;color:#ff8aa0;font-size:15px}.simp .mine .at input{border:0;box-shadow:none;padding-left:2px}
+.recRow{display:flex;gap:6px}.recRow .simBtn{flex:1;font-size:12px!important}
 .simp .shareRow{display:flex;gap:6px}.simp .shareRow .simBtn{flex:1}
 .simp .report{margin-top:10px;padding:10px;border-radius:8px;background:#141826;border:1px solid var(--line)}
 .simp .report ul{list-style:none;margin:8px 0 0;padding:0}.simp .report li{position:relative;display:grid;grid-template-columns:10px minmax(0,1fr) auto 36px;gap:5px;align-items:center;padding:5px 0 7px;font-size:12px}
@@ -724,7 +725,7 @@ document.getElementById("tlRec").onclick=()=>{
 // ---------- arena games: "stand up if…" played out step by step ----------
 let SIM=null;
 let SNAP=false;
-function simCam(){const side=SNAP||W<700?0:320,avail=W-side,top=(SNAP?0:W<700?232:178)+Math.max(20,Math.min(32,avail/32))*2.1+14,bot=SNAP?(REC?36:120):70,ex=SIMU.play?(SIMU.planRows||0)*ROWP+(SIMU.planRows?40:0):0,hw=CW+RING_OUT+10+ex,hh=CH+RING_OUT+10+ex;
+function simCam(){const side=SNAP||W<700?0:320,avail=W-side,top=(SNAP?0:W<700?232:178)+Math.max(20,Math.min(32,avail/32))*2.1+14,bot=SNAP?(REC?36:120):70,ex=SIMU.play?(SIMU.planRows||0)*ROWP+(SIMU.planRows?40:0):0,hw0=CW+RING_OUT+10+ex,hh0=CH+RING_OUT+10+ex,[hw,hh]=ROT?[hh0,hw0]:[hw0,hh0];
   const s=Math.min((avail-24)/(2*hw),(H-top-bot)/(2*hh));return{x:(W/2-avail/2)/s,y:(H/2-(top+H-bot)/2)/s,s}}
 function simStart(steps){SIM={steps,i:0,t0:performance.now()};steps[0].go();dirty=true;renderSale()}
 function simStop(){SIM=null;dirty=true;renderSale();fly(fitView(),600)}
@@ -752,14 +753,15 @@ function lockSteps(){return[2022,2023,2024,2025,2026].map(y=>({t:`🔒 Locked by
   sub:()=>{const L=seats.filter(m=>m.locked&&!m.burned),n=L.filter(m=>lockYear(m)<=y).length,k=L.filter(m=>lockYear(m)===y).length;return `${n.toLocaleString()} moments locked · ${k.toLocaleString()} new in ${y}`}}))}
 // record a game or the simulator as a 1280×720 video for X; stops by itself at the end
 let REC=null;
-function recStart(name,start,done,hold,after){
+function recStart(name,start,done,hold,after,vert){
   const types=["video/mp4;codecs=avc1.42E01E","video/mp4","video/webm;codecs=vp9","video/webm"],type=window.MediaRecorder&&types.find(t=>MediaRecorder.isTypeSupported(t));
   if(!cv.captureStream||!type){recBar.hidden=false;recMsg.textContent="Recording isn't supported in this browser. Try Chrome on a computer, or use your phone's screen recorder.";recStop.textContent="OK";recStop.onclick=()=>recBar.hidden=true;return}
-  document.body.classList.add("rec");SNAP=true;resize();DPR=1.5;cv.width=1920;cv.height=1080;W=1280;H=720;start();anim=null;cam=simCam();dirty=true;
+  document.body.classList.add("rec");document.body.classList.toggle("v",!!vert);SNAP=true;resize();
+  if(vert){DPR=2;cv.width=1080;cv.height=1920;W=540;H=960;ROT=Math.PI/2}else{DPR=1.5;cv.width=1920;cv.height=1080;W=1280;H=720}start();anim=null;cam=simCam();dirty=true;
   const chunks=[],rec=new MediaRecorder(cv.captureStream(30),{mimeType:type,videoBitsPerSecond:8e6});REC={rec,done,hold,t:0};
   rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
   rec.onstop=()=>{const ext=type.includes("mp4")?"mp4":"webm",blob=new Blob(chunks,{type:type.split(";")[0]}),fn=`${name}.${ext}`;
-    REC=null;SNAP=false;document.body.classList.remove("rec");resize();after();dirty=true;
+    REC=null;SNAP=false;ROT=0;document.body.classList.remove("rec","v");resize();after();dirty=true;
     if(DLNS){DLNS.save({filename:fn,data:blob}).catch(()=>{})}else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove()}
     recMsg.textContent=ext==="mp4"?"✅ Saved! Your video is ready to post on X.":"✅ Saved as .webm. X needs .mp4, so convert it first (Chrome saves .mp4).";recStop.textContent="OK";recStop.onclick=()=>recBar.hidden=true};
   rec.start();recBar.hidden=false;recMsg.textContent="🔴 Recording… it stops by itself at the end.";recStop.textContent="⏹ Stop recording";recStop.onclick=()=>{if(REC&&!REC.stopping){REC.stopping=true;REC.rec.stop()}}}
@@ -962,7 +964,7 @@ function renderSale(){
   if(filter==="hodl"){
     const held=seats.filter(m=>!m.burned&&!m.pack),stand=held.filter(m=>m.yrs>=hodlMin).length;
     salePanel.innerHTML=`<header><b>🤝 HODL: held at least…</b><small>Lights up VC moments held by the same collector for at least this long.</small>
-      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: holding after 1, 2, 3+ years"}</button><button class="simBtn alt" data-rec>🎬 Record video for X</button>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: holding after 1, 2, 3+ years"}</button><div class="recRow"><button class="simBtn alt" data-rec>🎬 Video 16:9 · X / YouTube</button><button class="simBtn alt" data-recv>📱 Video 9:16 · Reels / Shorts</button></div>
       <div class="tabs">${[1,2,3,4,5,6].map(y=>`<button data-y="${y}" class="${hodlMin===y?"on":""}">${y}+ yr</button>`).join("")}</div>
       <span class="stand">${stand.toLocaleString()} of ${held.length.toLocaleString()} ${hodlMin?`moments held ${hodlMin}+ yr${hodlMin===1?"":"s"}`:"moments held today"} (${Math.round(stand/held.length*100)}%)</span>
       <div class="tabs sub"><button data-v="long" class="${hodlView==="long"?"on":""}">Longest holds</button><button data-v="lead" class="${hodlView==="lead"?"on":""}">HODL leaders</button></div>
@@ -971,7 +973,7 @@ function renderSale(){
     if(hodlView==="long")panelList(held.filter(m=>m.yrs>=hodlMin).sort((a,b)=>(b===longest)-(a===longest)||b.yrs-a.yrs).slice(0,60).map(m=>({a:`${esc(SK[m.set].name.replace(" · Debut Club",""))} <b>#${m.serial}</b>`,b:m.yrs.toFixed(1)+" yrs",c:`${disp(m.owner.name)} · since ${fmtMonth(m.held)}`,go:()=>showSeat(m)})));
     else panelList(holders.slice().sort((a,b)=>b.my-a.my).slice(0,60).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:Math.round(o.my).toLocaleString(),c:`HODL score · ${nHeld(o).toLocaleString()} moment${nHeld(o)===1?"":"s"} · avg ${(o.my/Math.max(1,nHeld(o))).toFixed(1)} yrs held`,go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>b.yrs-a.yrs)[0];showSeat(best,true,true)}})));
     salePanel.querySelectorAll("[data-y]").forEach(b=>b.onclick=()=>{SIM=null;hodlMin=+b.dataset.y;dirty=true;renderSale()});
-    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(hodlSteps()));salePanel.querySelector("[data-rec]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-hodl",()=>simStart(hodlSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()})};
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(hodlSteps()));salePanel.querySelector("[data-rec]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-hodl",()=>simStart(hodlSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()})};salePanel.querySelector("[data-recv]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-hodl-vertical",()=>simStart(hodlSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()},true)};
     salePanel.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{hodlView=b.dataset.v;renderSale()});
     return;
   }
@@ -992,30 +994,30 @@ function renderSale(){
     const yrsList=[2020,2021,2022,2023,2024,2025,2026],by={};for(const y of yrsList)by[y]=holders.filter(o=>o.joined===y);
     const list=by[joinYear].slice().sort((a,b)=>nHeld(b)-nHeld(a)),seatsN=list.reduce((a,o)=>a+nHeld(o),0);
     salePanel.innerHTML=`<header><b>📅 Joined Top Shot in…</b><small>Collectors who joined Top Shot that year and bought a VC moment. Many more people joined Top Shot; this only counts VC collectors.</small>
-      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play 2020 → 2026"}</button><button class="simBtn alt" data-rec>🎬 Record video for X</button>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play 2020 → 2026"}</button><div class="recRow"><button class="simBtn alt" data-rec>🎬 Video 16:9 · X / YouTube</button><button class="simBtn alt" data-recv>📱 Video 9:16 · Reels / Shorts</button></div>
       <div class="tabs">${yrsList.map(y=>`<button data-j="${y}" class="${joinYear===y?"on":""}">${String(y).slice(2)}</button>`).join("")}</div>
       <span class="stand">${list.length.toLocaleString()} collector${list.length===1?"":"s"} joined in ${joinYear} and bought a VC moment · ${seatsN.toLocaleString()} VC moment${seatsN===1?"":"s"}</span></header><ul></ul>
       <div class="note">Joined = the date the Top Shot account was created (from each profile), not when they bought a VC moment.${joinYear===2026?` Another ${holders.filter(o=>o.firstVc===2026&&o.joined&&o.joined<2026).length} longer-time collectors bought their first VC moment in 2026.`:""} Wallets with no username aren't counted.</div>`;
     panelList(list.slice(0,80).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:nHeld(o).toLocaleString(),c:nHeld(o)>1?"VC moments":"VC moment",go:()=>{const best=o.seats.filter(s=>!s.burned).sort((a,b)=>SETS.indexOf(SK[a.set])-SETS.indexOf(SK[b.set]))[0];showSeat(best,true,true)}})));
     salePanel.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{SIM=null;joinYear=+b.dataset.j;dirty=true;renderSale()});
-    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(joinSteps()));salePanel.querySelector("[data-rec]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-join",()=>simStart(joinSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()})};
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(joinSteps()));salePanel.querySelector("[data-rec]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-join",()=>simStart(joinSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()})};salePanel.querySelector("[data-recv]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-join-vertical",()=>simStart(joinSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()},true)};
     return;
   }
   if(filter==="burn"){
     salePanel.innerHTML=`<header><b>🟥 Retired (burned)</b><small>${nBurned} VC moments retired by ${retirers.length} collectors. Each one is gone for good.</small>
-      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: retired moments per year"}</button><button class="simBtn alt" data-rec>🎬 Record video for X</button></header><ul></ul>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: retired moments per year"}</button><div class="recRow"><button class="simBtn alt" data-rec>🎬 Video 16:9 · X / YouTube</button><button class="simBtn alt" data-recv>📱 Video 9:16 · Reels / Shorts</button></div></header><ul></ul>
       <div class="note">Retired = burned on Top Shot (permanently removed). Zoom into the outer edge to find the Ring of Retirees.</div>`;
     panelList(retirers.slice(0,100).map((o,i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:String(o.retired),c:o.retired>1?"moments retired":"moment retired",go:()=>{selOwner=o;dirty=true;const s=o.seats.find(x=>x.burned);if(s)showSeat(s,true,true)}})));
-    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(burnSteps()));salePanel.querySelector("[data-rec]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-burn",()=>simStart(burnSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()})};
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(burnSteps()));salePanel.querySelector("[data-rec]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-burn",()=>simStart(burnSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()})};salePanel.querySelector("[data-recv]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-burn-vertical",()=>simStart(burnSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()},true)};
     return;
   }
   if(filter==="lock"){
     const lk=seats.filter(m=>m.locked&&!m.burned),heldN=seats.filter(m=>!m.burned&&!m.pack).length,by=new Map();for(const m of lk)by.set(m.owner,(by.get(m.owner)||0)+1);
     salePanel.innerHTML=`<header><b>🔒 Locked moments</b><small>${lk.length.toLocaleString()} of ${heldN.toLocaleString()} held VC moments are locked (${Math.round(lk.length/heldN*100)}%). Locked moments can't be sold or traded.</small>
-      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: moments getting locked, year by year"}</button><button class="simBtn alt" data-rec>🎬 Record video for X</button></header><ul></ul>
+      <button class="simBtn" data-sim>${SIM?"⏹ Stop":"▶ Play: moments getting locked, year by year"}</button><div class="recRow"><button class="simBtn alt" data-rec>🎬 Video 16:9 · X / YouTube</button><button class="simBtn alt" data-recv>📱 Video 9:16 · Reels / Shorts</button></div></header><ul></ul>
       <div class="note">A Top Shot lock lasts a year, then stays locked until the owner unlocks it. Lock dates are estimated from each lock's end date. Lock one VC moment to earn the 🔒 Locker badge.</div>`;
     panelList([...by.entries()].sort((a,b)=>b[1]-a[1]).slice(0,60).map(([o,n],i)=>({a:`${i+1}. ${esc(disp(o.name))}`,b:n.toLocaleString(),c:n>1?"locked moments":"locked moment",go:()=>{const s=o.seats.find(x=>x.locked&&!x.burned);if(s)showSeat(s,true,true)}})));
-    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(lockSteps()));salePanel.querySelector("[data-rec]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-lock",()=>simStart(lockSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()})};
+    salePanel.querySelector("[data-sim]").onclick=()=>SIM?simStop():(clearSel(),fly(simCam(),600),simStart(lockSteps()));salePanel.querySelector("[data-rec]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-lock",()=>simStart(lockSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()})};salePanel.querySelector("[data-recv]").onclick=()=>{if(SIM)simStop();clearSel();recStart("vc-arena-lock-vertical",()=>simStart(lockSteps()),()=>!SIM,0,()=>{cam=fitView();renderSale()},true)};
     return;
   }
   const list=seats.filter(matches);
@@ -1066,7 +1068,7 @@ const simUsers=(o,y)=>y<=SIM_Y0?SIM_U0:Math.max(100,Math.round((SIM_U0+(o.nu||0)
 const dropAmt=(mode,y,once,each)=>mode===1?(y===2027?once:0):mode===2?((y-2027)%2===0?each:0):mode===3?each:0;
 const dropTxt=(mode,once,each)=>["none",`+${once.toLocaleString()} once (2027)`,`+${each} every 2 years`,`+${each} every year`][mode];
 function simOne(o,keep){
-  let sup=nMinted-nBurned;const out=[sup],ev=[];const minted={2025:0,2026:50};   // Dallas Legendary (50) this series
+  let sup=nMinted-nBurned,tsd=TSD0;const out=[sup],ev=[];const minted={2025:0,2026:50};   // Dallas Legendary (50) this series
   // the rest of 2026 (today → Dec 31) at the same pace, so year 1 really ends on Jan 1, 2028
   const rest=Math.max(0,(Date.UTC(SIM_Y0+1,0,1)-NOW)/(365.25*DAY)),pre=[];
   if(rest>0){const ne=o.ev*rest>=1?poisson(o.ev*rest):(Math.random()<o.ev*rest?1:0);for(let i=0;i<ne;i++){const n=rint(40,160);sup-=n;pre.push({k:"event",n})}
@@ -1076,7 +1078,7 @@ function simOne(o,keep){
     const A=simUsers(o,y)/SIM_U0;
     const nev=o.ev>=1?poisson(o.ev):(Math.random()<o.ev?1:0);
     let cap=Math.round(sup*.08);   // realism: at most ~8% of supply retired in a year (holders have to choose to trade in)
-    for(let i=0;i<nev&&cap>0;i++){const n=Math.min(cap,Math.max(1,Math.round(rint(40,160)*A)));cap-=n;sup-=n;e.push({k:"event",n})}
+    for(let i=0;i<nev&&cap>0;i++){let n=Math.min(cap,Math.max(1,Math.round(rint(40,160)*A)));if(o.tgt===2){n=Math.min(n,tsd);if(n<=0)break}if(o.tgt>=2)tsd=Math.max(0,tsd-n);cap-=n;sup-=n;e.push({k:"event",n})}
     const cr=dropAmt(o.craft,y,500,250);if(cr){sup-=cr;e.push({k:"craft",n:cr})}   // trade in 2, get 1: net −1 each
     const org=Math.max(0,Math.round(o.org*A*(0.5+Math.random())));if(org){sup-=org;e.push({k:"org",n:org})}
     if(o.rl&&Math.random()<.4){const room=998-minted[y]-(minted[y-1]||0),leg=Math.random()<.5;   // VC's past drops: Legendary 49–50, Rare 269–990
@@ -1084,6 +1086,8 @@ function simOne(o,keep){
     const cm=dropAmt(o.com,y,1000,500);if(cm){sup+=cm;e.push({k:"common",n:cm,f:Math.random()<.5})}   // f = Fandom tier
     out.push(Math.max(0,sup));if(keep)ev.push(e)}
   return keep?{sup:out,ev}:out}
+// Debut Club (TSD) moments today, and where "Debut Club first" stops
+const TSD0=SK.tsd.list.filter(m=>!m.burned&&!m.pack).length,TSD_FLOOR=1000;
 // runs the futures in chunks so even 1,000,000 doesn't freeze the page
 let SIM_JOB=0;
 function simRun(N){N=N||SIMU.n||SIM_N;const o={...SIMU.opt},Y=SIM_Y1-SIM_Y0+1,cols=[...Array(Y)].map(()=>new Int32Array(N)),job=++SIM_JOB;let i=0;const t0=performance.now();
@@ -1099,7 +1103,7 @@ function simRun(N){N=N||SIMU.n||SIM_N;const o={...SIMU.opt},Y=SIM_Y1-SIM_Y0+1,co
 // our best guess: the most realistic settings, from VC history and today's Top Shot
 const REALISTIC={ev:1,org:10,rl:1,com:0,comYear:2027,craft:0,nu:0,gr:-10,tgt:0};
 // the plan for Top Shot: enough trade-in events for both goals (under 14,000 by 2031, under 10,000 by 2041), no new Commons
-const PLAN=()=>({ev:Math.max(SIMU.need&&SIMU.need.g5||12,SIMU.need&&SIMU.need.g15||12),org:10,rl:0,com:0,comYear:2027,craft:0,nu:0,gr:0,tgt:0});
+const PLAN=()=>({ev:Math.max(SIMU.need&&SIMU.need.g5||12,SIMU.need&&SIMU.need.g15||12),org:10,rl:0,com:0,comYear:2027,craft:0,nu:0,gr:0,tgt:3});
 // what would it take? fewest Top Shot events a year that gives at least a 50% chance of each goal
 function simNeed(){const opts=[0.5,1,2,3,4,6,8,12],base={ev:1,org:10,rl:0,com:0,comYear:2027,craft:0,nu:0,gr:0,tgt:0},out={};
   for(const [key,g,yr] of [["g5",14000,2031],["g15",10000,2041]]){const j=yr-SIM_Y0;
@@ -1131,8 +1135,8 @@ function renderSimu(){if(typeof backSync==="function")backSync();document.getEle
    <small>Simulated futures for VC supply, ${SIM_Y0}–${SIM_Y1}. Today: ${(nMinted-nBurned).toLocaleString()} in circulation, including ${seats.filter(m=>m.pack&&!m.burned).length} still in unopened packs (opening a pack doesn't change supply).</small>
    <small class="lab">Top Shot trade-in events</small>${grp("ev",[[0,"None"],[0.5,"Every 2 yrs"],[1,"1 a year (now)"],[4,"Every 3 months"],[12,"Every month"]])}
    <small class="hint">Each event retires (permanently removes) 40–160 VC moments, like the real ones: ~135 in 2023, 153 in 2024, 41 in 2026.</small>
-   <small class="lab">Trade-in events target</small>${grp("tgt",[[0,"Like the past"],[1,"All sets"],[2,"Debut Club (TSD)"]])}
-   <small class="hint">Past events were almost all Archive (87%) and RIB (10%). Only 1 TSD Debut Club moment has ever been retired, in a community event, not by Top Shot. A TSD-only event needs Top Shot's help.</small>
+   <small class="lab">Trade-in events target</small>${grp("tgt",[[0,"Like the past"],[1,"All sets"],[3,"Debut Club first"],[2,"Debut Club only"]])}
+   <small class="hint">Past events were almost all Archive (87%) and RIB (10%). Only 1 TSD Debut Club moment has ever been retired, in a community event, not by Top Shot. A TSD-only event needs Top Shot's help.<br><b>Debut Club first:</b> events retire TSD Debut moments until about ${TSD_FLOOR.toLocaleString()} are left (from ${TSD0.toLocaleString()} today), then go back to the usual sets. Makes Debut moments scarce again.</small>
    <small class="lab">Collectors retiring VC moments on their own</small>${grp("org",[[10,"~10 a yr (now)"],[25,"25"],[50,"50"],[100,"100"]])}
    <small class="hint">Moments a collector permanently removes outside a Top Shot event, e.g. to make the rest rarer.</small>
    <small class="lab">New Rare / Legendary VC moments</small>${grp("rl",[[0,"None"],[1,"Possible"]])}
@@ -1149,7 +1153,7 @@ function renderSimu(){if(typeof backSync==="function")backSync();document.getEle
      ${r?`<p>${goalLine(r.c15,15000)}</p><p>${goalLine(r.c14,14000)}</p><p>${goalLine(r.c10,10000)}</p>
      <p class="oracle">🔮 ${fmtPick(pickMs())}: <b>${simOnDate(r.p50,pickMs()).toLocaleString()}</b> VC moments <small>(likely ${simOnDate(r.p10,pickMs()).toLocaleString()}–${simOnDate(r.p90,pickMs()).toLocaleString()})</small></p>
      <p class="sm">Middle outcome in ${SIM_Y1}: <b>${r.p50[r.p50.length-1].toLocaleString()}</b> (likely range ${r.p10[r.p10.length-1].toLocaleString()}–${r.p90[r.p90.length-1].toLocaleString()})</p>${simChart()}`:""}
-     <button class="simBtn alt" data-rec>🎬 Record video for X</button>
+     <div class="recRow"><button class="simBtn alt" data-rec>🎬 Video 16:9 · X / YouTube</button><button class="simBtn alt" data-recv>📱 Video 9:16 · Reels / Shorts</button></div>
      <button class="simBtn" data-play>${SIMU.done?"↺ Play it again":SIMU.play?"⏹ Stop":"▶ Play one future on the arena"}</button>
      ${SIMU.plan?`<div class="mine plan"><b>🎯 You're watching our plan for Top Shot</b><small class="hint">This isn't a giveaway entry: the image says "Our plan" and has no handle. To enter, set the dials your own way.</small><button class="simBtn alt" data-back>↩ Back to my settings</button></div>`:`<div class="mine"><small class="lab">Your entry (printed on your image)</small>
        <label class="fld"><span>Your X handle</span><div class="at"><b>@</b><input id="simHandle" placeholder="VC15Tracker" maxlength="16" autocomplete="off" value="${esc(SIMU.handle||"")}"></div></label>
@@ -1170,6 +1174,7 @@ function renderSimu(){if(typeof backSync==="function")backSync();document.getEle
   const pb=simp.querySelector("[data-plan]");if(pb)pb.onclick=()=>{if(SIMU.play)simuStop();if(!SIMU.plan)SIMU.saved={...o};SIMU.plan=true;Object.assign(o,PLAN());SIMU.run=null;simRun();simuPlay();simp.scrollTop=0};
   const bb=simp.querySelector("[data-back]");if(bb)bb.onclick=()=>{if(SIMU.play)simuStop();SIMU.plan=false;Object.assign(o,SIMU.saved||REALISTIC);simRun()};
   simp.querySelector("[data-rec]").onclick=()=>{if(SIMU.play)simuStop();recStart("vc-supply-simulation",()=>simuPlay(),()=>SIMU.done,3000,()=>{cam=simCam();renderSimu()})};
+  simp.querySelector("[data-recv]").onclick=()=>{if(SIMU.play)simuStop();recStart("vc-supply-simulation-vertical",()=>simuPlay(),()=>SIMU.done,3000,()=>{cam=simCam();renderSimu()},true)};
   simp.querySelector("[data-play]").onclick=()=>SIMU.done?simuPlay():SIMU.play?simuStop():simuPlay();
   const hI=simp.querySelector("#simHandle"),dI=simp.querySelector("#simDate");
   if(hI)hI.oninput=()=>{const bx=simp.querySelector(".mine.need");if(bx){bx.classList.remove("need");bx.querySelector(".msg").textContent=""};SIMU.handle=hI.value.replace(/[^A-Za-z0-9_]/g,"").slice(0,15);if(hI.value!==SIMU.handle)hI.value=SIMU.handle};
@@ -1205,7 +1210,7 @@ function simReport(){const run=SIMU.run;if(!run)return "";const o=SIMU.opt;
     <li class="tot"><b>All VC moments</b><small>${totNow.toLocaleString()} → ${totEnd.toLocaleString()}</small><em class="${totEnd<totNow?"dn":"up"}">${(totEnd>=totNow?"+":"")+Math.round((totEnd-totNow)/totNow*100)}%</em></li></ul>
     <small class="hint">Same future that ▶ Play shows. Which sets lose moments follows the "Trade-in events target" dial.</small></div>`}
 function simShareX(){const r=SIMU.res;if(!r||!entryOk())return;const f=(cc,g)=>{const i=cc.findIndex(v=>v>=.5);return i<0?`unlikely by ${SIM_Y1}`:`likely by ${SIM_Y0+i}`};
-  const t=SIMU.plan?`🎯 Our plan for Top Shot to shrink Vince Carter supply: ${needTxt(SIMU.opt.ev)}, no new Commons.\n\nUnder 14,000 VC moments: ${f(r.c14,14000)}\nUnder 10,000: ${f(r.c10,10000)}\n\nWatch it play: vc15tracker.com @VC15Tracker @nbatopshot #NBATopShot`:`🔮 I ran the VC supply simulator for Vince Carter on NBA Top Shot.\n\nMy prediction for ${fmtPick(pickMs())}: ${simOnDate(r.p50,pickMs()).toLocaleString()} VC moments\n${srcTxt()}\nUnder 15,000 VC moments: ${f(r.c15,15000)}\nUnder 14,000: ${f(r.c14,14000)}\nMiddle outcome in ${SIM_Y1}: ${r.p50[r.p50.length-1].toLocaleString()}\n\nTry the simulator: vc15tracker.com @VC15Tracker #NBATopShot`;
+  const t=SIMU.plan?`🎯 Our plan for Top Shot to shrink Vince Carter supply: ${needTxt(SIMU.opt.ev)}, starting with the Debut Club (TSD) moments, no new Commons.\n\nUnder 14,000 VC moments: ${f(r.c14,14000)}\nUnder 10,000: ${f(r.c10,10000)}\n\nWatch it play: vc15tracker.com @VC15Tracker @nbatopshot #NBATopShot`:`🔮 I ran the VC supply simulator for Vince Carter on NBA Top Shot.\n\nMy prediction for ${fmtPick(pickMs())}: ${simOnDate(r.p50,pickMs()).toLocaleString()} VC moments\n${srcTxt()}\nUnder 15,000 VC moments: ${f(r.c15,15000)}\nUnder 14,000: ${f(r.c14,14000)}\nMiddle outcome in ${SIM_Y1}: ${r.p50[r.p50.length-1].toLocaleString()}\n\nTry the simulator: vc15tracker.com @VC15Tracker #NBATopShot`;
   window.open("https://x.com/intent/post?text="+encodeURIComponent(t),"_blank","noopener")}
 const srcTxt=()=>({rnd:"🎲 Settings picked by the Random button",real:"🎯 Settings: the Most realistic button","rnd+hand":"🎲 Started from Random, then changed by hand","real+hand":"🎯 Started from Most realistic, then changed by hand"}[SIMU.src]||"🎛️ Settings picked by hand");
 // no image or post until they add their X username and pick a date
@@ -1217,13 +1222,13 @@ function simShot(){if(!entryOk())return;const r=SIMU.res,o=SIMU.opt,c=document.c
   g.fillStyle="#0b0d14";g.fillRect(0,0,1200,675);g.strokeStyle="#5b3fb0";g.lineWidth=6;g.strokeRect(3,3,1194,669);
   g.fillStyle="#f2c94c";g.font="800 54px 'Barlow Condensed',sans-serif";g.fillText("🔮 VC SUPPLY · SIMULATION",48,86);
   g.fillStyle="#9a97a6";g.font="600 22px Barlow,sans-serif";g.fillText(`Based on 5,000 simulated futures · today ${(nMinted-nBurned).toLocaleString()} VC moments in circulation`,48,122);
-  const set=[`Top Shot trade-in events: ${o.ev===0?"none":evTxt(o.ev)}`,`Trade-in events target: ${["mostly Archive (like the past)","all VC sets","Debut Club (TSD)"][o.tgt]}`,`Collectors retiring VC moments on their own: ~${o.org} a year`,`New Rare/Legendary VC moments: ${o.rl?"possible (within the 998 rule)":"none"}`,`New Common/Fandom VC drops: ${dropTxt(o.com,1000,500)}`,`New VC moment by crafting only: ${o.craft?dropTxt(o.craft,500,250)+" (trade in 2, get 1)":"none"}`,`Top Shot active users: 2,300 today → ${simUsers(o,2027).toLocaleString()} in 2027 (+${(o.nu||0).toLocaleString()} new), then ${o.gr>0?"+":""}${o.gr}% a year`];
+  const set=[`Top Shot trade-in events: ${o.ev===0?"none":evTxt(o.ev)}`,`Trade-in events target: ${["mostly Archive (like the past)","all VC sets","Debut Club (TSD) only","Debut Club (TSD) first"][o.tgt]}`,`Collectors retiring VC moments on their own: ~${o.org} a year`,`New Rare/Legendary VC moments: ${o.rl?"possible (within the 998 rule)":"none"}`,`New Common/Fandom VC drops: ${dropTxt(o.com,1000,500)}`,`New VC moment by crafting only: ${o.craft?dropTxt(o.craft,500,250)+" (trade in 2, get 1)":"none"}`,`Top Shot active users: 2,300 today → ${simUsers(o,2027).toLocaleString()} in 2027 (+${(o.nu||0).toLocaleString()} new), then ${o.gr>0?"+":""}${o.gr}% a year`];
   g.fillStyle="#e6e2ee";g.font="600 18px Barlow,sans-serif";set.forEach((t,i)=>g.fillText("• "+t,48,168+i*27,600));
   const txt=(cc,goal)=>{const i50=cc.findIndex(v=>v>=.5);return i50<0?`Under ${goal.toLocaleString()}: unlikely by ${SIM_Y1}`:`Under ${goal.toLocaleString()}: likely by ${SIM_Y0+i50}`};
   g.font="800 34px 'Barlow Condensed',sans-serif";[[r.c15,15000],[r.c14,14000],[r.c10,10000]].forEach(([cc,go],i)=>{g.fillStyle=cc.findIndex(v=>v>=.5)<0?"#9a97a6":"#5fd38d";g.fillText(txt(cc,go),48,380+i*44)});
   if(!SIMU.plan){g.fillStyle=SIMU.src&&SIMU.src.startsWith("rnd")?"#7fd6ff":"#e6e2ee";g.font="700 20px Barlow,sans-serif";g.fillText(srcTxt(),48,516)}
   {const who=SIMU.handle?"@"+SIMU.handle:"My",guess=simOnDate(r.p50,pickMs());
-   const pt=SIMU.plan?`🎯 Our plan for Top Shot: ${needTxt(o.ev)}, no new Commons`:`🔮 ${who}${SIMU.handle?"'s":""} prediction for ${fmtPick(pickMs())}: ${guess.toLocaleString()} VC moments`;g.font="800 30px 'Barlow Condensed',sans-serif";const pw=g.measureText(pt).width+32;
+   const pt=SIMU.plan?`🎯 Our plan for Top Shot: ${needTxt(o.ev)}, Debut Club first, no new Commons`:`🔮 ${who}${SIMU.handle?"'s":""} prediction for ${fmtPick(pickMs())}: ${guess.toLocaleString()} VC moments`;g.font="800 30px 'Barlow Condensed',sans-serif";const pw=g.measureText(pt).width+32;
   g.fillStyle="#2a2410";g.strokeStyle="rgba(242,201,76,.7)";g.lineWidth=2;g.beginPath();g.roundRect?g.roundRect(44,532,pw,48,10):g.rect(44,532,pw,48);g.fill();g.stroke();
   g.fillStyle="#ffe9a8";g.fillText(pt,60,566)}
   // chart
@@ -1270,6 +1275,7 @@ function simuPlay(){SIMU.done=false;SIMU.used={};SIMU.commons=[];SIMU.newRows=0;
 function simuStop(){SIMU.done=false;SIMU.used={};SIMU.commons=[];SIMU.newRows=0;SIMU.play=false;SIMU.burnSet=new Set();SIMU.newSeats=[];SIMU.ann=[];document.body.classList.remove("simu");cam=fitView();dirty=true;renderSimu()}
 const SIM_PICK=["archive","archive","archive","archive","archive","archive","archive","archive","rib","origin"];   // past retirements: 87% Archive, 10% RIB
 const pickSet=()=>{const t=SIMU.opt.tgt;if(t===2)return "tsd";
+  if(t===3&&SK.tsd.list.filter(m=>!m.burned&&!m.pack&&!SIMU.burnSet.has(m)).length>TSD_FLOOR)return "tsd";
   if(t===1){let r=Math.random()*SIM_SPREAD.tot;for(const[k,n]of SIM_SPREAD.w){if((r-=n)<0)return k}return "archive"}
   return SIM_PICK[rint(0,SIM_PICK.length-1)]};
 const SIM_SPREAD=(()=>{const w=SETS.filter(S=>S.tier!=="court").map(S=>[S.key,S.list.filter(m=>!m.burned&&!m.pack).length]);return{w,tot:w.reduce((a,x)=>a+x[1],0)}})();
@@ -1277,7 +1283,7 @@ function simuYear(){const y=SIM_Y0+SIMU.yi,ev=SIMU.run.ev[SIMU.yi-1]||[],ann=[];
   const live=k=>SK[k].list.filter(m=>!m.burned&&!m.pack&&!SIMU.burnSet.has(m));
   for(const e of ev){
     if(e.k==="event"||e.k==="org"){for(let i=0;i<e.n;i++){const pool=live(e.k==="event"?pickSet():SIM_PICK[rint(0,SIM_PICK.length-1)]);if(pool.length)SIMU.burnSet.add(pool[rint(0,pool.length-1)])}
-      ann.push(e.k==="event"?`🟥 Top Shot ${SIMU.opt.tgt===2?"Debut Club (TSD) ":""}crafting event · ${e.n} VC moments retired`:`🟥 Collectors retired ${e.n} on their own`)}
+      ann.push(e.k==="event"?`🟥 Top Shot ${SIMU.opt.tgt===2?"Debut Club (TSD) ":SIMU.opt.tgt===3&&SK.tsd.list.filter(m=>!m.burned&&!m.pack&&!SIMU.burnSet.has(m)).length>TSD_FLOOR?"Debut Club (TSD) ":""}crafting event · ${e.n} VC moments retired`:`🟥 Collectors retired ${e.n} on their own`)}
     else if(e.k==="craft"){for(let i=0;i<2*e.n;i++){const pool=live(pickSet());if(pool.length)SIMU.burnSet.add(pool[rint(0,pool.length-1)])}
       placeNew("common",e.n,"#f2c94c");
       ann.push(`🟨 New VC moment, crafted · +${e.n.toLocaleString()} minted`,`🟥 ${(2*e.n).toLocaleString()} VC moments retired to craft it`)}
@@ -1285,7 +1291,7 @@ function simuYear(){const y=SIM_Y0+SIMU.yi,ev=SIMU.run.ev[SIMU.yi-1]||[],ann=[];
       placeNew(kind,e.n,col);
       ann.push(e.k==="common"?`${em} New VC ${e.f?"Fandom":"Common"} drop · +${e.n.toLocaleString()} minted`:`${em} New VC ${e.k==="leg"?"Legendary":"Rare"} · +${e.n} minted`)}}
   if(!ann.length)ann.push("A quiet year: nothing retired or minted");
-  const evs=ev.filter(e=>e.k==="event");if(evs.length>2){const tot=evs.reduce((a,e)=>a+e.n,0),lab=`${SIMU.opt.tgt===2?"Debut Club (TSD) ":""}crafting events`;
+  const evs=ev.filter(e=>e.k==="event");if(evs.length>2){const tot=evs.reduce((a,e)=>a+e.n,0),lab=`${SIMU.opt.tgt===2?"Debut Club (TSD) ":SIMU.opt.tgt===3&&SK.tsd.list.filter(m=>!m.burned&&!m.pack&&!SIMU.burnSet.has(m)).length>TSD_FLOOR?"Debut Club (TSD) ":""}crafting events`;
     for(let i=ann.length-1;i>=0;i--)if(ann[i].includes("crafting event ·"))ann.splice(i,1);ann.unshift(`🟥 ${evs.length} Top Shot ${lab} · ${tot.toLocaleString()} VC moments retired`)}
   SIMU.ann=ann}
 function simuTick(t){if(!SIMU.play||SIMU.done)return;const k=Math.floor((t-SIMU.t0)/2600)+1;
