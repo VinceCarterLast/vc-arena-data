@@ -144,6 +144,10 @@ body:not(.studio) .recRow,body:not(.studio) #tlRec,body:not(.studio) #tlFmt{disp
 .simp .hint{display:block;margin:4px 0 0;font-size:12.5px;color:var(--muted);line-height:1.35}
 .simp .simBtn.alt{background:#22273a;color:var(--fg);border:1px solid var(--line)}
 .simp .need{margin-top:10px;padding:10px;border-radius:8px;background:#1b2032;border-left:3px solid var(--gold)}.simp .need p{font-size:12.5px;margin:6px 0 0}
+.simp .labrow{display:flex;align-items:center;gap:6px;justify-content:space-between}.simp .labrow .lab{flex:1}
+.simp .ib{flex:none;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:#1d2133;color:#c9c5d6;font:700 12px var(--body);cursor:pointer;padding:0;margin-top:8px}.simp .ib.on{background:#7fb4ff;color:#0b0d14;border-color:#7fb4ff}
+.simp .newbox{margin-top:12px;padding:4px 10px 10px;border:1.5px solid rgba(242,201,76,.45);border-radius:10px;background:rgba(242,201,76,.04)}
+.simp .opt{font-style:normal;color:var(--muted);font-size:11px}.simp b.inl{display:inline;font-size:inherit}
 .simp .simTabs{display:flex;gap:4px;margin:8px 0 2px;background:#0f1220;border-radius:9px;padding:3px}.simp .simTabs button{flex:1;font:700 12.5px var(--body);color:var(--muted);background:none;border:0;border-radius:7px;padding:8px 4px;cursor:pointer}.simp .simTabs button.on{background:#2a2f45;color:#fff}
 .simp .howto{margin:8px 0 2px;font:700 12.5px var(--body)}.simp .howto span{white-space:nowrap}
 .simp .s1{color:#7fb4ff}.simp .s2{color:#f2c94c}.simp .s3{color:#ff8aa0}
@@ -1143,8 +1147,9 @@ function simChart(){const r=SIMU.res,W=300,H=140,ml=40,mt=8,mb=20,iw=W-ml-6,ih=H
 const simp=document.getElementById("simp");
 function renderSimu(){if(typeof backSync==="function")backSync();document.getElementById("legend").hidden=SIMU.open||!salePanel.hidden;if(!SIMU.open){simp.hidden=true;return}simp.hidden=false;
   const o=SIMU.opt,r=SIMU.res,grp=(key,vals)=>`<div class="tabs">${vals.map(([v,l])=>`<button data-k="${key}" data-v="${v}" class="${o[key]===v?"on":""}">${l}</button>`).join("")}</div>`;
+  SIMU.info=SIMU.info||{};const ib=k=>`<button class="ib ${SIMU.info[k]?"on":""}" data-i="${k}" aria-label="More info">ⓘ</button>`,ih=(k,t)=>SIMU.info[k]?`<small class="hint">${t}</small>`:"";
   const playLab=SIMU.done?"↺ Play it again":SIMU.play?"⏹ Stop":SIMU.plan?"▶ Play the plan":"▶ Play your future";
-  simp.innerHTML=`${SIMU.done?`<div class="done"><b>✅ The simulation is done!</b><span>${SIMU.plan?"Save the plan image now, before you close it.":"Add your X @ and a date below, then save your image."}</span>
+  simp.innerHTML=`${SIMU.done?`<div class="done"><b>✅ The simulation is done!</b><span>${SIMU.plan?"Save the plan image now, before you close it.":"Pick a date below, then save your image."}</span>
      <button class="simBtn" data-shot2>📸 Save results image</button>
      <button class="simBtn alt" data-close>← Back to the arena</button></div>`:""}
    <header><b>🔮 Supply simulator</b>
@@ -1159,18 +1164,20 @@ function renderSimu(){if(typeof backSync==="function")backSync();document.getEle
    :`<p class="howto"><span class="s1">① Set the dials</span> → <span class="s2">② ▶ Play</span> → <span class="s3">③ Save your image</span></p>
    <p class="step s1"><i>1</i>Your settings: pick a shortcut or set each dial</p>
    <div class="shareRow"><button class="simBtn real" data-real>🎯 Most realistic</button><button class="simBtn rnd" data-rnd>🎲 Random settings</button></div>
-   ${JSON.stringify(o)===JSON.stringify(REALISTIC)?`<small class="hint">Our best guess: Top Shot keeps running about 1 VC trade-in event a year; Fast Break player counts have been falling, so fewer people join each year; VC has had a new Rare or Legendary in most years, so those stay possible; Top Shot has been shrinking mint sizes, so no new Commons.</small>`:""}
-   <small>Simulated futures for VC supply, ${SIM_Y0}–${SIM_Y1}. Today: ${(nMinted-nBurned).toLocaleString()} in circulation, including ${seats.filter(m=>m.pack&&!m.burned).length} still in unopened packs (opening a pack doesn't change supply).</small>
-   <small class="lab">Top Shot trade-in events</small>${grp("ev",[[0,"None"],[0.5,"Every 2 yrs"],[1,"1 a year (now)"],[4,"Every 3 months"],[12,"Every month"]])}
-   <small class="hint">Each event retires (permanently removes) 40–160 VC moments, like the real ones: ~135 in 2023, 153 in 2024, 41 in 2026.</small>
-   <small class="lab">Trade-in events target</small>${grp("tgt",[[0,"Like the past"],[1,"All sets"],[3,"VC TSD first"],[2,"VC TSD only"]])}
-   <small class="hint">Past events were mostly Archive (87%) and RIB (10%), and Top Shot has never targeted VC TSD.<br><strong>VC TSD first:</strong> events retire VC TSD moments until about ${TSD_FLOOR.toLocaleString()} are left (${TSD0.toLocaleString()} today), then the usual sets. Makes VC TSD scarce again.</small>
-   <small class="lab">New VC moments · how often Top Shot releases one</small>
-   ${[["rare","New Rare"],["leg","New Legendary"],["ult","New Ultimate"],["fan","New Fandom"],["com","New Common"],["craft","New VC by crafting"]].map(([k,l])=>`<small class="lab sub">${l}</small>${grp(k,[[0,"None"],[0.25,"Every 4 yrs"],[0.5,"Every 2 yrs"],[1,"Every year"]])}`).join("")}
-   <small class="hint">At most one new VC release per tier a year. A release counts all its parallels: Dallas is one Legendary release (Standard 44 + Galactic 5 + Omega 1 = 50), and a Common with a /50 parallel is still one Common release. Sizes, parallels included: Rare 150–600, Legendary 40–99, Ultimate 1–10, Fandom 500–1,000, Common 1,000–3,000. Top Shot's rule: new Rare + Legendary can't add up to more than 998 in any two seasons. Crafting: trade in 2 VC moments, get 1 new one, so supply still goes down.</small>
-   <small class="lab">Top Shot users in 2027 (vs today)</small>${grp("nu",[[1,"Same"],[1.2,"+20%"],[1.5,"+50%"],[2,"2×"],[3,"3×"]])}
+   ${JSON.stringify(o)===JSON.stringify(REALISTIC)?`<div class="labrow"><small class="hint">🎯 Our best guess</small>${ib("real")}</div>${ih("real",`Our best guess: Top Shot keeps running about 1 VC trade-in event a year; Fast Break player counts have been falling, so fewer people join each year; VC has had a new Rare or Legendary in most years, so those stay possible; Top Shot has been shrinking mint sizes, so no new Commons.`)}`:""}
+   <div class="labrow"><small>Today: <b class="inl">${(nMinted-nBurned).toLocaleString()}</b> VC moments</small>${ib("today")}</div>${ih("today",`Simulated futures for VC supply, ${SIM_Y0}–${SIM_Y1}. Includes ${seats.filter(m=>m.pack&&!m.burned).length} still in unopened packs (opening a pack doesn't change supply).`)}
+   <div class="labrow"><small class="lab">Top Shot trade-in events</small>${ib("ev")}</div>${grp("ev",[[0,"None"],[0.5,"Every 2 yrs"],[1,"1 a year (now)"],[4,"Every 3 months"],[12,"Every month"]])}
+   ${ih("ev",`Each event retires (permanently removes) 40–160 VC moments, like the real ones: ~135 in 2023, 153 in 2024, 41 in 2026.`)}
+   <div class="labrow"><small class="lab">Which moments get retired</small>${ib("tgt")}</div>${grp("tgt",[[0,"Like the past"],[1,"All sets"],[3,"VC TSD first"],[2,"VC TSD only"]])}
+   ${ih("tgt",`Past events were mostly Archive (87%) and RIB (10%). Top Shot has never targeted VC TSD.<br><strong>VC TSD first:</strong> retires VC TSD until about ${TSD_FLOOR.toLocaleString()} are left (${TSD0.toLocaleString()} today), then the usual sets.`)}
+   <div class="newbox"><div class="labrow"><small class="lab">New VC moments · how often</small>${ib("new")}</div>
+   ${ih("new",`At most one new VC release per tier a year, parallels included (Dallas = one Legendary release of 50). Sizes: Ultimate 1–10, Legendary 40–99, Rare 150–600, Fandom 500–1,000, Common 1,000–3,000. Top Shot's rule: new Rare + Legendary can't add up to more than 998 in any two seasons.`)}
+   ${[["ult","🟨 Ultimate"],["leg","🟦 Legendary"],["rare","🟪 Rare"],["fan","🟧 Fandom"],["com","⬜ Common"]].map(([k,l])=>`<small class="lab sub">${l}</small>${grp(k,[[0,"None"],[0.25,"Every 4 yrs"],[0.5,"Every 2 yrs"],[1,"Every year"]])}`).join("")}</div>
+   <div class="labrow"><small class="lab">🟫 New VC by crafting</small>${ib("craft")}</div>${grp("craft",[[0,"None"],[0.25,"Every 4 yrs"],[0.5,"Every 2 yrs"],[1,"Every year"]])}
+   ${ih("craft",`Trade in 2 VC moments, get 1 new one. Every crafted moment retires 2, so supply still goes down.`)}
+   <div class="labrow"><small class="lab">Top Shot users in 2027 (vs today)</small>${ib("users")}</div>${grp("nu",[[1,"Same"],[1.2,"+20%"],[1.5,"+50%"],[2,"2×"],[3,"3×"]])}
    <small class="lab">Then each year after</small>${grp("gr",[[-10,"−10%"],[0,"Same"],[5,"+5%"],[10,"+10%"],[25,"+25%"]])}
-   <small class="hint">More people using Top Shot = more people joining each trade-in event.<br><strong>Your users vs today:</strong> 2027: ${pctTxt(simUsers(o,2027))} → 2031: ${pctTxt(simUsers(o,2031))} → 2041: ${pctTxt(simUsers(o,2041))}</small>`}</header>
+   ${ih("users",`More people using Top Shot = more people joining each trade-in event.<br><strong>Your users vs today:</strong> 2027: ${pctTxt(simUsers(o,2027))} → 2031: ${pctTxt(simUsers(o,2031))} → 2041: ${pctTxt(simUsers(o,2041))}`)}`}</header>
    <div class="simres">${SIMU.busy!=null?`<p>⏳ Working… ${Math.round(SIMU.busy*100)}%</p>`:""}
      <p class="step s2"><i>2</i>${SIMU.plan?"The plan's results":"Your results"}</p>
      <p class="sm">We ran ${SIMU.plan?"the plan":"your settings"} thousands of times. These are the most likely results.</p>
@@ -1178,14 +1185,15 @@ function renderSimu(){if(typeof backSync==="function")backSync();document.getEle
      <p class="oracle">🔮 ${fmtPick(pickMs())}: <b>${simOnDate(r.p50,pickMs()).toLocaleString()}</b> VC moments <small>(likely ${simOnDate(r.p10,pickMs()).toLocaleString()}–${simOnDate(r.p90,pickMs()).toLocaleString()})</small></p>
      <p class="sm">Middle outcome in ${SIM_Y1}: <b>${r.p50[r.p50.length-1].toLocaleString()}</b> (likely range ${r.p10[r.p10.length-1].toLocaleString()}–${r.p90[r.p90.length-1].toLocaleString()})</p>${simChart()}`:""}
      <div class="recRow"><button class="simBtn alt" data-rec>🎬 Video 16:9 · X / YouTube</button><button class="simBtn alt" data-recv>📱 Video 9:16 · Reels / Shorts</button></div>
-     ${SIMU.plan?`<div class="mine plan"><b>🎯 This is our plan for Top Shot</b><small class="hint">Not a giveaway entry: its image says "Our plan" and has no @. To enter, switch to 🔮 Your prediction.</small></div>`:`<div class="mine"><p class="step s3"><i>3</i>Your entry: add your X @ and a date, then save</p>
-       <label class="fld"><span>Your X handle</span><div class="at"><b>@</b><input id="simHandle" placeholder="VC15Tracker" maxlength="16" autocomplete="off" value="${esc(SIMU.handle||"")}"></div></label>
-       <label class="fld"><span>Pick a date (today to Dec 31, 2041)</span><small class="hint" style="margin:0 0 4px">Your simulation already covers every day from today to 2041. No need to run it again: just pick a date and we'll show the VC supply on that day.</small><input id="simDate" type="date" min="${new Date(NOW).toISOString().slice(0,10)}" max="2041-12-31" value="${SIMU.pick||""}"></label>${SIMU.pick&&r?`<p class="oracle" style="margin-top:6px">📅 On ${fmtPick(pickMs())}: <b>${simOnDate(r.p50,pickMs()).toLocaleString()}</b> VC moments</p>`:""}<small class="hint">🔒 Only printed on your image. Never saved or sent anywhere: it stays in your browser.</small><small class="msg"></small><small class="hint">${srcTxt()}</small></div>`}
+     ${SIMU.plan?`<div class="mine plan"><b>🎯 This is our plan for Top Shot</b><small class="hint">Not a giveaway entry: its image says "Our plan" and has no @. To enter, switch to 🔮 Your prediction.</small></div>`:`<div class="mine"><p class="step s3"><i>3</i>Pick a date, then save your image</p>
+       <label class="fld"><span>Your X @ <em class="opt">(optional, for giveaways)</em></span><div class="at"><b>@</b><input id="simHandle" placeholder="VC15Tracker" maxlength="16" autocomplete="off" value="${esc(SIMU.handle||"")}"></div></label>
+       <label class="fld"><span>Pick a date: see the VC supply on that day</span><input id="simDate" type="date" min="${new Date(NOW).toISOString().slice(0,10)}" max="2041-12-31" value="${SIMU.pick||""}"></label>${SIMU.pick&&r?`<p class="oracle" style="margin-top:6px">📅 On ${fmtPick(pickMs())}: <b>${simOnDate(r.p50,pickMs()).toLocaleString()}</b> VC moments</p>`:""}<small class="msg"></small><small class="hint">${srcTxt()}</small></div>`}
      <div class="shareRow"><button class="simBtn alt" data-shot>📸 Save image</button><button class="simBtn alt" data-x>𝕏 Share on X</button></div>
      <small class="hint">Tip: save the image first, then attach it to your X post.</small>
      ${r&&SIMU.busy==null?simReport():""}</div>
-   <div class="note">Retired = permanently removed from Top Shot (Top Shot's term). Based on VC history: Top Shot events in 2023 (~135 retired), 2024 (153) and 2026 (41). At most ~8% of supply is retired in any one year, since holders have to choose to trade in. New moments follow Top Shot's tiers and Historical Rules (Rare + Legendary max 998 per two series). Commons have no limit. A simulation, not a guarantee.</div>
+   <div class="note"><div class="labrow"><span>Retired = permanently removed. A simulation, not a guarantee.</span>${ib("note")}</div>${SIMU.info.note?`<p style="margin:6px 0 0">Retired = permanently removed from Top Shot (Top Shot's term). Based on VC history: Top Shot events in 2023 (~135 retired), 2024 (153) and 2026 (41). At most ~8% of supply is retired in any one year, since holders have to choose to trade in. New moments follow Top Shot's tiers and Historical Rules (Rare + Legendary max 998 per two series). Commons have no limit. A simulation, not a guarantee.</p>`:""}</div>
    <div class="playBar"><button class="simBtn big ${SIMU.play&&!SIMU.done?"stop":""} ${SIMU.pulse&&!SIMU.play?"pulse":""}" data-play>${playLab}</button></div>`;
+  simp.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{SIMU.info[b.dataset.i]=!SIMU.info[b.dataset.i];const t=simp.scrollTop;renderSimu();simp.scrollTop=t});
   simp.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{SIMU.plan=false;SIMU.pulse=true;SIMU.src=SIMU.src&&SIMU.src!=="hand"?SIMU.src.replace("+hand","")+"+hand":"hand";o[b.dataset.k]=+b.dataset.v;SIMU.n=SIM_N;simRun()});
   const rb=simp.querySelector("[data-real]");if(rb)rb.onclick=()=>{SIMU.plan=false;SIMU.pulse=true;SIMU.src="real";Object.assign(o,REALISTIC);SIMU.n=SIM_N;simRun()};
   simp.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{const plan=b.dataset.tab==="plan";if(plan===!!SIMU.plan)return;if(SIMU.play)simuStop();
@@ -1223,7 +1231,8 @@ function simReport(){const run=SIMU.run;if(!run)return "";const o=SIMU.opt;
   const totNow=Object.values(now).reduce((a,b)=>a+b,0),totEnd=Object.values(end).reduce((a,b)=>a+b,0)+added.reduce((a,x)=>a+x.a,0);
   const row=(name,col,a,b)=>{const pc=a?Math.round((b-a)/a*100):0;return `<li><span class="dot" style="background:${col}"></span><b>${esc(name)}</b><small>${a.toLocaleString()} → ${b.toLocaleString()}</small><em class="${pc<0?"dn":pc>0?"up":""}">${pc?(pc>0?"+":"")+pc+"%":"–"}</em><i style="width:${a?Math.max(2,Math.min(100,b/a*100)):100}%;background:${col}"></i></li>`};
   return `<div class="report"><b>📋 Supply report · this future, ${SIM_Y0} → ${SIM_Y1}</b><ul>${SETS.map(S=>row(S.name.replace(" · Debut Club",""),S.color,now[S.key],end[S.key])).join("")}
-    ${added.map(x=>`<li class="new"><span class="dot" style="background:${x.c}"></span><b>${x.e||"🆕"} ${esc(x.n)}</b><small>+${x.a.toLocaleString()}</small><em class="up">new</em></li>`).join("")}
+    ${[["Ultimate","🟨"],["Legendary","🟦"],["Rare","🟪"],["Fandom","🟧"],["Common","⬜"],["Crafted","🟫"]].map(([t,e])=>{const xs=added.filter(x=>x.n.startsWith(t==="Crafted"?"Crafted":"New "+t));if(!xs.length)return "";const n=xs.reduce((a,x)=>a+x.a,0);
+      return `<li class="new"><span></span><b>${e} New ${t}</b><small>+${n.toLocaleString()}</small><em class="up">new</em></li>`}).join("")}
     <li class="tot"><b>All VC moments</b><small>${totNow.toLocaleString()} → ${totEnd.toLocaleString()}</small><em class="${totEnd<totNow?"dn":"up"}">${(totEnd>=totNow?"+":"")+Math.round((totEnd-totNow)/totNow*100)}%</em></li></ul>
     <small class="hint">Same future that ▶ Play shows. Which sets lose moments follows the "Trade-in events target" dial.</small></div>`}
 function simShareX(){const r=SIMU.res;if(!r||!entryOk())return;const f=(cc,g)=>{const i=cc.findIndex(v=>v>=.5);return i<0?`unlikely by ${SIM_Y1}`:`likely by ${SIM_Y0+i}`};
@@ -1231,7 +1240,7 @@ function simShareX(){const r=SIMU.res;if(!r||!entryOk())return;const f=(cc,g)=>{
   window.open("https://x.com/intent/post?text="+encodeURIComponent(t),"_blank","noopener")}
 const srcTxt=()=>({rnd:"🎲 Settings picked by the Random button",real:"🎯 Settings: the Most realistic button","rnd+hand":"🎲 Started from Random, then changed by hand","real+hand":"🎯 Started from Most realistic, then changed by hand"}[SIMU.src]||"🎛️ Settings picked by hand");
 // no image or post until they add their X username and pick a date
-function entryOk(){if(SIMU.plan)return true;const miss=[];if(!SIMU.handle)miss.push("your X username");if(!SIMU.pick)miss.push("a date");if(!miss.length)return true;
+function entryOk(){return true;const miss=[];if(!SIMU.handle)miss.push("your X username");if(!SIMU.pick)miss.push("a date");if(!miss.length)return true;
   const box=simp.querySelector(".mine:not(.plan)");if(box){box.classList.add("need");box.scrollIntoView({block:"center",behavior:"smooth"});const m=box.querySelector(".msg");if(m)m.textContent="✋ First add "+miss.join(" and ")+"."}
   if(!SIMU.handle&&simp.querySelector("#simHandle"))simp.querySelector("#simHandle").focus();return false}
 // share card: the result as a picture for X
