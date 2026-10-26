@@ -128,6 +128,7 @@ body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);ov
 .simp .mine input:focus{outline:none;border-color:#ff4d6d;box-shadow:0 0 0 3px rgba(206,17,65,.25)}
 .simp .mine .at{display:flex;align-items:center;background:#0f1220;border:2px solid #ce1141;border-radius:7px}.simp .mine .at:focus-within{border-color:#ff4d6d;box-shadow:0 0 0 3px rgba(206,17,65,.25)}
 .simp .mine .at b{padding:0 2px 0 10px;color:#ff8aa0;font-size:15px}.simp .mine .at input{border:0;box-shadow:none;padding-left:2px}
+body:not(.studio) .recRow,body:not(.studio) #tlRec,body:not(.studio) #tlFmt{display:none!important}
 .recRow{display:flex;gap:6px}.recRow .simBtn{flex:1;font-size:12px!important}
 .simp .shareRow{display:flex;gap:6px}.simp .shareRow .simBtn{flex:1}
 .simp .report{margin-top:10px;padding:10px;border-radius:8px;background:#141826;border:1px solid var(--line)}
@@ -481,6 +482,8 @@ const RING=[];{
 }
 // ---------- canvas ----------
 const SITE="VC15TRACKER.COM";
+// video recording buttons only show in studio mode: open the site as vc15tracker.com/?studio
+if(/studio/.test(location.search))document.body.classList.add("studio");
 const cv=document.getElementById("arena"),ctx=cv.getContext("2d");
 let setKey=null,joinYear=2020,hodlMin=5,hodlView="long",W=0,H=0,DPR=1,cam={x:0,y:0,s:.3},filter="all",selOwner=null,selSeat=null,anim=null,dirty=true,nearSeat=null;const NEAR=55;
 function resize(){DPR=Math.min(2,window.devicePixelRatio||1);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*DPR;cv.height=H*DPR;dirty=true}
@@ -1273,16 +1276,18 @@ function simuPlay(){SIMU.done=false;SIMU.used={};SIMU.commons=[];SIMU.newRows=0;
   {let t=0;for(const ev of SIMU.run.ev)for(const e of ev||[])if(e.k==="craft"||(e.k==="common"&&!e.f))t+=e.n;let k=0,c=0;while(c<t){c+=ringCap(k);k++}SIMU.planRows=k}clearSel();setFilter("all");SIMU.play=true;SIMU.yi=0;SIMU.t0=performance.now();SIMU.burnSet=new Set();SIMU.newSeats=[];SIMU.ann=[];
   document.body.classList.add("simu");cam=simCam();dirty=true;renderSimu()}
 function simuStop(){SIMU.done=false;SIMU.used={};SIMU.commons=[];SIMU.newRows=0;SIMU.play=false;SIMU.burnSet=new Set();SIMU.newSeats=[];SIMU.ann=[];document.body.classList.remove("simu");cam=fitView();dirty=true;renderSimu()}
-const SIM_PICK=["archive","archive","archive","archive","archive","archive","archive","archive","rib","origin"];   // past retirements: 87% Archive, 10% RIB
+// "like the past": each pick follows the real retirements so far (about 87% Archive, 10% RIB, under 2% RIB Origin)
+const PAST_W=SETS.map(S=>[S.key,S.list.filter(m=>m.burned).length]).filter(x=>x[1]>0),PAST_T=PAST_W.reduce((a,x)=>a+x[1],0);
+const pastPick=()=>{let r=Math.random()*PAST_T;for(const[k,n]of PAST_W){if((r-=n)<0)return k}return "archive"};
 const pickSet=()=>{const t=SIMU.opt.tgt;if(t===2)return "tsd";
   if(t===3&&SK.tsd.list.filter(m=>!m.burned&&!m.pack&&!SIMU.burnSet.has(m)).length>TSD_FLOOR)return "tsd";
   if(t===1){let r=Math.random()*SIM_SPREAD.tot;for(const[k,n]of SIM_SPREAD.w){if((r-=n)<0)return k}return "archive"}
-  return SIM_PICK[rint(0,SIM_PICK.length-1)]};
+  return pastPick()};
 const SIM_SPREAD=(()=>{const w=SETS.filter(S=>S.tier!=="court").map(S=>[S.key,S.list.filter(m=>!m.burned&&!m.pack).length]);return{w,tot:w.reduce((a,x)=>a+x[1],0)}})();
 function simuYear(){const y=SIM_Y0+SIMU.yi,ev=SIMU.run.ev[SIMU.yi-1]||[],ann=[];
   const live=k=>SK[k].list.filter(m=>!m.burned&&!m.pack&&!SIMU.burnSet.has(m));
   for(const e of ev){
-    if(e.k==="event"||e.k==="org"){for(let i=0;i<e.n;i++){const pool=live(e.k==="event"?pickSet():SIM_PICK[rint(0,SIM_PICK.length-1)]);if(pool.length)SIMU.burnSet.add(pool[rint(0,pool.length-1)])}
+    if(e.k==="event"||e.k==="org"){for(let i=0;i<e.n;i++){const pool=live(e.k==="event"?pickSet():pastPick());if(pool.length)SIMU.burnSet.add(pool[rint(0,pool.length-1)])}
       ann.push(e.k==="event"?`🟥 Top Shot ${SIMU.opt.tgt===2?"Debut Club (TSD) ":SIMU.opt.tgt===3&&SK.tsd.list.filter(m=>!m.burned&&!m.pack&&!SIMU.burnSet.has(m)).length>TSD_FLOOR?"Debut Club (TSD) ":""}crafting event · ${e.n} VC moments retired`:`🟥 Collectors retired ${e.n} on their own`)}
     else if(e.k==="craft"){for(let i=0;i<2*e.n;i++){const pool=live(pickSet());if(pool.length)SIMU.burnSet.add(pool[rint(0,pool.length-1)])}
       placeNew("common",e.n,"#f2c94c");
