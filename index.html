@@ -709,7 +709,7 @@ const CAPS=[
 function tlColor(m){if(TL.day<m.appear)return "#1a1e2b";if(m.pack&&!m.burned)return PACK;if(m.burned&&m.burnedAt&&m.burnedAt<=TL.day)return TL.day-m.burnedAt<25?"#ff7a6b":BURN;return SK[m.set].color}
 function tlCounts(){let minted=0,ret=0;for(const m of seats){if(m.appear<=TL.day)minted++;if(m.burned&&m.burnedAt&&m.burnedAt<=TL.day)ret++}return{minted,ret}}
 function drawTL(){
-  ctx.setTransform(DPR,0,0,DPR,0,0);const d=dateOf(Math.max(TL.day,TL_START)),{minted,ret}=tlCounts(),cx=W/2,big=Math.max(34,Math.min(72,W/(H>W?8:16)));
+  ctx.setTransform(DPR,0,0,DPR,0,0);const d=dateOf(Math.max(TL.day,TL_START)),{minted,ret}=tlCounts(),cx=W/2,big=Math.max(30,Math.min(72,W/(H>W?10:16)));
   ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(11,13,20,.72)";ctx.fillRect(0,0,W,big*2.35);
   ctx.fillStyle="#f2c94c";ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;ctx.fillText(`${MON[d.getUTCMonth()].toUpperCase()} ${d.getUTCFullYear()}`,cx,big*1.05);
   ctx.fillStyle="#f1ede4";ctx.font=`700 ${big*.42}px Barlow,sans-serif`;ctx.fillText(`${(minted-ret).toLocaleString()} VC moments in circulation`,cx,big*1.62);
@@ -720,12 +720,12 @@ function drawTL(){
   if(cap){const fs=Math.max(13,Math.min(big*.3,W/34));ctx.font=`700 ${fs}px Barlow,sans-serif`;const im=cap.img&&PIMG[cap.img],ih=im?fs*3:0,tw=Math.min(ctx.measureText(cap.t).width,W-60-ih),w=tw+36+(im?ih+10:0),bh=Math.max(40,ih+12),y=H-(document.body.classList.contains("rec")?24:96)-bh/2;
     ctx.fillStyle=cap.img?"rgba(20,24,38,.95)":"rgba(206,17,65,.92)";ctx.strokeStyle=cap.img?"#f2c94c":"transparent";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(cx-w/2,y-bh/2,w,bh,14):ctx.rect(cx-w/2,y-bh/2,w,bh);ctx.fill();ctx.stroke();
     if(im&&im.complete)ctx.drawImage(im,cx-w/2+10,y-ih/2,ih,ih);ctx.fillStyle="#fff";ctx.textBaseline="middle";ctx.textAlign="left";ctx.fillText(cap.t,cx-w/2+18+(im?ih+10:0),y+1,tw);ctx.textAlign="center"}
-  ctx.textAlign="right";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.32)}px 'Barlow Condensed',sans-serif`;ctx.fillText(SITE+" · @VC15Tracker",W-14,H-(document.body.classList.contains("rec")?12:80));
+  ctx.textAlign="right";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.32)}px 'Barlow Condensed',sans-serif`;if(ROT){ctx.textAlign="center";ctx.fillText(SITE+" · @VC15Tracker",cx,H*.84)}else ctx.fillText(SITE+" · @VC15Tracker",W-14,H-(document.body.classList.contains("rec")?12:80));
   scrub.value=Math.round((TL.day-TL_START)/(TL_END-TL_START)*1000);
 }
 const tlbar=document.getElementById("tlbar"),scrub=document.getElementById("tlScrub"),tlPlay=document.getElementById("tlPlay"),tlMsg=document.getElementById("tlMsg");
-function fitBowl(){const big=Math.max(34,Math.min(72,W/(H>W?8:16))),top=big*2.35+12,bot=document.body.classList.contains("rec")?50:110,hw=CW+RING_OUT+20,hh=CH+RING_OUT+20;
-  const [a,b]=ROT?[hh,hw]:[hw,hh],s=Math.min((W-24)/(2*a),(H-top-bot)/(2*b));return{x:0,y:-((top-bot)/2)/s,s}}
+function fitBowl(){const big=Math.max(34,Math.min(72,W/(H>W?8:16))),top=big*2.35+12,bot=(document.body.classList.contains("rec")?50:110)+(ROT?H*.12:0),hw=CW+RING_OUT+20,hh=CH+RING_OUT+20;
+  const [a,b]=ROT?[hh,hw]:[hw,hh],s=Math.min((W*(ROT?.8:1)-24)/(2*a),(H-top-bot)/(2*b));return{x:0,y:-((top-bot)/2)/s,s}}
 const DAYS_PER_SEC=(TL_END-TL_START)/34;   // whole story in ~34 s at 1×
 function tlOpen(){TL.on=true;TL.day=TL_START;TL.playing=false;document.body.classList.add("tl");tlbar.hidden=false;clearSel();setFilter("all");cam=fitBowl();dirty=true;tlPlay.textContent="▶";tlMsg.textContent="Press ▶ to watch VC supply from 2020 to today.";backSync()}
 function tlExit(){if(TL.rec)return;TL.on=false;TL.playing=false;document.body.classList.remove("tl");tlbar.hidden=true;cam=fitView();dirty=true;backSync()}
@@ -757,8 +757,8 @@ document.getElementById("tlRec").onclick=()=>{
 // ---------- arena games: "stand up if…" played out step by step ----------
 let SIM=null;
 let SNAP=false;
-function simCam(){const side=SNAP||W<700?0:320,avail=W-side,top=(SNAP?0:W<700?232:178)+Math.max(20,Math.min(32,avail/32))*2.1+14,bot=SNAP?(REC?36:120):70,ex=SIMU.play?(SIMU.planRows||0)*ROWP+(SIMU.planRows?40:0):0,hw0=CW+RING_OUT+10+ex,hh0=CH+RING_OUT+10+ex,[hw,hh]=ROT?[hh0,hw0]:[hw0,hh0];
-  const s=Math.min((avail-24)/(2*hw),(H-top-bot)/(2*hh));return{x:(W/2-avail/2)/s,y:(H/2-(top+H-bot)/2)/s,s}}
+function simCam(){const side=SNAP||W<700?0:320,avail=W-side,top=(SNAP?0:W<700?232:178)+Math.max(20,Math.min(32,avail/32))*2.1+14,bot=(SNAP?(REC?36:120):70)+(ROT?H*.12:0),ex=SIMU.play?(SIMU.planRows||0)*ROWP+(SIMU.planRows?40:0):0,hw0=CW+RING_OUT+10+ex,hh0=CH+RING_OUT+10+ex,[hw,hh]=ROT?[hh0,hw0]:[hw0,hh0];
+  const s=Math.min((avail*(ROT?.8:1)-24)/(2*hw),(H-top-bot)/(2*hh));return{x:(W/2-avail/2)/s,y:(H/2-(top+H-bot)/2)/s,s}}
 function simStart(steps){SIM={steps,i:0,t0:performance.now()};steps[0].go();dirty=true;renderSale()}
 function simStop(){SIM=null;dirty=true;renderSale();fly(fitView(),600)}
 function simTick(t){if(!SIM)return;const hold=SIM.i>=SIM.steps.length-1?4000:2400;
@@ -1435,7 +1435,7 @@ function drawSimu(){if(!SIMU.play)return;ctx.setTransform(DPR,0,0,DPR,0,0);
   const lines=SIMU.ann,wmax=Math.max(...lines.map(l=>ctx.measureText(l).width))+30,hh=lines.length*fs*1.5+16;
   ctx.fillStyle="rgba(11,13,20,.88)";ctx.strokeStyle="#f2c94c";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(c.x-wmax/2,c.y-hh/2,wmax,hh,12):ctx.rect(c.x-wmax/2,c.y-hh/2,wmax,hh);ctx.fill();ctx.stroke();
   ctx.fillStyle="#fff";ctx.textBaseline="middle";lines.forEach((l,i)=>ctx.fillText(l,c.x,c.y-hh/2+8+fs*.75+i*fs*1.5));
-  ctx.textAlign="right";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.32)}px 'Barlow Condensed',sans-serif`;ctx.fillText(SITE+" · @VC15Tracker",avail-14,H-16)}
+  ctx.textAlign="right";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.32)}px 'Barlow Condensed',sans-serif`;ROT?(ctx.textAlign="center",ctx.fillText(SITE+" · @VC15Tracker",cx,H*.84)):ctx.fillText(SITE+" · @VC15Tracker",avail-14,H-16)}
 function drawTunnelSeats(){if(!SIMU.play||!SIMU.newSeats.length)return;const hs=SEAT/2;ctx.save();ctx.shadowColor="#f2c94c";ctx.shadowBlur=8*DPR;
   for(const m of SIMU.newSeats){ctx.fillStyle=m.c;ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT)}ctx.restore();
   if(SIMU.newRows){const d=NEW0+SIMU.newRows*ROWP+8;ctx.fillStyle="#f2c94c";ctx.font=`800 ${Math.max(12,14/cam.s)}px 'Barlow Condensed',sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(`NEW SEATS · +${SIMU.commons.length.toLocaleString()} VC MOMENTS`,0,CH+d+4)}}
