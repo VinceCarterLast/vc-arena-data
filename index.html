@@ -671,8 +671,8 @@ function draw(){
   // gold rings on special serials
   if(cam.s>.8&&!TL.on){ctx.strokeStyle=GOLD;ctx.lineWidth=1.2;for(const arr of buckets.values())for(const m of arr)if(m.gold&&!m.burned)ctx.strokeRect(m.x-hs-1.2,m.y-hs-1.2,SEAT+2.4,SEAT+2.4)}
   drawTunnelSeats();
-  if(FEED.length&&!TL.on&&!SIMU.play){const now=Date.now(),ph=(now%1400)/1400;let any=false;
-    for(const e of FEED){if(now-Date.parse(e.t)>3600e3)continue;const m=feedSeat(e);if(!m)continue;any=true;
+  if(LIVE_FEED.length&&!TL.on&&!SIMU.play){const now=Date.now(),ph=(now%1400)/1400;let any=false;
+    for(const e of LIVE_FEED){if(now-Date.parse(e.t)>3600e3)continue;const m=feedSeat(e);if(!m)continue;any=true;
       ctx.strokeStyle=e.a==="sale"?`rgba(62,224,127,${1-ph})`:e.a==="burn"?`rgba(255,42,64,${1-ph})`:`rgba(242,201,76,${1-ph})`;ctx.lineWidth=Math.max(.8,1.6/cam.s);
       ctx.beginPath();ctx.arc(m.x,m.y,SEAT*(.8+ph*2.2),0,7);ctx.stroke()}if(any)setTimeout(()=>dirty=true,40)}
   if(selOwner&&focusOwner){ctx.strokeStyle=GOLD;ctx.lineWidth=Math.max(.6,1.4/cam.s);for(const m of selOwner.seats)ctx.strokeRect(m.x-hs-.9,m.y-hs-.9,SEAT+1.8,SEAT+1.8)}
@@ -1497,11 +1497,13 @@ const liveTag=document.getElementById("live");
 function fmtET(iso){try{const p=Object.fromEntries(new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",day:"numeric",month:"short",year:"numeric",hour:"numeric",minute:"2-digit"}).formatToParts(new Date(iso)).map(x=>[x.type,x.value]));
   return `${p.day} ${p.month} ${p.year} · ${p.hour}:${p.minute} ${p.dayPeriod} ET`}catch(e){return iso}}
 document.getElementById("asof").textContent=`Owners · updated ${DATA.ownersUpdated&&DATA.ownersUpdated.length>10?fmtET(DATA.ownersUpdated):DATA.asOf}`;
+let HIST_FEED=null;
 function applyListings(d,live){
   const ls=Object.values(d.listings||{});if(!ls.length)return false;
   for(const S of SETS)for(const m of S.list){m.price=0;m.seller=null;m.token=0}
   for(const l of ls){const S=SK[l.set];const m=S&&S.list[l.serial-1];if(!m||!(+l.price>0))continue;
-    m.price=+l.price;m.seller=l.seller||null;m.token=l.token||0}
+    m.price=+l.price;m.seller=l.seller||null;m.token=l.token||0;m.listedAt=l.listed_at||null}
+  HIST_FEED=null;if(typeof paintFeed==="function")paintFeed();
   const when=fmtET(d.updated);
   liveTag.textContent=`${live?"Live listings":"Listings snapshot"} · ${ls.length} · updated ${when}`;
   liveTag.classList.toggle("on",live);dirty=true;renderSale();
@@ -1518,8 +1520,19 @@ async function loadLive(){
 }
 loadLive();setInterval(loadLive,5*60*1000);
 // ---------- live activity feed (activity.json, pushed by the sales bot within a minute or two of each event) ----------
-let FEED=[],FEED_I=0;const OWNER_BY=new Map(owners.map(o=>[String(o.name).toLowerCase(),o]));
+let LIVE_FEED=[],FEED_I=0;
+function histFeed(){if(HIST_FEED)return HIST_FEED;const out=[],cut=NOW-30*DAY,nm=i=>i>=0&&DATA.names[i]!=null?DATA.names[i]:"";
+  for(const S of SETS)for(const m of S.list){
+    for(const h of (m.hist||[])){const t=DAY0+h[1]*DAY;if(t>=cut&&h[2]!==-1)out.push({t:new Date(t+12*36e5).toISOString(),a:"sale",set:S.key,serial:m.serial,price:h[0]/100,seller:nm(h[2]),buyer:nm(h[3]),d:1})}
+    if(m.burned&&m.burnedAt){const t=DAY0+m.burnedAt*DAY;if(t>=cut)out.push({t:new Date(t+12*36e5).toISOString(),a:"burn",set:S.key,serial:m.serial,d:1})}
+    if(m.price&&m.listedAt&&Date.parse(m.listedAt)>=cut)out.push({t:m.listedAt,a:"list",set:S.key,serial:m.serial,price:m.price,seller:m.seller||""})}
+  return HIST_FEED=out}
+// live events first; history fills in the rest (no duplicates)
+function feedAll(){const k=e=>e.a+":"+e.set+":"+e.serial,seen=new Set(LIVE_FEED.map(k));
+  return [...LIVE_FEED,...histFeed().filter(e=>!seen.has(k(e)))].sort((a,b)=>Date.parse(b.t)-Date.parse(a.t)).slice(0,40)}
+Object.defineProperty(window,"FEED",{get:()=>feedAll()});const OWNER_BY=new Map(owners.map(o=>[String(o.name).toLowerCase(),o]));
 const FEED_TXT={sale:["🟢","sold"],list:["🏷️","listed"],gift:["🎁","gifted"],burn:["🟥","retired"],pack:["📦","pulled from a pack"]};
+const agoD=t=>{const d=Math.round((NOW-Date.parse(t))/864e5);return d<1?"today":d===1?"yesterday":`${d} days ago`};
 const ago=t=>{const m=Math.max(0,Math.round((Date.now()-Date.parse(t))/60000));return m<1?"just now":m<60?`${m} min ago`:m<1440?`${Math.round(m/60)} hr ago`:`${Math.round(m/1440)} d ago`};
 const feedSeat=e=>SK[e.set]&&SK[e.set].list.find(m=>m.serial===e.serial);
 // deal check against the Nothing But Stats True Value (special serials use their own value)
@@ -1528,20 +1541,20 @@ function dealTag(e){if(!e.price||(e.a!=="list"&&e.a!=="sale"))return "";const m=
 function feedLine(e,full){const S=SK[e.set];if(!S)return "";const [ic,vb]=FEED_TXT[e.a]||["•",e.a],nm=S.name.replace(" · Debut Club","");
   let t=`${ic} <b>${esc(nm)} #${e.serial}</b> ${vb}${e.price?` for <b>${money(e.price)}</b>`:""}${dealTag(e)}`;
   if(full){if(e.a==="sale"&&e.buyer)t+=` to ${esc(disp(e.buyer))}`;if(e.a==="gift"&&e.buyer)t+=` to ${esc(disp(e.buyer))}`}
-  return t+` <i>· ${ago(e.t)}</i>`}
+  return t+` <i>· ${e.d?agoD(e.t):ago(e.t)}</i>`}
 function sellerLine(name){if(!name)return "";const o=OWNER_BY.get(String(name).toLowerCase());if(!o)return `Seller ${esc(disp(name))}`;
   const h=nHeld(o);
   return `Seller <b>${esc(disp(name))}</b>${o.joined?` · on Top Shot since ${o.joined}`:""}${o.sold?` · has sold ${o.sold} VC moment${o.sold===1?"":"s"}`:""}${h?` · still holds ${h}`:""}`}
 const feedEl=document.createElement("button");feedEl.id="feed";feedEl.hidden=true;document.body.appendChild(feedEl);
 const feedP=document.createElement("div");feedP.id="feedP";feedP.hidden=true;document.body.appendChild(feedP);
 function paintFeed(){const ev=FEED.filter(e=>SK[e.set]);if(!ev.length){feedEl.hidden=true;return}feedEl.hidden=false;const e=ev[FEED_I%ev.length];
-  feedEl.innerHTML=`<span class="dot"></span><b class="lv">LIVE</b> ${feedLine(e)}`}
-function openFeed(){feedP.hidden=false;feedP.innerHTML=`<header><b>📰 Live activity</b><button aria-label="Close">✕</button></header><ul>${FEED.filter(e=>SK[e.set]).map((e,i)=>`<li data-i="${i}">${feedLine(e,true)}${e.a==="sale"||e.a==="list"?`<small>${sellerLine(e.seller)}</small>`:""}</li>`).join("")}</ul><small class="fnote">Sales, listings, gifts and retirements as they happen. Tap one to see the seat.</small>`;
+  feedEl.innerHTML=`<span class="dot"${e.d?' style="background:#9a97a6;animation:none"':""}></span><b class="lv"${e.d?' style="color:#9a97a6"':""}>${e.d?"RECENT":"LIVE"}</b> ${feedLine(e)}`}
+function openFeed(){feedP.hidden=false;feedP.innerHTML=`<header><b>📰 Live activity</b><button aria-label="Close">✕</button></header><ul>${FEED.filter(e=>SK[e.set]).map((e,i)=>`<li data-i="${i}">${feedLine(e,true)}${e.a==="sale"||e.a==="list"?`<small>${sellerLine(e.seller)}</small>`:""}</li>`).join("")}</ul><small class="fnote">Sales, listings, gifts and retirements: live from the bot, plus the last 30 days. Tap one to see the seat.</small>`;
   feedP.querySelector("header button").onclick=()=>feedP.hidden=true;
   feedP.querySelectorAll("li").forEach(li=>li.onclick=()=>{const e=FEED.filter(x=>SK[x.set])[+li.dataset.i],m=feedSeat(e);if(m){feedP.hidden=true;showSeat(m,true)}})}
 feedEl.onclick=openFeed;
 async function loadFeed(){try{const r=await fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/activity.json?t="+Math.floor(Date.now()/60000),{cache:"no-store"});
-  if(r.ok){const d=await r.json();if(Array.isArray(d.events)){FEED=d.events;paintFeed();if(!feedP.hidden)openFeed();dirty=true}}}catch(e){}}
+  if(r.ok){const d=await r.json();if(Array.isArray(d.events)){LIVE_FEED=d.events;paintFeed();if(!feedP.hidden)openFeed();dirty=true}}}catch(e){}}
 loadFeed();setInterval(loadFeed,60*1000);setInterval(()=>{FEED_I++;paintFeed()},5000);
 
 lg.querySelectorAll("[data-set]").forEach(b=>b.onclick=()=>goSet(b.dataset.set));
