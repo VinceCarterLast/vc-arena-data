@@ -273,6 +273,22 @@ body.rec #arena{width:min(1280px,calc(100vw - 40px),calc((100vh - 150px) * 1.777
 .legend .lrow .lv{margin-left:auto;width:64px;text-align:right;font-style:normal;font-size:11px;color:#cfc8b0}.legend .lrow .lv+span{margin-left:12px!important;min-width:44px;text-align:right}
 a.nbs{color:#7fb4ff;font-size:11.5px;text-decoration:none}a.nbs:hover{text-decoration:underline}.nbsline{margin:6px 0 0;text-align:right}
 i.pred{font-style:italic;color:#d9c7ff}
+.legend .lgt{justify-self:end;font:700 11px var(--body);color:var(--muted);background:#1d2133;border:1px solid var(--line);border-radius:999px;padding:3px 9px;cursor:pointer;margin-bottom:-2px}
+.legend.min{min-width:0;padding:6px;overflow:hidden}.legend.min>*:not(.lgt){display:none!important}.legend.min .lgt{margin:0;color:var(--fg)}
+#feed{position:fixed;z-index:6;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom,0px));max-width:min(620px,calc(100vw - 24px));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font:500 13.5px var(--body);color:var(--fg);background:rgba(20,24,38,.94);border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.45)}
+#feed b{font-weight:700}#feed i{font-style:normal;color:var(--muted)}#feed .lv{color:#3ee07f;font-size:11px;letter-spacing:.1em;margin-right:4px}
+#feed .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#3ee07f;margin-right:6px;box-shadow:0 0 0 0 rgba(62,224,127,.7);animation:fpulse 1.6s infinite}
+@keyframes fpulse{70%{box-shadow:0 0 0 8px rgba(62,224,127,0)}100%{box-shadow:0 0 0 0 rgba(62,224,127,0)}}
+#feedP{position:fixed;z-index:30;left:50%;transform:translateX(-50%);bottom:calc(110px + env(safe-area-inset-bottom,0px));width:min(560px,calc(100vw - 24px));max-height:60vh;overflow:auto;background:#141826;border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#feedP header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}#feedP header b{font:800 17px var(--body)}#feedP header button{background:#22273a;border:1px solid var(--line);color:var(--fg);border-radius:50%;width:28px;height:28px;cursor:pointer}
+#feedP ul{list-style:none;margin:0;padding:0}#feedP li{padding:8px 4px;border-top:1px solid var(--line);font-size:13.5px;cursor:pointer}#feedP li:hover{background:#1d2133}#feedP li i{font-style:normal;color:var(--muted)}
+#feedP li small{display:block;color:#bdb9c9;font-size:12px;margin-top:2px}#feedP .fnote{display:block;color:var(--muted);font-size:11.5px;margin-top:8px}
+#feed em.dl,#feedP em.dl{font-style:normal;font-size:11px;font-weight:700;padding:1px 6px;border-radius:999px;margin-left:2px}
+em.dl.good{background:rgba(62,224,127,.15);color:#3ee07f}em.dl.fair{background:rgba(242,201,76,.14);color:#f2c94c}em.dl.hi{background:rgba(255,138,128,.14);color:#ff8a80}
+.lastsale p.hot{color:#ffcf6b;font-weight:700}
+body.tl #feed,body.simu #feed,body.simo #feed,body.rec #feed{display:none!important}
+@media (max-width:700px){#feed{bottom:calc(70px + env(safe-area-inset-bottom,0px));font-size:12.5px}}
 </style>
 
 <canvas id="arena" aria-label="The VC Arena seen from above: one seat per Vince Carter moment"></canvas>
@@ -655,6 +671,10 @@ function draw(){
   // gold rings on special serials
   if(cam.s>.8&&!TL.on){ctx.strokeStyle=GOLD;ctx.lineWidth=1.2;for(const arr of buckets.values())for(const m of arr)if(m.gold&&!m.burned)ctx.strokeRect(m.x-hs-1.2,m.y-hs-1.2,SEAT+2.4,SEAT+2.4)}
   drawTunnelSeats();
+  if(FEED.length&&!TL.on&&!SIMU.play){const now=Date.now(),ph=(now%1400)/1400;let any=false;
+    for(const e of FEED){if(now-Date.parse(e.t)>3600e3)continue;const m=feedSeat(e);if(!m)continue;any=true;
+      ctx.strokeStyle=e.a==="sale"?`rgba(62,224,127,${1-ph})`:e.a==="burn"?`rgba(255,42,64,${1-ph})`:`rgba(242,201,76,${1-ph})`;ctx.lineWidth=Math.max(.8,1.6/cam.s);
+      ctx.beginPath();ctx.arc(m.x,m.y,SEAT*(.8+ph*2.2),0,7);ctx.stroke()}if(any)setTimeout(()=>dirty=true,40)}
   if(selOwner&&focusOwner){ctx.strokeStyle=GOLD;ctx.lineWidth=Math.max(.6,1.4/cam.s);for(const m of selOwner.seats)ctx.strokeRect(m.x-hs-.9,m.y-hs-.9,SEAT+1.8,SEAT+1.8)}
   if(selOwner&&!PIC){ctx.fillStyle="rgba(255,255,255,.9)";const r=Math.max(.9,1.2/cam.s);for(const m of selOwner.seats)if(m!==selSeat){ctx.beginPath();ctx.arc(m.x,m.y,r,0,7);ctx.fill()}}
   if(selSeat){ctx.save();ctx.shadowColor="#f2c94c";ctx.shadowBlur=18;ctx.strokeStyle="rgba(242,201,76,.95)";ctx.lineWidth=Math.max(.8,2/cam.s);ctx.strokeRect(selSeat.x-hs-.8,selSeat.y-hs-.8,SEAT+1.6,SEAT+1.6);ctx.restore()}
@@ -890,6 +910,9 @@ const FAMS=[["dallas",["omega","galac","dallas"],"Dallas"],["cosmic",["cosmic"],
 const RANK=new Map(holders.slice().sort((a,b)=>nHeld(b)-nHeld(a)).map((o,i)=>[o,i+1]));
 const FIRST_RET=new Map();{const best={};for(const m of seats)if(m.burned&&m.burnedAt){const b=best[m.set];if(!b||m.burnedAt<b.burnedAt)best[m.set]=m}
   for(const[k,m]of Object.entries(best)){if(!FIRST_RET.has(m.owner))FIRST_RET.set(m.owner,[]);FIRST_RET.get(m.owner).push(SK[k].name.replace(" · Debut Club",""))}}
+function hotLine(m){if(!FEED.length)return "";const now=Date.now(),sold=FEED.filter(e=>e.set===m.set&&e.a==="sale"&&now-Date.parse(e.t)<864e5).length;
+  const me=FEED.find(e=>e.set===m.set&&e.serial===m.serial);
+  return (me?`<p class="hot">⚡ This seat ${(FEED_TXT[me.a]||[,me.a])[1]} ${ago(me.t)}${me.price?` for ${money(me.price)}`:""}</p>`:"")+(sold?`<p class="hot">🔥 ${sold} ${esc(SK[m.set].name.replace(" · Debut Club",""))} seat${sold===1?"":"s"} sold in the last 24 hours</p>`:"")}
 function salesBlock(m){
   const h=m.hist&&m.hist.length?m.hist:(m.last?[[m.last[0],m.last[1],-1,-1]]:[]),tv=SALES.tv&&SALES.tv[m.set]?SALES.tv[m.set].v:0;
   const nm=i=>i>=0&&DATA.names[i]!=null?esc(disp(DATA.names[i])):"—";
@@ -898,7 +921,7 @@ function salesBlock(m){
   let val="";
   if(NBS){const sx=m.nbs,ex=NBS.sets[m.set];val=sx?`${nbsVal(sx)} <small>(special serial)</small><br>${nbsLink(sx.url)}`:ex&&ex.v?`${nbsVal(ex)}${m.gold?" <small>(special serial: worth at least this)</small>":""}<br>${nbsLink(ex.url)}`:""}
   else if(tv)val=m.gold?(m.stv?`True value <b>${money(m.stv/100)}</b> <small>(special serial, based on its own sales)</small>`:`True value: at least <b>${money(tv/100)}</b> <small>(special serial, hasn't sold yet)</small>`):`True value <b>${money(tv/100)}</b>`;
-  return `<div class="lastsale"><p>${h.length?`💵 This serial last sold <b>${money(h[0][0]/100)}</b> · ${fmtDate(h[0][1])}`:"💵 This serial has never sold on the marketplace"}</p>${val?`<p>📈 ${val}</p>`:""}
+  return `<div class="lastsale">${hotLine(m)}<p>${h.length?`💵 This serial last sold <b>${money(h[0][0]/100)}</b> · ${fmtDate(h[0][1])}`:"💵 This serial has never sold on the marketplace"}</p>${val?`<p>📈 ${val}</p>`:""}
    ${rows.length?`<details class="hist"><summary>History (${h.length} sale${h.length===1?"":"s"}${g.length?`, ${g.length} gift${g.length===1?"":"s"}`:""})</summary><ol>${rows.map(r=>`<li>${r.g?"<b>🎁 Gift</b>":`<b>${money(r.c/100)}</b>`}<span>${fmtDate(r.d)}</span><em>${r.a} → ${r.b}</em></li>`).join("")}</ol></details>`:""}</div>`;
 }
 function collectorInfo(o){
@@ -1098,7 +1121,7 @@ const lg=document.getElementById("legend");
 function goSet(k){setKey=k;setFilter("set");const S=SK[k];match.textContent=`${S.name.replace(" · Debut Club","")} · ${S.minted.toLocaleString()} seats · Rows ${S.list[0].row}–${S.list[S.list.length-1].row}`;
   const xs=S.list.map(m=>m.x),ys=S.list.map(m=>m.y);const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
   const s=clampS(Math.min((W-80)/(x1-x0+80),(H-220)/(y1-y0+80),4));fly({x:(x0+x1)/2,y:(y0+y1)/2,s},900)}
-setTimeout(()=>paintNBS(),0);lg.innerHTML=`<p class="lnote">15,695 moments · 10 editions · 7 plays<span id="nbsTot"></span></p>`+["court","100","200","300"].map(t=>`<h3>${TIERNAME[t]}</h3>`+SETS.filter(s=>s.tier===t).map(s=>`<button class="lrow" data-set="${s.key}"><img class="lthumb" src="${PLAYS[s.key].img}" alt=""><i style="background:${s.color}"></i>${s.name}<em class="lv" data-k="${s.key}"></em><span>${s.minted.toLocaleString()}</span></button>`).join("")).join("")
+setTimeout(()=>paintNBS(),0);lg.innerHTML=`<button class="lgt" id="lgt" aria-label="Hide or show the legend">✕ Hide</button><p class="lnote">15,695 moments · 10 editions · 7 plays<span id="nbsTot"></span></p>`+["court","100","200","300"].map(t=>`<h3>${TIERNAME[t]}</h3>`+SETS.filter(s=>s.tier===t).map(s=>`<button class="lrow" data-set="${s.key}"><img class="lthumb" src="${PLAYS[s.key].img}" alt=""><i style="background:${s.color}"></i>${s.name}<em class="lv" data-k="${s.key}"></em><span>${s.minted.toLocaleString()}</span></button>`).join("")).join("")
  +`<hr><div><i style="background:${GOLD}"></i>⭐ Gold seats (special serials: #1, #15, last mint, Dallas #25)<span>${seats.filter(m=>m.gold).length}</span></div><div><i style="background:#9fe3ff"></i>💎 Diamond hands (HODL 5+ yrs)<span>${seats.filter(m=>m.yrs>=5).length.toLocaleString()}</span></div><div><i style="background:${BURN}"></i>🟥 Retired seats<span>${nBurned}</span></div><div><i style="background:${PACK}"></i>🎁 Still in packs (unopened)<span>${seats.filter(m=>m.pack&&!m.burned).length}</span></div><p class="lnote" style="margin:8px 0 0">© 2026 VC15Tracker · All rights reserved<br>Est. 26·10·26<br>Independent fan project, not affiliated with Dapper Labs, NBA Top Shot, the NBA or Vince Carter. Not financial advice.</p>`;
 
 // ---------- 🔮 supply simulator: 5,000 what-if futures, then play one on the arena ----------
@@ -1494,8 +1517,36 @@ async function loadLive(){
   }catch(e){if(!gotLive)applyListings(LIVE_SNAPSHOT,false)}
 }
 loadLive();setInterval(loadLive,5*60*1000);
+// ---------- live activity feed (activity.json, pushed by the sales bot within a minute or two of each event) ----------
+let FEED=[],FEED_I=0;const OWNER_BY=new Map(owners.map(o=>[String(o.name).toLowerCase(),o]));
+const FEED_TXT={sale:["🟢","sold"],list:["🏷️","listed"],gift:["🎁","gifted"],burn:["🟥","retired"],pack:["📦","pulled from a pack"]};
+const ago=t=>{const m=Math.max(0,Math.round((Date.now()-Date.parse(t))/60000));return m<1?"just now":m<60?`${m} min ago`:m<1440?`${Math.round(m/60)} hr ago`:`${Math.round(m/1440)} d ago`};
+const feedSeat=e=>SK[e.set]&&SK[e.set].list.find(m=>m.serial===e.serial);
+// deal check against the Nothing But Stats True Value (special serials use their own value)
+function dealTag(e){if(!e.price||(e.a!=="list"&&e.a!=="sale"))return "";const m=feedSeat(e),v=m?valueOf(m):AVG_SALE[e.set];if(!v)return "";
+  const r=e.price/v;return r<=.85?` <em class="dl good">✅ Great deal</em>`:r<=1.15?` <em class="dl fair">👍 Fair price</em>`:` <em class="dl hi">⬆ Above value</em>`}
+function feedLine(e,full){const S=SK[e.set];if(!S)return "";const [ic,vb]=FEED_TXT[e.a]||["•",e.a],nm=S.name.replace(" · Debut Club","");
+  let t=`${ic} <b>${esc(nm)} #${e.serial}</b> ${vb}${e.price?` for <b>${money(e.price)}</b>`:""}${dealTag(e)}`;
+  if(full){if(e.a==="sale"&&e.buyer)t+=` to ${esc(disp(e.buyer))}`;if(e.a==="gift"&&e.buyer)t+=` to ${esc(disp(e.buyer))}`}
+  return t+` <i>· ${ago(e.t)}</i>`}
+function sellerLine(name){if(!name)return "";const o=OWNER_BY.get(String(name).toLowerCase());if(!o)return `Seller ${esc(disp(name))}`;
+  const h=nHeld(o);
+  return `Seller <b>${esc(disp(name))}</b>${o.joined?` · on Top Shot since ${o.joined}`:""}${o.sold?` · has sold ${o.sold} VC moment${o.sold===1?"":"s"}`:""}${h?` · still holds ${h}`:""}`}
+const feedEl=document.createElement("button");feedEl.id="feed";feedEl.hidden=true;document.body.appendChild(feedEl);
+const feedP=document.createElement("div");feedP.id="feedP";feedP.hidden=true;document.body.appendChild(feedP);
+function paintFeed(){const ev=FEED.filter(e=>SK[e.set]);if(!ev.length){feedEl.hidden=true;return}feedEl.hidden=false;const e=ev[FEED_I%ev.length];
+  feedEl.innerHTML=`<span class="dot"></span><b class="lv">LIVE</b> ${feedLine(e)}`}
+function openFeed(){feedP.hidden=false;feedP.innerHTML=`<header><b>📰 Live activity</b><button aria-label="Close">✕</button></header><ul>${FEED.filter(e=>SK[e.set]).map((e,i)=>`<li data-i="${i}">${feedLine(e,true)}${e.a==="sale"||e.a==="list"?`<small>${sellerLine(e.seller)}</small>`:""}</li>`).join("")}</ul><small class="fnote">Sales, listings, gifts and retirements as they happen. Tap one to see the seat.</small>`;
+  feedP.querySelector("header button").onclick=()=>feedP.hidden=true;
+  feedP.querySelectorAll("li").forEach(li=>li.onclick=()=>{const e=FEED.filter(x=>SK[x.set])[+li.dataset.i],m=feedSeat(e);if(m){feedP.hidden=true;showSeat(m,true)}})}
+feedEl.onclick=openFeed;
+async function loadFeed(){try{const r=await fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/activity.json?t="+Math.floor(Date.now()/60000),{cache:"no-store"});
+  if(r.ok){const d=await r.json();if(Array.isArray(d.events)){FEED=d.events;paintFeed();if(!feedP.hidden)openFeed();dirty=true}}}catch(e){}}
+loadFeed();setInterval(loadFeed,60*1000);setInterval(()=>{FEED_I++;paintFeed()},5000);
 
 lg.querySelectorAll("[data-set]").forEach(b=>b.onclick=()=>goSet(b.dataset.set));
+{const t=document.getElementById("lgt"),set=min=>{lg.classList.toggle("min",min);t.textContent=min?"📋 Legend":"✕ Hide";try{localStorage.setItem("vcLegendMin",min?"1":"")}catch(e){}};
+ let m0=false;try{m0=localStorage.getItem("vcLegendMin")==="1"}catch(e){}set(m0);t.onclick=()=>set(!lg.classList.contains("min"))}
 window.addEventListener("resize",resize);
 resize();cam=fitView();
 if(document.fonts)document.fonts.ready.then(()=>dirty=true);
