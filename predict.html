@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Score Predictor · VC15 Tracker</title>
+<meta name="description" content="Free score prediction board: everyone picks a final score, the board follows the game live, closest score wins.">
+<meta property="og:title" content="Score Predictor · VC15 Tracker">
+<meta property="og:description" content="Pick a final score, follow along live. Closest score wins. Free to play.">
+<link rel="icon" href="favicon.ico"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d14;--panel:#141826;--line:#2a3045;--fg:#f1ede4;--muted:#9aa0b4;--gold:#f2c94c;--a:#00338d;--a2:#c60c30;--b:#241773;--b2:#9e7c0c;--body:Barlow,system-ui,sans-serif;--head:'Barlow Condensed',system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:500 15px var(--body)}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px 4px}
+header h1{margin:0;font:900 30px var(--head)}header h1 b{color:var(--gold)}
+header .tag{font:800 11px var(--body);letter-spacing:.12em;background:var(--gold);color:#1b1608;border-radius:5px;padding:3px 7px}
+header a{margin-left:auto;text-decoration:none;font:700 13px var(--body);background:#22273a;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
+.sub{padding:0 16px 12px;margin:0;color:var(--muted)}
+main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;padding:0 16px 20px;align-items:start}
+@media (max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.card h2{margin:0 0 8px;font:800 13px var(--body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+/* scoreboard */
+#board{background:#06070b;border:3px solid #2b2f3d;border-radius:16px;padding:14px 16px;box-shadow:inset 0 0 40px rgba(0,0,0,.8)}
+.sbTitle{text-align:center;font:800 14px var(--body);letter-spacing:.14em;color:var(--muted);margin-bottom:8px}
+.sbRow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.team{border-radius:12px;padding:10px;text-align:center}
+.team .ab{font:900 clamp(26px,5vw,44px) var(--head);letter-spacing:.04em;color:#fff}
+.team .nm{font:700 13px var(--body);color:rgba(255,255,255,.8)}
+.team.a{background:linear-gradient(160deg,var(--a),#001d52);box-shadow:inset 0 -4px 0 var(--a2)}
+.team.b{background:linear-gradient(160deg,var(--b),#130b45);box-shadow:inset 0 -4px 0 var(--b2)}
+.score{font:900 clamp(46px,9vw,84px) Orbitron,monospace;color:#ffd84a;text-shadow:0 0 18px rgba(255,200,40,.55);min-width:2.2ch;text-align:center;background:#0d0f16;border-radius:10px;padding:2px 10px;margin-top:6px}
+.mid{display:flex;flex-direction:column;align-items:center;gap:6px}
+.qtr{font:900 22px Orbitron,monospace;color:#ff5a3c;text-shadow:0 0 12px rgba(255,80,40,.5)}
+.vs{font:800 13px var(--body);color:var(--muted)}
+.lead{margin-top:12px;text-align:center;font:800 clamp(18px,3vw,24px) var(--head);color:var(--gold);min-height:1.3em}
+.host{display:none;margin-top:12px;gap:8px;flex-wrap:wrap;justify-content:center}
+body.hosting .host{display:flex}
+.host .grp{display:flex;gap:4px;align-items:center;background:#11141e;border:1px solid var(--line);border-radius:10px;padding:5px}
+.host .grp b{font:800 13px var(--body);padding:0 4px}
+.host button,.btn{border:1px solid var(--line);background:#22273a;color:var(--fg);border-radius:8px;padding:8px 10px;font:800 14px var(--body);cursor:pointer}
+.btn.go{background:var(--gold);color:#1b1608;border-color:var(--gold)}
+/* squares grid */
+#gridWrap{overflow:auto;margin-top:14px;border-radius:12px;background:#0d1018;border:1px solid var(--line);max-height:560px}
+#grid{border-collapse:collapse;font:700 10px var(--body)}
+#grid th{position:sticky;background:#141826;color:var(--muted);font:800 10px var(--body);padding:0 2px;z-index:2}
+#grid thead th{top:0}#grid tbody th{left:0}
+#grid thead th.corner{left:0;z-index:3;font-size:9px;line-height:1.1}
+#grid td{width:22px;height:22px;min-width:22px;border:1px solid #1c2131;text-align:center;color:#fff;cursor:default;position:relative}
+#grid td.pick{background:#2b63d9}
+#grid td.pick.multi{background:#7b3fe4}
+#grid td.now{outline:3px solid #ffd84a;outline-offset:-2px;z-index:1}
+#grid td.cross{background-color:rgba(255,216,74,.08)}
+#grid td.pick.best,#grid td.best{background:#f2c94c;color:#1b1608}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;color:var(--muted);font-size:13px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* leaderboard */
+#lb{list-style:none;margin:0;padding:0}
+#lb li{display:flex;align-items:center;gap:8px;padding:7px 4px;border-bottom:1px solid #1f2436}
+#lb li .r{width:24px;font:900 16px var(--head);color:var(--muted)}
+#lb li:nth-child(-n+3) .r{color:var(--gold)}
+#lb li .n{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#lb li .p{font:800 14px Orbitron,monospace;color:#ffd84a}
+#lb li .d{font-size:12px;color:var(--muted);width:62px;text-align:right}
+label{display:block;font:700 13px var(--body);color:var(--muted);margin:10px 0 5px}
+textarea,input[type=text]{width:100%;background:#0b0d14;color:var(--fg);border:1px solid var(--line);border-radius:9px;padding:9px 10px;font:500 15px var(--body)}
+textarea{min-height:150px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.note{display:block;margin-top:8px;color:var(--muted);font-size:12px;line-height:1.45}
+.bad{color:#ff8a80}
+#tip{position:fixed;pointer-events:none;background:#000;color:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font:600 13px var(--body);z-index:20;max-width:260px}#tip[hidden]{display:none}
+.hostOnly{display:none}body.hosting .hostOnly{display:block}
+.live{margin-top:6px;text-align:center;font:700 13px var(--body);color:var(--muted)}.live.on{color:#3ee07f}
+#winner{display:none;margin-top:12px;text-align:center;background:linear-gradient(90deg,#2a2614,#3a3110,#2a2614);border:1px solid var(--gold);border-radius:12px;padding:12px;font:900 clamp(22px,4vw,34px) var(--head);color:var(--gold)}
+</style>
+</head>
+<body>
+<header><h1>SCORE <b>PREDICTOR</b></h1><span class="tag">FREE</span><a href="games.html">🎮 More giveaway games</a></header>
+<p class="sub">Everyone picks a final score. The board follows the game live, and the closest score wins. Free to play.</p>
+<main>
+<section>
+  <div id="board">
+    <div class="sbTitle" id="sbTitle">SUNDAY · NOV 1 · 1:00 PM ET</div>
+    <div class="sbRow">
+      <div class="team a"><div class="ab" id="abA">BUF</div><div class="nm" id="nmA">Bills</div><div class="score" id="scA">0</div></div>
+      <div class="mid"><div class="qtr" id="qtr">PRE</div><div class="vs">VS</div></div>
+      <div class="team b"><div class="ab" id="abB">BAL</div><div class="nm" id="nmB">Ravens</div><div class="score" id="scB">0</div></div>
+    </div>
+    <div class="lead" id="lead"></div>
+    <div class="live" id="live">⚪ Waiting for the live score…</div>
+    <div id="winner"></div>
+    <div class="host">
+      <div class="grp"><b id="hA">BUF</b><button data-t="A" data-v="7">TD+7</button><button data-t="A" data-v="6">+6</button><button data-t="A" data-v="3">FG+3</button><button data-t="A" data-v="2">+2</button><button data-t="A" data-v="1">+1</button><button data-t="A" data-v="-1">−1</button></div>
+      <div class="grp"><b id="hB">BAL</b><button data-t="B" data-v="7">TD+7</button><button data-t="B" data-v="6">+6</button><button data-t="B" data-v="3">FG+3</button><button data-t="B" data-v="2">+2</button><button data-t="B" data-v="1">+1</button><button data-t="B" data-v="-1">−1</button></div>
+      <div class="grp"><button id="qPrev">◀</button><b>Quarter</b><button id="qNext">▶</button></div>
+    </div>
+  </div>
+  <div id="gridWrap"><table id="grid"></table></div>
+  <div class="legend"><span><i style="background:#2b63d9"></i>Someone picked it</span><span><i style="background:#7b3fe4"></i>2+ people</span><span><i style="background:#f2c94c"></i>Closest right now</span><span><i style="outline:2px solid #ffd84a;background:transparent"></i>Current score</span></div>
+</section>
+<aside>
+  <div class="card"><h2>🏆 Closest right now</h2><ul id="lb"></ul><p class="note" id="lbNote"></p></div>
+  <div class="card" style="margin-top:14px">
+    <h2>Host setup</h2>
+    <p class="note" style="margin-top:0">Paste the replies from your post. Each line: a name and a score, with <b id="firstT">Bills</b> score first, like <code>GabeCollects 27-20</code>.</p>
+    <div class="hostOnly">
+      <div class="two"><div><label>Team 1 (score first)</label><input type="text" id="tA" value="BUF Bills"></div><div><label>Team 2</label><input type="text" id="tB" value="BAL Ravens"></div></div>
+      <label>Game time line</label><input type="text" id="when" value="SUNDAY · NOV 1 · 1:00 PM ET">
+      <label>Prize (optional)</label><input type="text" id="prize" placeholder="e.g. NFL All Day moment">
+    </div>
+    <label for="picks">Picks</label>
+    <textarea id="picks" placeholder="GabeCollects 27-20&#10;@BillsMafia716 31-24&#10;HoopsFan23: 24 17"></textarea>
+    <p class="note" id="parseNote"></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn go" id="hostBtn">🎛️ Host controls</button>
+      <button class="btn" id="final">🏁 Final</button>
+      <button class="btn" id="copy">📋 Copy results</button>
+      <button class="btn" id="share">🔗 Share board link</button>
+    </div>
+    <span class="note">Closest = fewest total points off (Bills difference + Ravens difference). Tie: whoever replied first (higher in the list). Free to enter, no purchase needed.</span>
+  </div>
+</aside>
+</main>
+<div id="tip" hidden></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let S={tA:"BUF Bills",tB:"BAL Ravens",when:"SUNDAY · NOV 1 · 1:00 PM ET",prize:"",picks:"",a:0,b:0,q:0,final:false};
+const QS=["PRE","Q1","Q2","HALF","Q3","Q4","OT","FINAL"];
+// state comes from a shared link (#b=...) or this browser's last session
+function load(){try{const h=location.hash.match(/#b=(.+)/);if(h){S={...S,...JSON.parse(decodeURIComponent(escape(atob(h[1]))))};return}}catch(e){}
+  try{const d=JSON.parse(localStorage.getItem("vcPredict")||"null");if(d)S={...S,...d}}catch(e){}}
+function save(){try{localStorage.setItem("vcPredict",JSON.stringify(S))}catch(e){}}
+const split=t=>{const m=String(t).trim().match(/^(\S+)\s*(.*)$/);return m?[m[1].toUpperCase().slice(0,4),m[2]||m[1]]:["T","Team"]};
+function parse(){const[ab,nm]=split(S.tA),[bb,nmb]=split(S.tB),out=[],bad=[];
+  const aw=new RegExp(`\\b(${ab}|${nm.split(" ").pop()})\\b`,"i"),bw=new RegExp(`\\b(${bb}|${nmb.split(" ").pop()})\\b`,"i");
+  String(S.picks).split(/\n+/).forEach((line,i)=>{const l=line.trim();if(!l)return;const m=l.match(/^@?([A-Za-z0-9_.\-]+)[\s:,]*(.*)$/),name=m&&m[1],rest=m?m[2]:"",nums=(rest.match(/\d{1,2}/g)||[]).map(Number);
+    if(!name||nums.length<2){bad.push(l);return}
+    let a=nums[0],b=nums[1];const ia=rest.search(aw),ib=rest.search(bw);if(ia>=0&&ib>=0&&ib<ia)[a,b]=[b,a];   // "Ravens 24 Bills 21" -> flip
+    out.push({name,a,b,i})});
+  return{list:out,bad}}
+function render(){const[ab,nm]=split(S.tA),[bb,nmb]=split(S.tB);
+  $("abA").textContent=ab;$("nmA").textContent=nm;$("abB").textContent=bb;$("nmB").textContent=nmb;$("hA").textContent=ab;$("hB").textContent=bb;$("firstT").textContent=nm;
+  $("sbTitle").textContent=S.when+(S.prize?` · PRIZE: ${S.prize}`:"");$("scA").textContent=S.a;$("scB").textContent=S.b;$("qtr").textContent=S.final?"FINAL":QS[S.q]+(S.clock&&S.q!==3?" "+S.clock:"");
+  const{list,bad}=parse();
+  $("parseNote").innerHTML=`<b>${list.length}</b> pick${list.length===1?"":"s"}`+(bad.length?` · <span class="bad">couldn't read: ${bad.slice(0,4).map(esc).join(" | ")}${bad.length>4?"…":""}</span>`:"");
+  const ranked=list.map(p=>({...p,d:Math.abs(p.a-S.a)+Math.abs(p.b-S.b)})).sort((x,y)=>x.d-y.d||x.i-y.i);
+  $("lb").innerHTML=ranked.slice(0,10).map((p,k)=>`<li><span class="r">${k+1}</span><span class="n">${esc(p.name)}</span><span class="p">${p.a}-${p.b}</span><span class="d">${p.d===0?"EXACT!":"off by "+p.d}</span></li>`).join("")||`<li><span class="n" style="color:var(--muted)">No picks yet</span></li>`;
+  $("lbNote").textContent=list.length?`${list.length} players · ${ab} score first`:"";
+  const top=ranked[0];
+  $("lead").textContent=top&&!S.final?(S.q===0?`${list.length} picks are in. Kickoff soon!`:`Leading now: ${top.name} (${top.a}-${top.b})${ranked[1]&&ranked[1].d===top.d?" · tied, earlier reply leads":""}`):"";
+  const w=$("winner");if(S.final&&top){w.style.display="block";w.textContent=`🏆 WINNER: ${top.name} · picked ${top.a}-${top.b}${top.d===0?" · EXACT SCORE!":` · off by ${top.d}`}`}else w.style.display="none";
+  // squares: rows = team 1 score, columns = team 2 score
+  const maxA=Math.max(45,S.a+3,...list.map(p=>p.a)),maxB=Math.max(42,S.b+3,...list.map(p=>p.b)),at=new Map();
+  for(const p of list){const k=p.a+":"+p.b;if(!at.has(k))at.set(k,[]);at.get(k).push(p)}
+  const best=top?new Set(ranked.filter(p=>p.d===top.d).slice(0,1).map(p=>p.a+":"+p.b)):new Set();
+  let h=`<thead><tr><th class="corner">${ab}↓<br>${bb}→</th>`;for(let b=0;b<=maxB;b++)h+=`<th>${b}</th>`;h+="</tr></thead><tbody>";
+  for(let a=0;a<=maxA;a++){h+=`<tr><th>${a}</th>`;for(let b=0;b<=maxB;b++){const k=a+":"+b,ps=at.get(k),cls=[];if(ps)cls.push("pick",ps.length>1?"multi":"");if(best.has(k)&&S.q>0)cls.push("best");if(a===S.a&&b===S.b&&S.q>0)cls.push("now");else if(S.q>0&&(a===S.a||b===S.b))cls.push("cross");
+      h+=`<td class="${cls.join(" ")}" data-k="${k}">${ps?(ps.length>1?ps.length:esc(ps[0].name.slice(0,2).toUpperCase())):""}</td>`}h+="</tr>"}
+  $("grid").innerHTML=h+"</tbody>";
+  // keep the current score in view
+  const now=document.querySelector("#grid td.now")||document.querySelector("#grid td.best");if(now&&S.q>0){const gw=$("gridWrap");gw.scrollTop=Math.max(0,now.offsetTop-gw.clientHeight/2);gw.scrollLeft=Math.max(0,now.offsetLeft-gw.clientWidth/2)}
+  window.__at=at;save()}
+$("grid").addEventListener("mousemove",e=>{const td=e.target.closest("td");const t=$("tip");if(!td||!window.__at.get(td.dataset.k)){t.hidden=true;return}const[a,b]=td.dataset.k.split(":");
+  t.hidden=false;t.innerHTML=`<b>${a}-${b}</b><br>${window.__at.get(td.dataset.k).map(p=>esc(p.name)).join("<br>")}`;t.style.left=Math.min(innerWidth-270,e.clientX+12)+"px";t.style.top=(e.clientY+12)+"px"});
+$("grid").addEventListener("mouseleave",()=>$("tip").hidden=true);
+$("grid").addEventListener("click",e=>{const td=e.target.closest("td");if(!td||!window.__at.get(td.dataset.k))return;const[a,b]=td.dataset.k.split(":");alert(`${a}-${b}: `+window.__at.get(td.dataset.k).map(p=>p.name).join(", "))});
+for(const id of["tA","tB","when","prize","picks"])$(id).oninput=()=>{S[id]=$(id).value;render()};
+document.querySelectorAll(".host button[data-t]").forEach(b=>b.onclick=()=>{const k=b.dataset.t==="A"?"a":"b";S[k]=Math.max(0,S[k]+Number(b.dataset.v));if(S.q===0)S.q=1;S.final=false;S.clock="";render()});
+$("qNext").onclick=()=>{S.q=Math.min(QS.length-2,S.q+1);S.final=false;render()};$("qPrev").onclick=()=>{S.q=Math.max(0,S.q-1);S.final=false;render()};
+$("final").onclick=()=>{S.final=!S.final;if(S.q===0)S.q=5;render()};
+$("hostBtn").onclick=()=>document.body.classList.toggle("hosting");
+function resultText(){const{list}=parse();const r=list.map(p=>({...p,d:Math.abs(p.a-S.a)+Math.abs(p.b-S.b)})).sort((x,y)=>x.d-y.d||x.i-y.i);const[ab]=split(S.tA),[bb]=split(S.tB);
+  return `🏈 ${S.final?"FINAL":QS[S.q]}: ${ab} ${S.a} - ${bb} ${S.b}\n`+(r[0]?`🏆 ${S.final?"Winner":"Leading"}: ${r[0].name} (picked ${r[0].a}-${r[0].b}${r[0].d===0?", exact!":`, off by ${r[0].d}`})\n`:"")+(r[1]?`🥈 ${r[1].name} (${r[1].a}-${r[1].b})\n`:"")+(r[2]?`🥉 ${r[2].name} (${r[2].a}-${r[2].b})\n`:"")+`${list.length} players · free to play · vc15tracker.com/predict.html`}
+$("copy").onclick=e=>{navigator.clipboard&&navigator.clipboard.writeText(resultText());e.target.textContent="✅ Copied";setTimeout(()=>e.target.textContent="📋 Copy results",1500)};
+$("share").onclick=e=>{const u=location.origin+location.pathname+"#b="+btoa(unescape(encodeURIComponent(JSON.stringify(S))));navigator.clipboard&&navigator.clipboard.writeText(u);e.target.textContent="✅ Link copied";setTimeout(()=>e.target.textContent="🔗 Share board link",1500)};
+// ---- automatic live score: the bot on the Mac mini pushes score.json (from ESPN) every minute during the game ----
+const SCORE_URL="https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/score.json";
+let lastUpd="";
+async function pollScore(){try{const r=await fetch(SCORE_URL+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const g=await r.json();
+  const[ab]=split(S.tA),[bb]=split(S.tB),T=g.teams||{},el=$("live");
+  if(!(ab in T)||!(bb in T)){el.className="live";el.textContent="⚪ Live score not available for this game. The host updates it.";return}
+  if(g.updated&&g.updated!==lastUpd){lastUpd=g.updated;
+    if(g.state!=="pre"){S.a=T[ab];S.b=T[bb];S.final=!!g.final;S.q=g.half?3:g.period>=5?6:g.period===4?5:g.period===3?4:g.period===2?2:g.period===1?1:S.q;S.clock=g.final?"":(g.half?"":g.clock||"")}
+    render()}
+  el.className="live"+(g.state==="in"?" on":"");el.textContent=g.state==="in"?`🟢 LIVE · score updates automatically · ${g.detail||""}`:g.final?"🏁 Final score":`⏰ ${g.detail||"Kickoff soon"} · the score will update by itself`}catch(e){}}
+load();for(const id of["tA","tB","when","prize","picks"])$(id).value=S[id];
+if(/[?&]host\b/.test(location.search))document.body.classList.add("hosting");
+render();pollScore();setInterval(pollScore,30000);
+</script>
+</body>
+</html>

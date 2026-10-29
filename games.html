@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Giveaway Games · VC15 Tracker</title>
+<meta name="description" content="Free giveaway games: paste your entries and watch a duck race or marble race pick the winner. Secure random, record a video for X.">
+<meta property="og:title" content="Giveaway Games · VC15 Tracker">
+<meta property="og:description" content="Paste your entries, watch the race, post the winner. Free for any collector or community.">
+<link rel="icon" href="favicon.ico"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d14;--panel:#141826;--line:#2a3045;--fg:#f1ede4;--muted:#9aa0b4;--gold:#f2c94c;--red:#ce1141;--blue:#2b63d9;--body:Barlow,system-ui,sans-serif;--head:'Barlow Condensed',system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:500 15px var(--body)}
+a{color:var(--gold)}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px 6px}
+header h1{margin:0;font:900 30px var(--head);letter-spacing:.01em}header h1 b{color:var(--gold)}
+header .tag{font:800 11px var(--body);letter-spacing:.12em;background:var(--gold);color:#1b1608;border-radius:5px;padding:3px 7px}
+header .back{margin-left:auto;text-decoration:none;font:700 13px var(--body);background:#22273a;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
+.sub{padding:0 16px 10px;color:var(--muted);margin:0}
+main{display:grid;grid-template-columns:340px 1fr;gap:14px;padding:0 16px 16px;align-items:start}
+@media (max-width:860px){main{grid-template-columns:1fr}#stageWrap{order:-1}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.card h2{margin:0 0 8px;font:800 14px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.games{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.games button{background:#1b2032;border:2px solid var(--line);color:var(--fg);border-radius:12px;padding:12px 8px;font:800 16px var(--head);letter-spacing:.02em;cursor:pointer;text-align:center}
+.games button span{display:block;font-size:28px;line-height:1.1}
+.games button.on{border-color:var(--gold);background:#2a2614}
+.games button.soon{opacity:.45;cursor:default}
+label{display:block;font:700 13px var(--body);color:var(--muted);margin:10px 0 5px}
+textarea,input[type=text]{width:100%;background:#0b0d14;color:var(--fg);border:1px solid var(--line);border-radius:9px;padding:9px 10px;font:500 15px var(--body)}
+textarea{min-height:170px;resize:vertical}
+.count{margin:6px 0 0;color:var(--muted);font-size:13px}.count b{color:var(--fg)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{flex:1 1 auto;border:0;border-radius:10px;padding:12px 14px;font:800 15px var(--body);cursor:pointer;background:#22273a;color:var(--fg);border:1px solid var(--line)}
+.btn.go{background:var(--gold);color:#1b1608;border-color:var(--gold);flex-basis:100%}
+.btn:disabled{opacity:.45;cursor:default}
+small.note{display:block;margin-top:10px;color:var(--muted);font-size:12px;line-height:1.45}
+#stageWrap{position:relative}
+#stage{width:100%;aspect-ratio:16/9;display:block;background:#0b0d14;border-radius:14px;border:1px solid var(--line)}
+#modal{position:fixed;inset:0;background:rgba(5,6,10,.72);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}#modal[hidden]{display:none}
+#modal .card{width:min(460px,100%)}#modal h3{margin:0 0 8px;font:900 26px var(--head);color:var(--gold)}
+#modal ol{margin:6px 0 12px;padding-left:22px;font:700 17px var(--body)}#modal li{margin:3px 0}
+#recBar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#141826;border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;gap:12px;align-items:center;z-index:10}#recBar[hidden]{display:none}
+body.rec #stage{aspect-ratio:auto}
+</style>
+</head>
+<body>
+<header>
+  <h1>GIVEAWAY <b>GAMES</b></h1><span class="tag">FREE</span>
+  <a class="back" href="./">🏟️ Back to The VC Arena</a>
+</header>
+<p class="sub">Paste your entries, pick a game, and watch it pick the winner. Free for any collector or community.</p>
+<main>
+  <section class="card" id="controls">
+    <h2>1 · Pick a game</h2>
+    <div class="games" id="games">
+      <button data-g="duck" class="on"><span>🦆</span>Duck Race</button>
+      <button data-g="marble"><span>🏁</span>Marble Race</button>
+      <button class="soon" disabled><span>🎡</span>Wheel · soon</button>
+      <button class="soon" disabled><span>🔻</span>Plinko · soon</button>
+      <a href="predict.html" style="grid-column:1/-1;text-decoration:none;background:#1b2032;border:2px solid var(--line);color:var(--fg);border-radius:12px;padding:10px;font:800 16px var(--head);text-align:center"><span style="font-size:22px">🏈</span> Score Predictor · closest score wins</a>
+    </div>
+    <h2>2 · Entries</h2>
+    <label for="prize">Prize (optional)</label>
+    <input type="text" id="prize" maxlength="60" placeholder="e.g. Vince Carter Archive moment">
+    <label for="names">Names, one per line or separated by commas</label>
+    <textarea id="names" placeholder="GabeCollects&#10;HoopsFan23&#10;DunkCityDave"></textarea>
+    <p class="count" id="count"></p>
+    <div class="row">
+      <button class="btn go" id="go">▶ Start the race</button>
+      <button class="btn" id="rec">🎬 Record 16:9</button>
+      <button class="btn" id="recv">📱 Record 9:16</button>
+    </div>
+    <small class="note">The winner is drawn with secure random (your browser's crypto) before the race starts, and every entry has the same chance. The race just shows the result. Want someone to have more chances? Add their name more than once.</small>
+  </section>
+  <section id="stageWrap"><canvas id="stage"></canvas></section>
+</main>
+<div id="modal" hidden><div class="card"><h3 id="mTitle">🏆 Results</h3><ol id="mList"></ol>
+  <div class="row"><button class="btn go" id="mCopy">📋 Copy results</button><button class="btn" id="mAgain">🔁 Remove winner, race again</button><button class="btn" id="mClose">Close</button></div></div></div>
+<div id="recBar" hidden><span id="recMsg">🔴 Recording…</span><button class="btn" id="recStop">⏹ Stop</button></div>
+<script>
+"use strict";
+const cv=document.getElementById("stage"),ctx=cv.getContext("2d");
+let W=1280,H=720,DPR=1,REC=null,GAME="duck",RACE=null;
+const $=id=>document.getElementById(id);
+const rnd=n=>{const u=new Uint32Array(1);crypto.getRandomValues(u);return u[0]%n};
+const rr=()=>rnd(1e9)/1e9;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const F="'Barlow Condensed',sans-serif",B="Barlow,sans-serif";
+const COLS=["#ff6b6b","#4dabf7","#69db7c","#ffa94d","#da77f2","#3bc9db","#f783ac","#a9e34b","#9775fa","#ffd43b","#38d9a9","#74c0fc","#e599f7","#ffc078","#63e6be","#ff8787"];
+function names(){return $("names").value.split(/[\n,]+/).map(s=>s.trim().replace(/^@/,"")).filter(Boolean).slice(0,500)}
+function save(){try{localStorage.setItem("vcGames",JSON.stringify({n:$("names").value,p:$("prize").value,g:GAME}))}catch(e){}}
+try{const d=JSON.parse(localStorage.getItem("vcGames")||"null");if(d){$("names").value=d.n||"";$("prize").value=d.p||"";if(d.g)GAME=d.g}}catch(e){}
+function upd(){const n=names().length;$("count").innerHTML=n<2?"Add at least 2 names.":`<b>${n}</b> entries · each has a 1 in ${n} chance`;for(const id of["go","rec","recv"])$(id).disabled=n<2||!!RACE;save()}
+$("names").oninput=upd;$("prize").oninput=save;
+for(const b of document.querySelectorAll("#games button[data-g]"))b.onclick=()=>{if(RACE)return;GAME=b.dataset.g;document.querySelectorAll("#games button").forEach(x=>x.classList.toggle("on",x===b));save();idle()};
+document.querySelectorAll("#games button").forEach(x=>x.classList.toggle("on",x.dataset.g===GAME));
+
+function fit(){if(REC)return;const r=cv.getBoundingClientRect();DPR=Math.min(2,devicePixelRatio||1);W=Math.max(320,r.width);H=W*9/16;cv.width=W*DPR;cv.height=H*DPR;if(!RACE)idle()}
+addEventListener("resize",fit);
+
+// ---- race engine: finish order drawn first (secure random, equal chances), then the race plays it out ----
+function makeRace(list){const order=[...list.keys()];for(let i=order.length-1;i>0;i--){const j=rnd(i+1);[order[i],order[j]]=[order[j],order[i]]}
+  const D=GAME==="duck"?24:30;let T=D;
+  const rs=order.map((idx,r)=>{if(r===1)T+=.18;else if(r===2)T+=.32;else if(r>2)T+=.12+rr()*.4;return {name:list[idx],T,a1:rr()*7,a2:rr()*7,a3:rr()*7,f1:.8+rr()*.8,f2:1.8+rr()*.8,col:COLS[rnd(COLS.length)]}});
+  const lanes=[...rs];for(let i=lanes.length-1;i>0;i--){const j=rnd(i+1);[lanes[i],lanes[j]]=[lanes[j],lanes[i]]}lanes.forEach((r,i)=>r.lane=i);
+  return {rs,order:rs,t:-3.4,last:performance.now(),T0:rs[0].T,T2:(rs[2]||rs[1]).T,prize:$("prize").value.trim(),n:list.length,game:GAME,done:false,parts:[],conf:[]}}
+function prog(r,t){if(t<=0)return 0;const x=t/r.T;if(x>=1)return 1+Math.min(.04,(x-1)*.12);
+  const base=(x<.08?x*x/.16:x-.04)/.96,n=.6*Math.sin(6.283*r.f1*x+r.a1)+.4*Math.sin(6.283*r.f2*x+r.a2);return Math.max(0,Math.min(.999,base+.05*Math.sin(Math.PI*x)*n))}
+function tick(){const R=RACE,now=performance.now(),dt=Math.min(.1,(now-R.last)/1000);R.last=now;
+  R.slow=R.t>R.T0-1.1&&R.t<R.T2+.3;R.t+=dt*(R.slow?.33:1);
+  for(const r of R.rs){r.p=prog(r,R.t);r.fin=R.t>=r.T}
+  R.rank=R.rs.slice().sort((a,b)=>a.fin&&b.fin?a.T-b.T:a.fin?-1:b.fin?1:b.p-a.p);
+  if(!R.endAt&&R.t>R.T2+1.2){R.endAt=now;for(let i=0;i<140;i++)R.conf.push({x:rr()*W,y:-rr()*H*.5,vx:(rr()-.5)*2,vy:2+rr()*3,c:COLS[rnd(COLS.length)],r:rr()*6})}
+  if(R.endAt&&now-R.endAt>6500&&!R.done){R.done=true;if(!REC)showResults()}}
+
+// ---- shared overlays ----
+function banner(R){const big=Math.max(26,Math.min(54,W/22));ctx.fillStyle="rgba(11,13,20,.85)";ctx.fillRect(0,0,W,big*2.2);ctx.textAlign="center";ctx.textBaseline="alphabetic";
+  if(R&&R.endAt){const[a,b,c]=R.order;ctx.fillStyle="#f2c94c";ctx.font=`900 ${big}px ${F}`;ctx.fillText(`🏆 WINNER: ${a.name}`,W/2,big*1.02);ctx.fillStyle="#f1ede4";ctx.font=`700 ${big*.4}px ${B}`;ctx.fillText(`🥈 ${b.name}${c?` · 🥉 ${c.name}`:""}${R.prize?` · Prize: ${R.prize}`:""}`,W/2,big*1.7)}
+  else{ctx.fillStyle="#f2c94c";ctx.font=`900 ${big}px ${F}`;ctx.fillText(GAME==="duck"?"🦆 DUCK RACE":"🏁 MARBLE RACE",W/2,big*1.02);ctx.fillStyle="#f1ede4";ctx.font=`700 ${big*.4}px ${B}`;
+    ctx.fillText(R?`${R.n} racers${R.prize?` · Prize: ${R.prize}`:""}`:"Paste your entries and press Start",W/2,big*1.7)}
+  return big*2.2}
+function overlays(R,top){const big=Math.max(26,Math.min(54,W/22)),narrow=W<H;
+  if(R.t<.8&&!R.endAt){const n=R.t<0?Math.ceil(-R.t-.4):0,t=n>0?String(Math.min(3,n)):"GO!";ctx.textAlign="center";ctx.font=`900 ${big*2.6}px ${F}`;ctx.lineWidth=10;ctx.strokeStyle="rgba(0,0,0,.55)";ctx.fillStyle=n>0?"#fff":"#3ee07f";ctx.strokeText(t,W/2,H*.58);ctx.fillText(t,W/2,H*.58)}
+  if(R.slow&&!R.endAt){ctx.font=`800 ${big*.6}px ${F}`;const t="📸 PHOTO FINISH",w=ctx.measureText(t).width+30;ctx.fillStyle="#ff5a7a";ctx.beginPath();ctx.roundRect(W/2-w/2,top+10,w,big*.9,10);ctx.fill();ctx.fillStyle="#111";ctx.textAlign="center";ctx.fillText(t,W/2,top+10+big*.66)}
+  if(R.rank&&!R.endAt){const n=Math.min(narrow?5:8,R.rank.length),rw=narrow?W*.8:Math.min(270,W*.3),rh=narrow?22:24,x0=narrow?W*.1:W-rw-12,y0=narrow?H-rh*n-H*.14:top+12;
+    ctx.fillStyle="rgba(11,13,20,.82)";ctx.beginPath();ctx.roundRect(x0,y0,rw,rh*n+10,10);ctx.fill();ctx.textBaseline="middle";
+    R.rank.slice(0,n).forEach((r,i)=>{const y=y0+5+rh*(i+.5);ctx.textAlign="left";ctx.font=`800 15px ${F}`;ctx.fillStyle=i<3?"#f2c94c":"#9aa0b4";ctx.fillText(String(i+1),x0+10,y);ctx.fillStyle=r.col;ctx.beginPath();ctx.arc(x0+32,y,5,0,7);ctx.fill();
+      let nm=r.name;if(nm.length>20)nm=nm.slice(0,19)+"…";ctx.fillStyle="#f1ede4";ctx.font=`700 14px ${B}`;ctx.fillText(nm,x0+44,y);if(r.fin){ctx.textAlign="right";ctx.fillText("🏁",x0+rw-8,y)}});ctx.textBaseline="alphabetic"}
+  for(const c of R.conf){c.x+=c.vx;c.y+=c.vy;c.vy+=.03;ctx.fillStyle=c.c;ctx.fillRect(c.x,c.y,6,10)}
+  ctx.textAlign="right";ctx.fillStyle="rgba(241,237,228,.8)";ctx.font=`800 ${Math.max(13,W/70)}px ${F}`;ctx.fillText("VC15TRACKER.COM/GAMES · @VC15Tracker",W-12,H-12)}
+
+// ---- 🦆 duck race on a river ----
+function drawDuck(x,y,s,col,bob){ctx.save();ctx.translate(x,y+bob);
+  ctx.fillStyle="rgba(255,255,255,.35)";ctx.beginPath();ctx.ellipse(-s*.1,s*.32,s*.75,s*.12,0,0,7);ctx.fill();
+  ctx.fillStyle="#ffd43b";ctx.beginPath();ctx.ellipse(0,0,s*.62,s*.38,0,0,7);ctx.fill();          // body
+  ctx.beginPath();ctx.moveTo(-s*.55,-s*.05);ctx.lineTo(-s*.8,-s*.32);ctx.lineTo(-s*.45,-s*.18);ctx.fill();  // tail
+  ctx.beginPath();ctx.arc(s*.36,-s*.4,s*.27,0,7);ctx.fill();                                          // head
+  ctx.fillStyle="#ff922b";ctx.beginPath();ctx.ellipse(s*.66,-s*.36,s*.17,s*.08,0,0,7);ctx.fill();      // beak
+  ctx.fillStyle="#111";ctx.beginPath();ctx.arc(s*.44,-s*.46,s*.05,0,7);ctx.fill();
+  ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(-s*.05,-s*.02,s*.3,s*.18,-.2,0,7);ctx.fill();          // coloured wing = their colour
+  ctx.restore()}
+function drawDuckRace(R){const now=performance.now()/1000,L=3000,top=banner(R),bank=Math.max(18,H*.06),y0=top+bank,y1=H-bank,lanesN=R?Math.min(16,R.rs.length):8,lh=(y1-y0)/lanesN;
+  const lead=R&&R.rank?R.rank[0].p*L:0,view=W*.62;let cam=Math.max(-W*.15,Math.min(L+W*.3-W,lead-view));if(!R||R.t<=0)cam=-W*.15;if(R&&R.endAt)cam=L+W*.3-W;
+  // banks and water
+  ctx.fillStyle="#2f9e44";ctx.fillRect(0,top,W,bank);ctx.fillRect(0,y1,W,bank);
+  const g=ctx.createLinearGradient(0,y0,0,y1);g.addColorStop(0,"#1c7ed6");g.addColorStop(1,"#1864ab");ctx.fillStyle=g;ctx.fillRect(0,y0,W,y1-y0);
+  ctx.strokeStyle="rgba(255,255,255,.18)";ctx.lineWidth=2;for(let i=0;i<14;i++){const yy=y0+(i+.5)*(y1-y0)/14;ctx.beginPath();for(let x=0;x<=W;x+=20){const wx=x+cam;const yv=yy+Math.sin(wx/60+now*2+i)*3;x?ctx.lineTo(x,yv):ctx.moveTo(x,yv)}ctx.stroke()}
+  if(lanesN<=16){ctx.fillStyle="rgba(255,255,255,.55)";for(let k=1;k<lanesN;k++){const yy=y0+k*lh;for(let x=(-cam%40+40)%40;x<W;x+=40){ctx.beginPath();ctx.arc(x,yy,2.5,0,7);ctx.fill()}}}
+  // start & finish
+  const sx=0-cam,fx=L-cam;ctx.fillStyle="rgba(255,255,255,.9)";if(sx>-10&&sx<W)ctx.fillRect(sx-2,y0,4,y1-y0);
+  if(fx>-30&&fx<W+30){const q=12;for(let yy=y0,i=0;yy<y1;yy+=q,i++)for(let j=0;j<2;j++){ctx.fillStyle=(i+j)%2?"#fff":"#111";ctx.fillRect(fx+j*q,yy,q,q)}
+    ctx.fillStyle="#f1ede4";ctx.font=`900 ${Math.max(16,W/40)}px ${F}`;ctx.textAlign="center";ctx.fillText("FINISH",fx+q,top+bank*.72)}
+  if(!R)return;
+  const s=Math.max(16,Math.min(46,lh*(R.rs.length>16?1.1:.8)));
+  const items=R.rs.map(r=>{const row=r.lane%lanesN,yy=y0+(row+.6)*lh+(R.rs.length>16?((r.lane/lanesN|0)%3-1)*lh*.18:0);return{r,x:r.p*L-cam,y:yy}}).sort((a,b)=>a.y-b.y);
+  for(const it of items){const bob=Math.sin(now*4+it.r.a1)*2;if(R.t>0&&!it.r.fin&&rnd(6)===0)R.parts.push({x:it.x-s*.6,y:it.y+s*.25,vx:-1-rr()*2,vy:-rr()*1.5,l:1});drawDuck(it.x,it.y,s,it.r.col,bob)}
+  ctx.fillStyle="rgba(255,255,255,.8)";R.parts=R.parts.filter(p=>(p.l-=.04)>0);for(const p of R.parts){p.x+=p.vx;p.y+=p.vy;p.vy+=.08;ctx.globalAlpha=p.l;ctx.beginPath();ctx.arc(p.x,p.y,2.2,0,7);ctx.fill()}ctx.globalAlpha=1;
+  // name tags: everyone when few ducks, the top 8 otherwise
+  const show=new Set((R.rank||[]).slice(0,R.rs.length<=16?99:8));ctx.font=`700 ${Math.max(11,Math.min(15,s*.38))}px ${B}`;ctx.textAlign="center";ctx.textBaseline="middle";
+  for(const it of items){if(!show.has(it.r))continue;const t=(R.rank[0]===it.r?"👑 ":"")+it.r.name.slice(0,18),w=ctx.measureText(t).width+12,ty=it.y-s*.95;ctx.fillStyle=R.rank[0]===it.r?"rgba(242,201,76,.95)":"rgba(11,13,20,.75)";ctx.beginPath();ctx.roundRect(it.x-w/2,ty-10,w,20,10);ctx.fill();ctx.fillStyle=R.rank[0]===it.r?"#111":"#fff";ctx.fillText(t,it.x,ty+.5)}
+  ctx.textBaseline="alphabetic";overlays(R,top)}
+
+// ---- 🏁 marble race on its own clean track ----
+function trackPt(u,hw,hh){const r=hh,straight=2*(hw-r),Lp=2*straight+2*Math.PI*r;let d=((u%1)+1)%1*Lp;
+  if(d<straight/2)return[d,-r,0];d-=straight/2;if(d<Math.PI*r){const a=-Math.PI/2+d/r;return[hw-r+Math.cos(a)*r,Math.sin(a)*r,a+Math.PI/2]}d-=Math.PI*r;
+  if(d<straight)return[hw-r-d,r,Math.PI];d-=straight;if(d<Math.PI*r){const a=Math.PI/2+d/r;return[-(hw-r)+Math.cos(a)*r,Math.sin(a)*r,a+Math.PI/2]}d-=Math.PI*r;return[-(hw-r)+d,-r,0]}
+function drawMarbleRace(R){const top=banner(R),narrow=W<H,side=narrow?0:Math.min(290,W*.3),cx=(W-side)/2,cy=top+(H-top)/2+4,hw=narrow?W*.36:Math.min((W-side)*.4,(H-top)*.95),hh=Math.min((H-top)*.36,hw*.55),tw=Math.max(26,Math.min(70,hh*.42));
+  ctx.fillStyle="#12341f";ctx.beginPath();ctx.roundRect(cx-hw-tw,cy-hh-tw,2*(hw+tw),2*(hh+tw),hh+tw);ctx.fill();
+  ctx.save();ctx.translate(cx,cy);ctx.strokeStyle="#2b2f3d";ctx.lineWidth=tw;ctx.lineJoin="round";ctx.beginPath();for(let i=0;i<=200;i++){const[x,y]=trackPt(i/200,hw,hh);i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath();ctx.stroke();
+  ctx.strokeStyle="rgba(255,255,255,.25)";ctx.setLineDash([10,12]);ctx.lineWidth=2;ctx.stroke();ctx.setLineDash([]);
+  const q=tw/6;for(let i=0;i<6;i++)for(let j=0;j<2;j++){ctx.fillStyle=(i+j)%2?"#fff":"#111";ctx.fillRect(-q+j*q,-hh-tw/2+i*q,q,q)}
+  if(R){const laps=2,r=Math.max(4,Math.min(11,tw/5.5));
+    const items=R.rs.map(m=>{const u=m.p*laps,[x,y,a]=trackPt(u,hw,hh),off=((m.lane%5)-2)*tw*.17,nx=-Math.sin(a),ny=Math.cos(a);return{m,x:x+nx*off,y:y+ny*off}});
+    for(const it of items.sort((a,b)=>a.m.p-b.m.p)){ctx.fillStyle="rgba(0,0,0,.35)";ctx.beginPath();ctx.arc(it.x+1.5,it.y+2,r,0,7);ctx.fill();const g=ctx.createRadialGradient(it.x-r*.35,it.y-r*.35,r*.15,it.x,it.y,r);g.addColorStop(0,"#fff");g.addColorStop(.3,it.m.col);g.addColorStop(1,"rgba(0,0,0,.55)");ctx.fillStyle=it.m.col;ctx.beginPath();ctx.arc(it.x,it.y,r,0,7);ctx.fill();ctx.fillStyle=g;ctx.fill()}
+    const show=(R.rank||[]).slice(0,R.rs.length<=10?99:5);ctx.font=`700 ${Math.max(11,r*1.3)}px ${B}`;ctx.textAlign="center";ctx.textBaseline="middle";
+    for(const m of show){const it=items.find(i=>i.m===m),t=(R.rank[0]===m?"👑 ":"")+m.name.slice(0,16),w=ctx.measureText(t).width+12;ctx.fillStyle=R.rank[0]===m?"rgba(242,201,76,.95)":"rgba(11,13,20,.78)";ctx.beginPath();ctx.roundRect(it.x-w/2,it.y-r-24,w,19,9);ctx.fill();ctx.fillStyle=R.rank[0]===m?"#111":"#fff";ctx.fillText(t,it.x,it.y-r-14.5)}
+    const lead=R.rank?R.rank[0]:null;ctx.textBaseline="alphabetic";ctx.restore();
+    if(lead&&!R.endAt){ctx.fillStyle="#f1ede4";ctx.font=`800 ${Math.max(16,W/45)}px ${F}`;ctx.textAlign="center";ctx.fillText(lead.p<.5?"LAP 1 OF 2":"🔔 FINAL LAP",cx,cy+6)}
+    overlays(R,top)}else ctx.restore()}
+
+function frame(){ctx.setTransform(DPR,0,0,DPR,0,0);ctx.fillStyle="#0b0d14";ctx.fillRect(0,0,W,H);
+  if(RACE&&!RACE.done)tick();(GAME==="duck"?drawDuckRace:drawMarbleRace)(RACE&&RACE.game===GAME?RACE:null);
+  if(RACE&&RACE.done&&!REC){}if(RACE&&RACE.done&&REC&&!REC.stopping){REC.stopping=true;setTimeout(()=>REC&&REC.rec.stop(),600)}
+  if(RACE&&!RACE.done)requestAnimationFrame(frame)}
+function idle(){if(!RACE||RACE.done){frame()}}
+function start(){const list=names();if(list.length<2)return false;$("modal").hidden=true;RACE=makeRace(list);upd();requestAnimationFrame(frame);return true}
+$("go").onclick=start;
+function showResults(){const R=RACE;$("mTitle").textContent="🏆 "+R.order[0].name+" wins!";$("mList").innerHTML=R.order.slice(0,3).map(r=>`<li>${esc(r.name)}</li>`).join("");$("modal").hidden=false;RACE.final=true;const R2=RACE;RACE=null;LASTR=R2;upd()}
+let LASTR=null;
+function resultText(R){const[a,b,c]=R.order;return `${R.game==="duck"?"🦆 Duck Race":"🏁 Marble Race"} results${R.prize?` · ${R.prize}`:""}\n🥇 ${a.name}\n${b?"🥈 "+b.name+"\n":""}${c?"🥉 "+c.name+"\n":""}${R.n} entries · vc15tracker.com/games`}
+$("mCopy").onclick=e=>{if(LASTR&&navigator.clipboard)navigator.clipboard.writeText(resultText(LASTR));e.target.textContent="✅ Copied"};
+$("mClose").onclick=()=>$("modal").hidden=true;
+$("mAgain").onclick=()=>{if(!LASTR)return;const w=LASTR.order[0].name;const l=names();const i=l.indexOf(w);if(i>=0){l.splice(i,1);$("names").value=l.join("\n");upd()}$("modal").hidden=true;$("mCopy").textContent="📋 Copy results"};
+
+// ---- record a video of the race ----
+function recStart(vert){const types=["video/mp4;codecs=avc1.42E01E","video/mp4","video/webm;codecs=vp9","video/webm"],type=window.MediaRecorder&&types.find(t=>MediaRecorder.isTypeSupported(t));
+  if(!cv.captureStream||!type){alert("Recording isn't supported in this browser. Try Chrome on a computer, or use your phone's screen recorder.");return}
+  if(names().length<2)return;document.body.classList.add("rec");
+  if(vert){W=540;H=960;DPR=2}else{W=1280;H=720;DPR=1.5}cv.width=W*DPR;cv.height=H*DPR;
+  const chunks=[],rec=new MediaRecorder(cv.captureStream(30),{mimeType:type,videoBitsPerSecond:8e6});REC={rec};
+  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  rec.onstop=()=>{const ext=type.includes("mp4")?"mp4":"webm",blob=new Blob(chunks,{type:type.split(";")[0]}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`giveaway-${GAME}-race${vert?"-vertical":""}.${ext}`;document.body.appendChild(a);a.click();a.remove();
+    REC=null;document.body.classList.remove("rec");$("recBar").hidden=true;fit();if(RACE&&RACE.done)showResults()};
+  rec.start();$("recBar").hidden=false;$("recMsg").textContent="🔴 Recording… it stops by itself at the end.";start()}
+$("rec").onclick=()=>recStart(false);$("recv").onclick=()=>recStart(true);
+$("recStop").onclick=()=>{if(REC&&!REC.stopping){REC.stopping=true;REC.rec.stop()}};
+document.fonts&&document.fonts.ready.then(()=>idle());
+fit();upd();
+</script>
+</body>
+</html>
