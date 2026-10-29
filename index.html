@@ -289,6 +289,14 @@ em.dl.good{background:rgba(62,224,127,.15);color:#3ee07f}em.dl.fair{background:r
 .lastsale p.hot{color:#ffcf6b;font-weight:700}
 body.tl #feed,body.simu #feed,body.simo #feed,body.rec #feed{display:none!important}
 @media (max-width:700px){#feed{bottom:calc(70px + env(safe-area-inset-bottom,0px));font-size:12.5px}}
+.ballBtn{background:#1f8a5a!important;color:#fff!important}body:not(.studio) #ballOpen{display:none!important}
+#ballModal{position:fixed;inset:0;z-index:40;background:rgba(5,6,10,.7);display:flex;align-items:flex-start;justify-content:center;padding:60px 12px}#ballModal[hidden]{display:none}
+#ballModal .rm{width:min(480px,100%);background:#141826;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+#ballModal .rmHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}#ballModal .rmHead b{font:800 19px var(--body)}#ballModal .rmHead button{background:#22273a;border:1px solid var(--line);color:var(--fg);border-radius:50%;width:30px;height:30px;cursor:pointer}
+#ballModal .bl{display:block;font:600 13px var(--body);margin-top:10px}#ballModal select,#ballModal textarea{display:block;width:100%;box-sizing:border-box;margin-top:5px;font:500 14px var(--body);color:var(--fg);background:#0f1220;border:1px solid var(--line);border-radius:8px;padding:8px}
+#ballModal .bc{margin:10px 0 0;font-size:14px}#ballModal .miss{color:#ff8a80}
+#ballModal .rmB{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}#ballModal .rmB .simBtn{flex:1;min-width:120px;display:block;font:700 13.5px var(--body);border-radius:8px;padding:10px;cursor:pointer;border:0;background:var(--gold);color:#1b1608}#ballModal .rmB .simBtn.alt{background:#22273a;color:var(--fg);border:1px solid var(--line)}
+#ballModal small{display:block;margin-top:8px;color:var(--muted);font-size:12px}
 </style>
 
 <canvas id="arena" aria-label="The VC Arena seen from above: one seat per Vince Carter moment"></canvas>
@@ -298,7 +306,7 @@ body.tl #feed,body.simu #feed,body.simo #feed,body.rec #feed{display:none!import
     <h1>The <span>VC</span> Arena<em class="pre" title="Early preview: est. 26·10·26, still being tuned before the full launch">PRESEASON</em></h1>
     <p>15,695 seats, one for every VC moment ever minted.<span class="sample live on" id="asof">Real owners</span><span class="sample live" id="live">Sample listings</span></p>
   </div>
-  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><button class="tlBtn" id="tlOpen">▶ Timelapse (past)</button><button class="tlBtn simTop" id="simOpen">🔮 Simulator (future)</button>
+  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><button class="tlBtn" id="tlOpen">▶ Timelapse (past)</button><button class="tlBtn simTop" id="simOpen">🔮 Simulator (future)</button><button class="tlBtn ballBtn" id="ballOpen">🏖️ Beach ball</button>
   <div class="search">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
     <input id="q" type="search" placeholder="Find your seats… try “mcuban”" autocomplete="off">
@@ -670,7 +678,7 @@ function draw(){
   ctx.restore();
   // gold rings on special serials
   if(cam.s>.8&&!TL.on){ctx.strokeStyle=GOLD;ctx.lineWidth=1.2;for(const arr of buckets.values())for(const m of arr)if(m.gold&&!m.burned)ctx.strokeRect(m.x-hs-1.2,m.y-hs-1.2,SEAT+2.4,SEAT+2.4)}
-  drawTunnelSeats();
+  drawTunnelSeats();drawBall();
   if(LIVE_FEED.length&&!TL.on&&!SIMU.play){const now=Date.now(),ph=(now%1400)/1400;let any=false;
     for(const e of LIVE_FEED){if(now-Date.parse(e.t)>3600e3)continue;const m=feedSeat(e);if(!m)continue;any=true;
       ctx.strokeStyle=e.a==="sale"?`rgba(62,224,127,${1-ph})`:e.a==="burn"?`rgba(255,42,64,${1-ph})`:`rgba(242,201,76,${1-ph})`;ctx.lineWidth=Math.max(.8,1.6/cam.s);
@@ -678,7 +686,7 @@ function draw(){
   if(selOwner&&focusOwner){ctx.strokeStyle=GOLD;ctx.lineWidth=Math.max(.6,1.4/cam.s);for(const m of selOwner.seats)ctx.strokeRect(m.x-hs-.9,m.y-hs-.9,SEAT+1.8,SEAT+1.8)}
   if(selOwner&&!PIC){ctx.fillStyle="rgba(255,255,255,.9)";const r=Math.max(.9,1.2/cam.s);for(const m of selOwner.seats)if(m!==selSeat){ctx.beginPath();ctx.arc(m.x,m.y,r,0,7);ctx.fill()}}
   if(selSeat){ctx.save();ctx.shadowColor="#f2c94c";ctx.shadowBlur=18;ctx.strokeStyle="rgba(242,201,76,.95)";ctx.lineWidth=Math.max(.8,2/cam.s);ctx.strokeRect(selSeat.x-hs-.8,selSeat.y-hs-.8,SEAT+1.6,SEAT+1.6);ctx.restore()}
-  drawPriceTags();drawSim();drawSimu();
+  drawPriceTags();drawSim();drawSimu();drawBallUI();
 }
 // ---------- price tags in the stands (lowest ask per area, like a ticket app) ----------
 const ZONES=[];{
@@ -688,7 +696,7 @@ const ZONES=[];{
     for(const z of b)if(z.length){const x=z.reduce((s,m)=>s+m.x,0)/z.length,y=z.reduce((s,m)=>s+m.y,0)/z.length;ZONES.push({set:S.key,seats:z,x,y})}}
 }
 let TAGS=[];
-function drawPriceTags(){
+function drawPriceTags(){if(BALL)return;
   TAGS=[];
   if(TL.on){drawTL();return}
   if(SIMU.play)return;
@@ -822,7 +830,7 @@ function recStart(name,start,done,hold,after,vert){
   rec.start();recBar.hidden=false;recMsg.textContent="🔴 Recording… it stops by itself at the end.";recStop.textContent="⏹ Stop recording";recStop.onclick=()=>{if(REC&&!REC.stopping){REC.stopping=true;REC.rec.stop()}}}
 function recTick(t){if(!REC||REC.stopping)return;dirty=true;if(REC.done()){if(!REC.t)REC.t=t;if(t-REC.t>=REC.hold){REC.stopping=true;REC.rec.stop()}}}
 function loop(t){
-  tlTick(t);simTick(t);simuTick(t);recTick(t);
+  tlTick(t);simTick(t);simuTick(t);recTick(t);if(BALL)dirty=true;
   if(anim){const k=Math.min(1,(t-anim.t0)/anim.d),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
     cam.x=anim.a.x+(anim.b.x-anim.a.x)*e;cam.y=anim.a.y+(anim.b.y-anim.a.y)*e;cam.s=Math.exp(Math.log(anim.a.s)+(Math.log(anim.b.s)-Math.log(anim.a.s))*e);
     if(k>=1)anim=null;dirty=true}
@@ -1519,6 +1527,63 @@ async function loadLive(){
   }catch(e){if(!gotLive)applyListings(LIVE_SNAPSHOT,false)}
 }
 loadLive();setInterval(loadLive,5*60*1000);
+// ---------- 🏖️ beach ball giveaway: a ball bounces around the arena and lands on a random eligible seat ----------
+const BALL_POOLS=[["all","Every VC holder"],["locked","🔒 Collectors with a locked VC moment"],["retired","🟥 Collectors who retired a VC moment"],["hodl5","💎 Seats held 5+ years"],["new","🆕 Joined Top Shot in "+new Date().getFullYear()],["list","📋 Usernames I paste (e.g. X replies)"]];
+let BALL=null;
+function ballPool(kind,txt){const live=m=>!m.pack&&!m.burned;let people=[];
+  if(kind==="all")people=holders.map(o=>[o,o.seats.filter(live)]);
+  else if(kind==="locked")people=owners.map(o=>[o,o.seats.filter(m=>live(m)&&m.locked)]);
+  else if(kind==="retired")people=owners.filter(o=>o.retired>0).map(o=>[o,o.seats.filter(m=>!m.pack)]);
+  else if(kind==="hodl5")people=owners.map(o=>[o,o.seats.filter(m=>live(m)&&m.yrs>=5)]);
+  else if(kind==="new"){const y=new Date().getFullYear();people=owners.filter(o=>+o.joined===y).map(o=>[o,o.seats.filter(live)])}
+  else if(kind==="list"){const want=[...new Set(String(txt||"").split(/[\s,;]+/).map(x=>x.replace(/^@/,"").trim().toLowerCase()).filter(Boolean))],miss=[];
+    for(const w of want){const o=OWNER_BY.get(w);const ss=o?o.seats.filter(live):[];if(ss.length)people.push([o,ss]);else miss.push(w)}return {people,miss}}
+  return {people:people.filter(x=>x[1].length),miss:[]}}
+const rnd=n=>{const u=new Uint32Array(1);crypto.getRandomValues(u);return u[0]%n};
+function startBall(kind,txt,label){const P=ballPool(kind,txt).people;if(!P.length)return false;
+  const [win,ws]=P[rnd(P.length)],target=ws[rnd(ws.length)];   // every eligible collector gets an equal chance, then one of their seats
+  const lim=[CW+RING_OUT-20,CH+RING_OUT-20],pts=[{x:0,y:-CH-60}];
+  for(let i=0;i<6;i++){const a=rnd(3600)/3600*Math.PI*2,r=.35+rnd(600)/1000;pts.push({x:Math.cos(a)*lim[0]*r,y:Math.sin(a)*lim[1]*r})}
+  pts.push({x:target.x,y:target.y});
+  clearSel();setFilter("all");BALL={pts,target,win,n:P.length,label,t0:performance.now(),dur:11000,hold:6500,lit:[],done:false};
+  cam=fitView();document.body.classList.add("simu");dirty=true;return true}
+function ballPos(t){const P=BALL.pts,n=P.length-1,e=1-Math.pow(1-t,2.2),f=e*n,i=Math.min(n-1,Math.floor(f)),u=f-i;
+  const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(n,i+2)],cr=(a,b,c,d)=>.5*(2*b+(-a+c)*u+(2*a-5*b+4*c-d)*u*u+(-a+3*b-3*c+d)*u*u*u);
+  return {x:cr(p0.x,p1.x,p2.x,p3.x),y:cr(p0.y,p1.y,p2.y,p3.y),h:Math.abs(Math.sin(t*Math.PI*7))*(1-t)*70}}
+function drawBall(){if(!BALL)return;const now=performance.now(),t=Math.min(1,(now-BALL.t0)/BALL.dur),p=ballPos(t);
+  if(t<1&&p.h<6){const c=closestSeat(p.x,p.y);if(c&&c.d<26&&!BALL.lit.includes(c.s)){BALL.lit.push(c.s);if(BALL.lit.length>40)BALL.lit.shift()}}
+  const hs=SEAT/2;ctx.save();for(const m of BALL.lit){ctx.fillStyle="rgba(255,230,120,.85)";ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT)}
+  if(t>=1){const m=BALL.target,pl=1+.35*Math.sin(now/180);ctx.shadowColor="#f2c94c";ctx.shadowBlur=30;ctx.strokeStyle="#ffd54a";ctx.lineWidth=5/cam.s;for(const k of [1,2]){ctx.beginPath();ctx.arc(m.x,m.y,SEAT*3*k*pl,0,7);ctx.stroke()}ctx.fillStyle="#ffd54a";ctx.fillRect(m.x-hs*1.6,m.y-hs*1.6,SEAT*1.6,SEAT*1.6);ctx.shadowBlur=0}
+  const R=30+p.h*.45;ctx.fillStyle="rgba(0,0,0,.35)";ctx.beginPath();ctx.ellipse(p.x,p.y+3,R*.9,R*.45,0,0,7);ctx.fill();
+  ctx.translate(p.x,p.y-p.h);ctx.rotate(now/260);const cols=["#ce1141","#ffffff","#f2c94c","#ffffff","#3b82f6","#ffffff"];
+  for(let i=0;i<6;i++){ctx.fillStyle=cols[i];ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,i*Math.PI/3,(i+1)*Math.PI/3);ctx.fill()}
+  ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(0,0,R*.22,0,7);ctx.fill();ctx.strokeStyle="rgba(0,0,0,.35)";ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,R,0,7);ctx.stroke();ctx.restore();
+  if(t>=1&&now-BALL.t0>BALL.dur+BALL.hold)BALL.done=true;dirty=true}
+function drawBallUI(){if(!BALL)return;ctx.setTransform(DPR,0,0,DPR,0,0);const t=(performance.now()-BALL.t0)/BALL.dur,cx=W/2,big=Math.max(26,Math.min(54,W/20));
+  ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(11,13,20,.82)";ctx.fillRect(0,0,W,big*2.3);
+  ctx.fillStyle="#f2c94c";ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;
+  if(t<1){ctx.fillText("🏖️ BEACH BALL GIVEAWAY",cx,big*1.05);ctx.fillStyle="#f1ede4";ctx.font=`700 ${big*.4}px Barlow,sans-serif`;ctx.fillText(`${BALL.label} · ${BALL.n.toLocaleString()} eligible collector${BALL.n===1?"":"s"}`,cx,big*1.75)}
+  else{const m=BALL.target,S=SK[m.set];ctx.fillText(`🎉 WINNER: ${disp(BALL.win.name)}`,cx,big*1.05);ctx.fillStyle="#f1ede4";ctx.font=`700 ${big*.4}px Barlow,sans-serif`;ctx.fillText(`${S.name.replace(" · Debut Club","")} #${m.serial} · out of ${BALL.n.toLocaleString()} eligible`,cx,big*1.75)}
+  ctx.textAlign="right";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.36)}px 'Barlow Condensed',sans-serif`;ctx.fillText(SITE+" · @VC15Tracker",W-14,H-16);
+  if(BALL.done&&!REC){const w=BALL.win,m=BALL.target;BALL=null;document.body.classList.remove("simu");showSeat(m,true)}}
+// host panel (studio mode)
+const ballM=document.createElement("div");ballM.id="ballModal";ballM.hidden=true;document.body.appendChild(ballM);
+document.getElementById("ballOpen").onclick=()=>{ballM.hidden=false;
+  ballM.innerHTML=`<div class="rm"><div class="rmHead"><b>🏖️ Beach ball giveaway</b><button data-x aria-label="Close">✕</button></div>
+   <label class="bl">Who's in the draw?<select id="bpool">${BALL_POOLS.map(([k,l])=>`<option value="${k}">${l}</option>`).join("")}</select></label>
+   <label class="bl" id="blist" hidden>Usernames (Top Shot), one per line or separated by commas<textarea id="btxt" rows="5" placeholder="VinceCarterLast&#10;GabeCollects"></textarea></label>
+   <p class="bc" id="bcount"></p>
+   <div class="rmB"><button class="simBtn" data-go>▶ Throw the ball</button><button class="simBtn alt" data-rec>🎬 Record 16:9</button><button class="simBtn alt" data-recv>📱 Record 9:16</button></div>
+   <small>Every eligible collector has an equal chance (secure random), then the ball lands on one of their seats.</small></div>`;
+  const sel=ballM.querySelector("#bpool"),ta=ballM.querySelector("#btxt"),cnt=ballM.querySelector("#bcount");
+  const upd=()=>{ballM.querySelector("#blist").hidden=sel.value!=="list";const r=ballPool(sel.value,ta.value);
+    cnt.innerHTML=`<b>${r.people.length.toLocaleString()}</b> eligible collector${r.people.length===1?"":"s"}${r.miss.length?` · <span class="miss">not found or no VC seat: ${r.miss.map(esc).join(", ")}</span>`:""}`};
+  sel.onchange=upd;ta.oninput=upd;upd();
+  const label=()=>BALL_POOLS.find(x=>x[0]===sel.value)[1].replace(/^\S+\s/,"");
+  ballM.querySelector("[data-x]").onclick=()=>ballM.hidden=true;
+  ballM.querySelector("[data-go]").onclick=()=>{if(startBall(sel.value,ta.value,label()))ballM.hidden=true};
+  for(const [a,v] of [["[data-rec]",false],["[data-recv]",true]])ballM.querySelector(a).onclick=()=>{if(!ballPool(sel.value,ta.value).people.length)return;ballM.hidden=true;
+    recStart("vc-beach-ball"+(v?"-vertical":""),()=>startBall(sel.value,ta.value,label()),()=>BALL&&BALL.done,0,()=>{const m=BALL&&BALL.target;BALL=null;document.body.classList.remove("simu");cam=fitView();if(m)showSeat(m,true)},v)}};
 // ---------- live activity feed (activity.json, pushed by the sales bot within a minute or two of each event) ----------
 let LIVE_FEED=[],FEED_I=0;
 function histFeed(){if(HIST_FEED)return HIST_FEED;const out=[],cut=NOW-30*DAY,nm=i=>i>=0&&DATA.names[i]!=null?DATA.names[i]:"";
