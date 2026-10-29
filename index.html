@@ -1540,30 +1540,44 @@ function ballPool(kind,txt){const live=m=>!m.pack&&!m.burned;let people=[];
     for(const w of want){const o=OWNER_BY.get(w);const ss=o?o.seats.filter(live):[];if(ss.length)people.push([o,ss]);else miss.push(w)}return {people,miss}}
   return {people:people.filter(x=>x[1].length),miss:[]}}
 const rnd=n=>{const u=new Uint32Array(1);crypto.getRandomValues(u);return u[0]%n};
-function startBall(kind,txt,label){const P=ballPool(kind,txt).people;if(!P.length)return false;
-  const [win,ws]=P[rnd(P.length)],target=ws[rnd(ws.length)];   // every eligible collector gets an equal chance, then one of their seats
+function startBall(kind,txt,label,perSeat){const P=ballPool(kind,txt).people;if(!P.length)return false;
+  let win,target;
+  if(perSeat){const all=P.flatMap(([o,ss])=>ss.map(m=>[o,m]));[win,target]=all[rnd(all.length)]}   // every seat is one ticket: more seats, more chances
+  else{const [o,ws]=P[rnd(P.length)];win=o;target=ws[rnd(ws.length)]}   // every collector gets an equal chance
+  let decoy=null;
+  if(kind==="list"){const inn=new Set(P.map(x=>x[0])),E=P.flatMap(x=>x[1]),d2=(a,b)=>(a.x-b.x)**2+(a.y-b.y)**2;
+    const near=seats.filter(m=>!m.pack&&!m.burned&&m.owner&&!inn.has(m.owner)&&String(m.owner.name).toLowerCase()!=="vincecarterlast"&&d2(m,target)<(SEAT*9)**2)
+      .filter(m=>{const dt=d2(m,target);return E.every(e=>e===target||d2(m,e)>dt)}).sort((a,b)=>d2(a,target)-d2(b,target)).slice(0,8);
+    if(near.length)decoy=near[rnd(near.length)]}
   const lim=[CW+RING_OUT-20,CH+RING_OUT-20],pts=[{x:0,y:-CH-60}];
   for(let i=0;i<6;i++){const a=rnd(3600)/3600*Math.PI*2,r=.35+rnd(600)/1000;pts.push({x:Math.cos(a)*lim[0]*r,y:Math.sin(a)*lim[1]*r})}
-  pts.push({x:target.x,y:target.y});
-  clearSel();setFilter("all");BALL={pts,target,win,n:P.length,label,t0:performance.now(),dur:11000,hold:6500,lit:[],done:false};
+  const land=decoy||target;pts.push({x:land.x,y:land.y});
+  const dur=11000,miss=decoy?4000:0,roll=decoy?1800:0;
+  clearSel();setFilter("all");BALL={pts,target,win,decoy,n:P.length,label,t0:performance.now(),dur,miss,roll,tWin:dur+miss+roll,hold:6500,lit:[],done:false};
   cam=fitView();document.body.classList.add("simu");dirty=true;return true}
 function ballPos(t){const P=BALL.pts,n=P.length-1,e=1-Math.pow(1-t,2.2),f=e*n,i=Math.min(n-1,Math.floor(f)),u=f-i;
   const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(n,i+2)],cr=(a,b,c,d)=>.5*(2*b+(-a+c)*u+(2*a-5*b+4*c-d)*u*u+(-a+3*b-3*c+d)*u*u*u);
   return {x:cr(p0.x,p1.x,p2.x,p3.x),y:cr(p0.y,p1.y,p2.y,p3.y),h:Math.abs(Math.sin(t*Math.PI*7))*(1-t)*70}}
-function drawBall(){if(!BALL)return;const now=performance.now(),t=Math.min(1,(now-BALL.t0)/BALL.dur),p=ballPos(t);
+function ballAt(now){const e=now-BALL.t0,B=BALL;if(e<B.dur)return ballPos(e/B.dur);const D=B.decoy,T=B.target;
+  if(!D||e>=B.tWin)return {x:T.x,y:T.y,h:0};if(e<B.dur+B.miss)return {x:D.x,y:D.y,h:0};
+  const u=(e-B.dur-B.miss)/B.roll,k=u*u*(3-2*u);return {x:D.x+(T.x-D.x)*k,y:D.y+(T.y-D.y)*k,h:Math.abs(Math.sin(u*Math.PI*2))*(1-u)*28}}
+function drawBall(){if(!BALL)return;const now=performance.now(),e=now-BALL.t0,t=Math.min(1,e/BALL.dur),p=ballAt(now),won=e>=BALL.tWin;
   if(t<1&&p.h<6){const c=closestSeat(p.x,p.y);if(c&&c.d<26&&!BALL.lit.includes(c.s)){BALL.lit.push(c.s);if(BALL.lit.length>40)BALL.lit.shift()}}
   const hs=SEAT/2;ctx.save();for(const m of BALL.lit){ctx.fillStyle="rgba(255,230,120,.85)";ctx.fillRect(m.x-hs,m.y-hs,SEAT,SEAT)}
-  if(t>=1){const m=BALL.target,pl=1+.35*Math.sin(now/180);ctx.shadowColor="#f2c94c";ctx.shadowBlur=30;ctx.strokeStyle="#ffd54a";ctx.lineWidth=5/cam.s;for(const k of [1,2]){ctx.beginPath();ctx.arc(m.x,m.y,SEAT*3*k*pl,0,7);ctx.stroke()}ctx.fillStyle="#ffd54a";ctx.fillRect(m.x-hs*1.6,m.y-hs*1.6,SEAT*1.6,SEAT*1.6);ctx.shadowBlur=0}
+  if(t>=1&&BALL.decoy){const m=BALL.decoy,pl=1+.25*Math.sin(now/150);ctx.strokeStyle=won?"rgba(206,17,65,.5)":"#ce1141";ctx.lineWidth=4/cam.s;ctx.beginPath();ctx.arc(m.x,m.y,SEAT*2.4*pl,0,7);ctx.stroke();ctx.fillStyle="rgba(206,17,65,.75)";ctx.fillRect(m.x-hs*1.3,m.y-hs*1.3,SEAT*1.3,SEAT*1.3)}
+  if(won){const m=BALL.target,pl=1+.35*Math.sin(now/180);ctx.shadowColor="#f2c94c";ctx.shadowBlur=30;ctx.strokeStyle="#ffd54a";ctx.lineWidth=5/cam.s;for(const k of [1,2]){ctx.beginPath();ctx.arc(m.x,m.y,SEAT*3*k*pl,0,7);ctx.stroke()}ctx.fillStyle="#ffd54a";ctx.fillRect(m.x-hs*1.6,m.y-hs*1.6,SEAT*1.6,SEAT*1.6);ctx.shadowBlur=0}
   const R=30+p.h*.45;ctx.fillStyle="rgba(0,0,0,.35)";ctx.beginPath();ctx.ellipse(p.x,p.y+3,R*.9,R*.45,0,0,7);ctx.fill();
   ctx.translate(p.x,p.y-p.h);ctx.rotate(now/260);const cols=["#ce1141","#ffffff","#f2c94c","#ffffff","#3b82f6","#ffffff"];
   for(let i=0;i<6;i++){ctx.fillStyle=cols[i];ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,i*Math.PI/3,(i+1)*Math.PI/3);ctx.fill()}
   ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(0,0,R*.22,0,7);ctx.fill();ctx.strokeStyle="rgba(0,0,0,.35)";ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,R,0,7);ctx.stroke();ctx.restore();
-  if(t>=1&&now-BALL.t0>BALL.dur+BALL.hold)BALL.done=true;dirty=true}
+  if(won&&e>BALL.tWin+BALL.hold)BALL.done=true;dirty=true}
 function drawBallUI(){if(!BALL)return;ctx.setTransform(DPR,0,0,DPR,0,0);const t=(performance.now()-BALL.t0)/BALL.dur,cx=W/2,big=Math.max(26,Math.min(54,W/20));
   ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(11,13,20,.82)";ctx.fillRect(0,0,W,big*2.3);
   ctx.fillStyle="#f2c94c";ctx.font=`800 ${big}px 'Barlow Condensed',sans-serif`;
   if(t<1){ctx.fillText("🏖️ BEACH BALL GIVEAWAY",cx,big*1.05);ctx.fillStyle="#f1ede4";ctx.font=`700 ${big*.4}px Barlow,sans-serif`;ctx.fillText(`${BALL.label} · ${BALL.n.toLocaleString()} eligible collector${BALL.n===1?"":"s"}`,cx,big*1.75)}
-  else{const m=BALL.target,S=SK[m.set];ctx.fillText(`🎉 WINNER: ${disp(BALL.win.name)}`,cx,big*1.05);ctx.fillStyle="#f1ede4";ctx.font=`700 ${big*.4}px Barlow,sans-serif`;ctx.fillText(`${S.name.replace(" · Debut Club","")} #${m.serial} · out of ${BALL.n.toLocaleString()} eligible`,cx,big*1.75)}
+  else if(BALL.decoy&&performance.now()-BALL.t0<BALL.tWin){const D=BALL.decoy,inMiss=performance.now()-BALL.t0<BALL.dur+BALL.miss;ctx.fillStyle="#ff5a7a";ctx.fillText(`😱 @${disp(D.owner.name)} DIDN'T ENTER!`,cx,big*1.05);ctx.fillStyle="#f1ede4";ctx.font=`700 ${big*.4}px Barlow,sans-serif`;
+    ctx.fillText(inMiss?`They would've won · ${SK[D.set].name.replace(" · Debut Club","")} #${D.serial}`:"Rolling to the closest seat in the draw…",cx,big*1.75)}
+  else{const m=BALL.target,S=SK[m.set];ctx.fillText(`🎉 WINNER: ${disp(BALL.win.name)}`,cx,big*1.05);ctx.fillStyle="#f1ede4";ctx.font=`700 ${big*.4}px Barlow,sans-serif`;ctx.fillText(BALL.decoy?`Closest seat in the draw · ${S.name.replace(" · Debut Club","")} #${m.serial}`:`${S.name.replace(" · Debut Club","")} #${m.serial} · out of ${BALL.n.toLocaleString()} eligible`,cx,big*1.75)}
   ctx.textAlign="right";ctx.fillStyle="rgba(241,237,228,.75)";ctx.font=`800 ${Math.max(14,big*.36)}px 'Barlow Condensed',sans-serif`;ctx.fillText(SITE+" · @VC15Tracker",W-14,H-16);
   if(BALL.done&&!REC){const w=BALL.win,m=BALL.target;BALL=null;document.body.classList.remove("simu");showSeat(m,true)}}
 // host panel (studio mode)
@@ -1572,18 +1586,20 @@ document.getElementById("ballOpen").onclick=()=>{ballM.hidden=false;
   ballM.innerHTML=`<div class="rm"><div class="rmHead"><b>🏖️ Beach ball giveaway</b><button data-x aria-label="Close">✕</button></div>
    <label class="bl">Who's in the draw?<select id="bpool">${BALL_POOLS.map(([k,l])=>`<option value="${k}">${l}</option>`).join("")}</select></label>
    <label class="bl" id="blist" hidden>Usernames (Top Shot), one per line or separated by commas<textarea id="btxt" rows="5" placeholder="VinceCarterLast&#10;GabeCollects"></textarea></label>
+   <label class="bl">Chances<select id="bodds"><option value="seat">🎟️ Every seat is a ticket (more seats = better odds)</option><option value="person">🤝 One equal chance per collector</option></select></label>
    <p class="bc" id="bcount"></p>
    <div class="rmB"><button class="simBtn" data-go>▶ Throw the ball</button><button class="simBtn alt" data-rec>🎬 Record 16:9</button><button class="simBtn alt" data-recv>📱 Record 9:16</button></div>
-   <small>Every eligible collector has an equal chance (secure random), then the ball lands on one of their seats.</small></div>`;
+   <small>Secure random. "Every seat is a ticket": a collector with 100 seats has 100 chances. "One per collector": everyone has the same chance, then the ball lands on one of their seats. With pasted names, the ball first lands next to the winner on someone who didn't enter, then rolls to the closest seat in the draw (the winner is still picked fairly first).</small></div>`;
   const sel=ballM.querySelector("#bpool"),ta=ballM.querySelector("#btxt"),cnt=ballM.querySelector("#bcount");
   const upd=()=>{ballM.querySelector("#blist").hidden=sel.value!=="list";const r=ballPool(sel.value,ta.value);
-    cnt.innerHTML=`<b>${r.people.length.toLocaleString()}</b> eligible collector${r.people.length===1?"":"s"}${r.miss.length?` · <span class="miss">not found or no VC seat: ${r.miss.map(esc).join(", ")}</span>`:""}`};
+    const ns=r.people.reduce((a,x)=>a+x[1].length,0);cnt.innerHTML=`<b>${r.people.length.toLocaleString()}</b> eligible collector${r.people.length===1?"":"s"} · <b>${ns.toLocaleString()}</b> seats${r.miss.length?` · <span class="miss">not found or no VC seat: ${r.miss.map(esc).join(", ")}</span>`:""}`};
   sel.onchange=upd;ta.oninput=upd;upd();
   const label=()=>BALL_POOLS.find(x=>x[0]===sel.value)[1].replace(/^\S+\s/,"");
   ballM.querySelector("[data-x]").onclick=()=>ballM.hidden=true;
-  ballM.querySelector("[data-go]").onclick=()=>{if(startBall(sel.value,ta.value,label()))ballM.hidden=true};
+  const ps=()=>ballM.querySelector("#bodds").value==="seat";
+  ballM.querySelector("[data-go]").onclick=()=>{if(startBall(sel.value,ta.value,label(),ps()))ballM.hidden=true};
   for(const [a,v] of [["[data-rec]",false],["[data-recv]",true]])ballM.querySelector(a).onclick=()=>{if(!ballPool(sel.value,ta.value).people.length)return;ballM.hidden=true;
-    recStart("vc-beach-ball"+(v?"-vertical":""),()=>startBall(sel.value,ta.value,label()),()=>BALL&&BALL.done,0,()=>{const m=BALL&&BALL.target;BALL=null;document.body.classList.remove("simu");cam=fitView();if(m)showSeat(m,true)},v)}};
+    recStart("vc-beach-ball"+(v?"-vertical":""),()=>startBall(sel.value,ta.value,label(),ps()),()=>BALL&&BALL.done,0,()=>{const m=BALL&&BALL.target;BALL=null;document.body.classList.remove("simu");cam=fitView();if(m)showSeat(m,true)},v)}};
 // ---------- live activity feed (activity.json, pushed by the sales bot within a minute or two of each event) ----------
 let LIVE_FEED=[],FEED_I=0;
 function histFeed(){if(HIST_FEED)return HIST_FEED;const out=[],cut=NOW-30*DAY,nm=i=>i>=0&&DATA.names[i]!=null?DATA.names[i]:"";
