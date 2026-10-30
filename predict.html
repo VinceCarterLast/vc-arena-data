@@ -120,7 +120,7 @@ textarea{min-height:150px;resize:vertical}
       <button class="btn" id="copy">📋 Copy results</button>
       <button class="btn" id="share">🔗 Share board link</button>
     </div>
-    <span class="note">Closest = fewest total points off (Bills difference + Ravens difference). Tie: whoever replied first (higher in the list). Free to enter, no purchase needed.</span>
+    <span class="note">You must pick the right winner. Among those, closest = fewest total points off (both teams' differences added). If nobody picked the winner, closest score wins. Tie: whoever replied first (higher in the list). Free to enter, no purchase needed.</span>
   </div>
 </aside>
 </main>
@@ -143,16 +143,20 @@ function parse(){const[ab,nm]=split(S.tA),[bb,nmb]=split(S.tB),out=[],bad=[];
     let a=nums[0],b=nums[1];const ia=rest.search(aw),ib=rest.search(bw);if(ia>=0&&ib>=0&&ib<ia)[a,b]=[b,a];   // "Ravens 24 Bills 21" -> flip
     out.push({name,a,b,i})});
   return{list:out,bad}}
+// rank: picking the right winner comes first, then fewest points off, then whoever replied first
+const sgn=x=>x>0?1:x<0?-1:0;
+function rankPicks(list){const w=sgn(S.a-S.b);return list.map(p=>({...p,d:Math.abs(p.a-S.a)+Math.abs(p.b-S.b),ok:sgn(p.a-p.b)===w}))
+  .sort((x,y)=>(x.ok===y.ok?0:x.ok?-1:1)||x.d-y.d||x.i-y.i)}
 function render(){const[ab,nm]=split(S.tA),[bb,nmb]=split(S.tB);
   $("abA").textContent=ab;$("nmA").textContent=nm;$("abB").textContent=bb;$("nmB").textContent=nmb;$("hA").textContent=ab;$("hB").textContent=bb;$("firstT").textContent=nm;
   $("sbTitle").textContent=S.when+(S.prize?` · PRIZE: ${S.prize}`:"");$("scA").textContent=S.a;$("scB").textContent=S.b;$("qtr").textContent=S.final?"FINAL":QS[S.q]+(S.clock&&S.q!==3?" "+S.clock:"");
   const{list,bad}=parse();
   $("parseNote").innerHTML=`<b>${list.length}</b> pick${list.length===1?"":"s"}`+(bad.length?` · <span class="bad">couldn't read: ${bad.slice(0,4).map(esc).join(" | ")}${bad.length>4?"…":""}</span>`:"");
-  const ranked=list.map(p=>({...p,d:Math.abs(p.a-S.a)+Math.abs(p.b-S.b)})).sort((x,y)=>x.d-y.d||x.i-y.i);
-  $("lb").innerHTML=ranked.slice(0,10).map((p,k)=>`<li><span class="r">${k+1}</span><span class="n">${esc(p.name)}</span><span class="p">${p.a}-${p.b}</span><span class="d">${p.d===0?"EXACT!":"off by "+p.d}</span></li>`).join("")||`<li><span class="n" style="color:var(--muted)">No picks yet</span></li>`;
+  const ranked=rankPicks(list);
+  $("lb").innerHTML=ranked.slice(0,10).map((p,k)=>`<li><span class="r">${k+1}</span><span class="n">${esc(p.name)}</span><span class="p">${p.a}-${p.b}</span><span class="d">${p.d===0?"EXACT!":(S.q>0&&!p.ok?"wrong winner":"off by "+p.d)}</span></li>`).join("")||`<li><span class="n" style="color:var(--muted)">No picks yet</span></li>`;
   $("lbNote").textContent=list.length?`${list.length} players · ${ab} score first`:"";
   const top=ranked[0];
-  $("lead").textContent=top&&!S.final?(S.q===0?`${list.length} picks are in. Kickoff soon!`:`Leading now: ${top.name} (${top.a}-${top.b})${ranked[1]&&ranked[1].d===top.d?" · tied, earlier reply leads":""}`):"";
+  $("lead").textContent=top&&!S.final?(S.q===0?`${list.length} picks are in. Kickoff soon!`:`Leading now: ${top.name} (${top.a}-${top.b})${ranked[1]&&ranked[1].d===top.d&&ranked[1].ok===top.ok?" · tied, earlier reply leads":""}`):"";
   const w=$("winner");if(S.final&&top){w.style.display="block";w.textContent=`🏆 WINNER: ${top.name} · picked ${top.a}-${top.b}${top.d===0?" · EXACT SCORE!":` · off by ${top.d}`}`}else w.style.display="none";
   // squares: rows = team 1 score, columns = team 2 score
   const maxA=Math.max(45,S.a+3,...list.map(p=>p.a)),maxB=Math.max(42,S.b+3,...list.map(p=>p.b)),at=new Map();
@@ -174,7 +178,7 @@ document.querySelectorAll(".host button[data-t]").forEach(b=>b.onclick=()=>{cons
 $("qNext").onclick=()=>{S.q=Math.min(QS.length-2,S.q+1);S.final=false;render()};$("qPrev").onclick=()=>{S.q=Math.max(0,S.q-1);S.final=false;render()};
 $("final").onclick=()=>{S.final=!S.final;if(S.q===0)S.q=5;render()};
 $("hostBtn").onclick=()=>document.body.classList.toggle("hosting");
-function resultText(){const{list}=parse();const r=list.map(p=>({...p,d:Math.abs(p.a-S.a)+Math.abs(p.b-S.b)})).sort((x,y)=>x.d-y.d||x.i-y.i);const[ab]=split(S.tA),[bb]=split(S.tB);
+function resultText(){const{list}=parse();const r=rankPicks(list);const[ab]=split(S.tA),[bb]=split(S.tB);
   return `🏈 ${S.final?"FINAL":QS[S.q]}: ${ab} ${S.a} - ${bb} ${S.b}\n`+(r[0]?`🏆 ${S.final?"Winner":"Leading"}: ${r[0].name} (picked ${r[0].a}-${r[0].b}${r[0].d===0?", exact!":`, off by ${r[0].d}`})\n`:"")+(r[1]?`🥈 ${r[1].name} (${r[1].a}-${r[1].b})\n`:"")+(r[2]?`🥉 ${r[2].name} (${r[2].a}-${r[2].b})\n`:"")+`${list.length} players · free to play · vc15tracker.com/predict.html`}
 $("copy").onclick=e=>{navigator.clipboard&&navigator.clipboard.writeText(resultText());e.target.textContent="✅ Copied";setTimeout(()=>e.target.textContent="📋 Copy results",1500)};
 $("share").onclick=e=>{const u=location.origin+location.pathname+"#b="+btoa(unescape(encodeURIComponent(JSON.stringify(S))));navigator.clipboard&&navigator.clipboard.writeText(u);e.target.textContent="✅ Link copied";setTimeout(()=>e.target.textContent="🔗 Share board link",1500)};
