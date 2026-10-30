@@ -96,6 +96,7 @@ textarea{min-height:150px;resize:vertical}
       <div class="grp"><b id="hA">BUF</b><button data-t="A" data-v="7">TD+7</button><button data-t="A" data-v="6">+6</button><button data-t="A" data-v="3">FG+3</button><button data-t="A" data-v="2">+2</button><button data-t="A" data-v="1">+1</button><button data-t="A" data-v="-1">−1</button></div>
       <div class="grp"><b id="hB">BAL</b><button data-t="B" data-v="7">TD+7</button><button data-t="B" data-v="6">+6</button><button data-t="B" data-v="3">FG+3</button><button data-t="B" data-v="2">+2</button><button data-t="B" data-v="1">+1</button><button data-t="B" data-v="-1">−1</button></div>
       <div class="grp"><button id="qPrev">◀</button><b>Quarter</b><button id="qNext">▶</button></div>
+      <div class="grp"><button id="reset">↺ Reset score</button></div>
     </div>
   </div>
   <div id="gridWrap"><table id="grid"></table></div>
@@ -176,6 +177,7 @@ $("grid").addEventListener("click",e=>{const td=e.target.closest("td");if(!td||!
 for(const id of["tA","tB","when","prize","picks"])$(id).oninput=()=>{S[id]=$(id).value;render()};
 document.querySelectorAll(".host button[data-t]").forEach(b=>b.onclick=()=>{const k=b.dataset.t==="A"?"a":"b";S[k]=Math.max(0,S[k]+Number(b.dataset.v));if(S.q===0)S.q=1;S.final=false;S.clock="";render()});
 $("qNext").onclick=()=>{S.q=Math.min(QS.length-2,S.q+1);S.final=false;render()};$("qPrev").onclick=()=>{S.q=Math.max(0,S.q-1);S.final=false;render()};
+$("reset").onclick=()=>{if(!confirm("Reset the score to 0-0 and pre-game? (Picks are kept.)"))return;S.a=0;S.b=0;S.q=0;S.final=false;S.clock="";render()};
 $("final").onclick=()=>{S.final=!S.final;if(S.q===0)S.q=5;render()};
 $("hostBtn").onclick=()=>document.body.classList.toggle("hosting");
 function resultText(){const{list}=parse();const r=rankPicks(list);const[ab]=split(S.tA),[bb]=split(S.tB);
