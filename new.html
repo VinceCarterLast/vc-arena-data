@@ -28,7 +28,8 @@ h2{font:900 26px 'Barlow Condensed',sans-serif;margin:28px 0 10px}
 .steps b{font-size:17px}.steps p{margin:3px 0 0;color:var(--muted);font-size:14px}
 .prog{height:10px;border-radius:6px;background:#1b1e27;border:1px solid var(--line);margin:4px 0 12px;overflow:hidden}.prog i{display:block;height:100%;background:var(--green);transition:width .4s}
 .tl{position:relative;margin-left:12px;border-left:3px solid var(--line);padding-left:20px}
-.tl div{position:relative;margin-bottom:14px}.tl div::before{content:"";position:absolute;left:-29px;top:5px;width:15px;height:15px;border-radius:50%;background:var(--gold);border:3px solid var(--bg)}
+.tl div{position:relative;margin-bottom:14px}.tl div:first-child b{color:var(--green)}.tl div:first-child::before{background:var(--green)}
+.tl div::before{content:"";position:absolute;left:-29px;top:5px;width:15px;height:15px;border-radius:50%;background:var(--gold);border:3px solid var(--bg)}
 .tl b{color:var(--gold);font:900 20px 'Barlow Condensed',sans-serif;margin-right:8px}.tl span{color:var(--fg)}
 .badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
 .badges div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.badges b{display:block;font-size:16px}.badges span{color:var(--muted);font-size:14px}
@@ -54,11 +55,11 @@ h2{font:900 26px 'Barlow Condensed',sans-serif;margin:28px 0 10px}
 
   <h2>🏷️ Badges you'll see on moments</h2>
   <div class="badges">
-    <div><b>TSD · Top Shot Debut</b><span>The player's first moment on Top Shot. Vince's TSD is his final career shot, Mar 11, 2020.</span></div>
-    <div><b>RY · Rookie Year</b><span>A moment from the player's rookie season.</span></div>
-    <div><b>RP · Rookie Premiere</b><span>From the player's first game in the league.</span></div>
-    <div><b>RM · Rookie Mint</b><span>Minted while the player was a rookie.</span></div>
-    <div><b>CY · Championship Year</b><span>From a season the player's team won the title.</span></div>
+    <div><b>⭐ TSD · Top Shot Debut</b><span>The player's first moment on Top Shot. Vince's TSD is his final career shot, Mar 11, 2020.</span></div>
+    <div><b>🌱 RY · Rookie Year</b><span>A moment from the player's rookie season.</span></div>
+    <div><b>🚀 RP · Rookie Premiere</b><span>From the player's first game in the league.</span></div>
+    <div><b>🔰 RM · Rookie Mint</b><span>Minted while the player was a rookie.</span></div>
+    <div><b>🏆 CY · Championship Year</b><span>From a season the player's team won the title.</span></div>
     <div><b>🔒 Locked</b><span>The owner locked it for a while: it can't be sold until the lock ends.</span></div>
   </div>
   <p class="note">Badge rules can change. Check a moment's badge info on Top Shot for the exact meaning.</p>
@@ -84,11 +85,13 @@ const STEPS=[
   ["Play Fast Break","Pick five players each night and try to hit the target. It's in the Top Shot app.",""],
   ["Join a giveaway","Look for our free giveaways on X, like the score predictor on Bills game days.","games.html"]];
 const TIMELINE=[
-  ["2020","NBA Top Shot launches, first in a closed beta, then open to everyone. Vince's final career shot becomes his Top Shot Debut (TSD) moment."],
-  ["2021","The NFT boom: Top Shot takes off. The Archive and Vintage Vibes (Fandom) VC sets drop in Summer '21."],
-  ["2024","Vince Carter enters the Basketball Hall of Fame."],
+  ["Present","🎉 You join NBA Top Shot and the VC family. Welcome!"],
+  ["Oct 26, 2026","VC15 Tracker launches: the website and @VC15Tracker on X."],
   ["2026","Fast Break returns and Earn the Moment arrives on Top Shot."],
-  ["Oct 26, 2026","VC15 Tracker launches: the website and @VC15Tracker on X."]];
+  ["2024","Vince Carter enters the Basketball Hall of Fame."],
+  ["2021","The NFT boom: Top Shot takes off. The Archive and Vintage Vibes (Fandom) VC sets drop in Summer '21."],
+  ["2020","NBA Top Shot launches, first in a closed beta, then open to everyone. Vince's final career shot becomes his Top Shot Debut (TSD) moment."],
+];
 let done={};try{done=JSON.parse(localStorage.getItem("vcNewSteps")||"{}")}catch(e){}
 function paint(){const el=document.getElementById("steps");
   el.innerHTML=STEPS.map(([t,p,u],i)=>`<li data-i="${i}" class="${done[i]?"done":""}"><div class="ck">${done[i]?"✓":i+1}</div><div><b>${t}</b><p>${p}${u?` <a href="${u}" ${u.startsWith("http")?'target="_blank" rel="noopener"':""} onclick="event.stopPropagation()">Open →</a>`:""}</p></div></li>`).join("");

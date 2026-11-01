@@ -105,8 +105,8 @@ const SETS={archive:["Archive Set","Common",10000],tsd:["TSD Common","Base Set �
 const TYPE={offer:["OFFER","#b197fc","🤝"],sale:["SOLD","var(--green)","🟢"],list:["LISTED","var(--blue)","🏷️"],burn:["RETIRED","var(--red)","🟥"],gift:["GIFTED","var(--pink)","🎁"],pack:["PACK","var(--sand)","📦"],lock:["LOCKED","var(--lock)","🔒"],unlock:["UNLOCKED","#adb5bd","🔓"]};
 const FILTERS=[["all","All"],["sale","🟢 Sales"],["list","🏷️ Listings"],["offer","🤝 Offers"],["burn","🟥 Retired"],["gift","🎁 Gifts"],["pack","📦 Packs"]];
 const SORTS=[["new","🕒 Newest"],["low","⬆ Price: low to high"],["high","⬇ Price: high to low"],["deal","🔥 Best deal"]];
-const TIERS=[["all","All tiers"],["common","Common"],["fandom","Fandom"],["rare","Rare"],["legendary","Legendary"],["dallas","Dallas"]];
-const TIER={archive:"common",tsd:"common",fandom:"fandom",rib:"rare",origin:"rare",asg:"legendary",cosmic:"legendary",dallas:"dallas",galac:"dallas",omega:"dallas"};
+const TIERS=[["all","All tiers"],["common","Common"],["fandom","Fandom"],["rare","Rare"],["legendary","Legendary"]];
+const TIER={archive:"common",tsd:"common",fandom:"fandom",rib:"rare",origin:"rare",asg:"legendary",cosmic:"legendary",dallas:"legendary",galac:"legendary",omega:"legendary"};
 const RANGES=[["1","24 h",1],["7","7 days",7],["30","30 days",30],["y","This year",0],["all","All time",1e5]];
 const AVG={asg:1577.6,tsd:19.19,origin:58.6,archive:3.08,rib:20.5,fandom:13.8,cosmic:2983,galac:550,dallas:313,omega:750};
 const DAY0=Date.UTC(2020,0,1),DAY=864e5;
@@ -161,7 +161,7 @@ function render(){
       <div class="r"><b>${price}</b><i>${ago(e.t)}</i></div></div>`}).join("");
   const m=document.getElementById("more");m.hidden=ev.length<=shown;m.textContent=`Show more (${(ev.length-shown).toLocaleString()} older)`}
 function renderListings(f){const m=document.getElementById("more");
-  const rows=Object.keys(SETS).map(k=>{const L=LST.filter(x=>x.set===k),low=L.length?Math.min(...L.map(x=>x.price)):null,a=asp(k),tv=VAL[k]||AVG[k];
+  const rows=Object.keys(SETS).filter(k=>tier==="all"||TIER[k]===tier).map(k=>{const L=LST.filter(x=>x.set===k),low=L.length?Math.min(...L.map(x=>x.price)):null,a=asp(k),tv=VAL[k]||AVG[k];
     const sig=!low||!a?`<span class="sig ok">–</span>`:low<a.v*.95?`<span class="sig need">🔥 Ask below avg sale</span>`:low>a.v*1.05?`<span class="sig avoid">⚠️ Ask above avg sale</span>`:`<span class="sig ok">≈ At avg sale</span>`;
     return `<tr class="ck" data-set="${k}"><td><b>${esc(SETS[k][0])}</b></td><td>${low?money(low):"none"}</td><td>${a?money(a.v):"–"}</td><td>${tv?money(tv):"–"}</td><td>${L.length}</td><td>${sig}</td></tr>`}).join("");
   const box=`<div class="box2"><h3>📊 Edition check: avg sale vs lowest ask</h3><p>Avg sale = average of the last 10 sales (special serials left out). If the lowest ask is <b>below</b> the avg sale, it's a buy signal. If it's <b>above</b>, wait. True value is Nothing But Stats' estimate.</p>
