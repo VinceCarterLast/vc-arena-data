@@ -89,6 +89,8 @@ footer{max-width:1000px;margin:0 auto;padding:0 16px 30px;display:flex;justify-c
   <div class="filters">
     <div class="chips" id="range"></div>
     <div class="chips" id="chips"></div>
+    <div class="chips" id="tiers"></div>
+    <div class="chips" id="sorts"></div>
   </div>
   <div id="feed"></div>
   <button class="more" id="more" hidden>Show more</button>
@@ -101,8 +103,10 @@ const RAW="https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/
 const SETS={archive:["Archive Set","Common",10000],tsd:["TSD Common","Base Set · Series 1",3336],rib:["RIB '05-06","Rare",990],fandom:["Vintage Vibes","Fandom",951],
   origin:["RIB Origin","Rare",269],asg:["ASG Legendary","All-Star Classics",50],cosmic:["TSD Cosmic","Legendary",49],dallas:["Dallas Standard","Playoff Classics",44],galac:["Dallas Galactic","Playoff Classics",5],omega:["Dallas Omega","Playoff Classics",1]};
 const TYPE={offer:["OFFER","#b197fc","🤝"],sale:["SOLD","var(--green)","🟢"],list:["LISTED","var(--blue)","🏷️"],burn:["RETIRED","var(--red)","🟥"],gift:["GIFTED","var(--pink)","🎁"],pack:["PACK","var(--sand)","📦"],lock:["LOCKED","var(--lock)","🔒"],unlock:["UNLOCKED","#adb5bd","🔓"]};
-const FILTERS=[["all","All"],["sale","🟢 Sales"],["list","🏷️ Listings"],["offer","🤝 Offers"],["burn","🟥 Retired"],["gift","🎁 Gifts"],["pack","📦 Packs"],["lock","🔒 Locks"]];
-const SORTS=[["deal","🔥 Best deal"],["low","⬇ Lowest ask"],["new","🕒 Newest"]];
+const FILTERS=[["all","All"],["sale","🟢 Sales"],["list","🏷️ Listings"],["offer","🤝 Offers"],["burn","🟥 Retired"],["gift","🎁 Gifts"],["pack","📦 Packs"]];
+const SORTS=[["new","🕒 Newest"],["low","⬆ Price: low to high"],["high","⬇ Price: high to low"],["deal","🔥 Best deal"]];
+const TIERS=[["all","All tiers"],["common","Common"],["fandom","Fandom"],["rare","Rare"],["legendary","Legendary"],["dallas","Dallas"]];
+const TIER={archive:"common",tsd:"common",fandom:"fandom",rib:"rare",origin:"rare",asg:"legendary",cosmic:"legendary",dallas:"dallas",galac:"dallas",omega:"dallas"};
 const RANGES=[["1","24 h",1],["7","7 days",7],["30","30 days",30],["y","This year",0],["all","All time",1e5]];
 const AVG={asg:1577.6,tsd:19.19,origin:58.6,archive:3.08,rib:20.5,fandom:13.8,cosmic:2983,galac:550,dallas:313,omega:750};
 const DAY0=Date.UTC(2020,0,1),DAY=864e5;
@@ -110,7 +114,7 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const money=v=>v==null?"":"$"+(v>=1000?Math.round(v).toLocaleString():(+v).toFixed(2));
 const ago=t=>{const s=(Date.now()-Date.parse(t))/1000;if(s<60)return "now";if(s<3600)return Math.floor(s/60)+" min ago";if(s<86400)return Math.floor(s/3600)+" hr ago";const d=Math.floor(s/86400);return d<60?d+" d ago":new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})};
 const disp=n=>/^0x[0-9a-f]{16}$/i.test(n||"")?n.slice(0,6)+"…"+n.slice(-4):(n||"");
-let LIVE=[],HIST=[],VAL={},TOK={},LST=[],OFF=null,PACKS={},PKCOUNT={},IDS=null,flt="all",rng="all",view="cards",shown=60,sort="deal";
+let LIVE=[],HIST=[],VAL={},TOK={},LST=[],OFF=null,PACKS={},PKCOUNT={},IDS=null,flt="all",rng="all",view="cards",shown=60,sort="new",tier="all";
 try{view=localStorage.getItem("vcLiveView2")||"cards";rng=localStorage.getItem("vcLiveRange3")||"all"}catch(e){}
 const img=e=>`img/${SETS[e.set]?e.set:"archive"}.jpg`;
 const valOf=e=>e.v||VAL[`${e.set}:${e.serial}`]||VAL[e.set]||AVG[e.set];
@@ -131,6 +135,10 @@ function render(){
   document.getElementById("chips").innerHTML="<em>Show</em>"+FILTERS.map(([k,l])=>`<button data-f="${k}" class="${k===flt?"on":""}">${l}</button>`).join("");
   document.querySelectorAll("#range button").forEach(b=>b.onclick=()=>{rng=b.dataset.r;shown=60;try{localStorage.setItem("vcLiveRange3",rng)}catch(e){}render()});
   document.querySelectorAll("#chips button").forEach(b=>b.onclick=()=>{flt=b.dataset.f;shown=60;render()});
+  document.getElementById("tiers").innerHTML="<em>Tier</em>"+TIERS.map(([k,l])=>`<button data-t="${k}" class="${k===tier?"on":""}">${l}</button>`).join("");
+  document.getElementById("sorts").innerHTML="<em>Sort</em>"+SORTS.map(([k,l])=>`<button data-s="${k}" class="${k===sort?"on":""}">${l}</button>`).join("");
+  document.querySelectorAll("#tiers button").forEach(b=>b.onclick=()=>{tier=b.dataset.t;shown=60;render()});
+  document.querySelectorAll("#sorts button").forEach(b=>b.onclick=()=>{sort=b.dataset.s;shown=60;render()});
   document.querySelectorAll(".viewbox button").forEach(b=>{b.classList.toggle("on",b.dataset.v===view);b.onclick=()=>{view=b.dataset.v;try{localStorage.setItem("vcLiveView2",view)}catch(e){}render()}});
   const t0=since(),inR=all().filter(e=>SETS[e.set]&&Date.parse(e.t)>=t0),sales=inR.filter(e=>e.a==="sale"&&e.price);
   document.getElementById("sRet").textContent=inR.filter(e=>e.a==="burn").length.toLocaleString();document.getElementById("sRetL").textContent=`Retired · ${lab}`;
@@ -139,7 +147,9 @@ function render(){
   const f=document.getElementById("feed");f.className=view;
   if(flt==="list")return renderListings(f);
   const extra=flt==="offer"?offersBox():flt==="pack"?packsBox():"";
-  const ev=inR.filter(e=>flt==="all"||e.a===flt||(flt==="lock"&&e.a==="unlock"));
+  const ev=inR.filter(e=>(flt==="all"||e.a===flt)&&(tier==="all"||TIER[e.set]===tier));
+  const pr=e=>e.price||0,rat=e=>{const v=valOf(e);return e.price&&v?e.price/v:9e9};
+  if(sort==="low")ev.sort((a,b)=>(pr(a)||9e9)-(pr(b)||9e9));else if(sort==="high")ev.sort((a,b)=>pr(b)-pr(a));else if(sort==="deal")ev.sort((a,b)=>rat(a)-rat(b));
   const note=!HIST.length&&rng!=="1"&&rng!=="7"?" Loading older history…":"";
   const emptyMsg=flt==="lock"?"Locks and unlocks are tracked from Nov 1, 2026 onward. They'll show up here as they happen.":flt==="offer"?"No generous offers spotted yet. The best open offer for each edition is above.":`Nothing here for ${lab.toLowerCase()} yet.${note}`;
   if(!ev.length){f.className="";f.innerHTML=extra+`<div class="empty">${emptyMsg}</div>`;document.getElementById("more").hidden=true;return}
@@ -156,16 +166,16 @@ function renderListings(f){const m=document.getElementById("more");
     return `<tr class="ck" data-set="${k}"><td><b>${esc(SETS[k][0])}</b></td><td>${low?money(low):"none"}</td><td>${a?money(a.v):"–"}</td><td>${tv?money(tv):"–"}</td><td>${L.length}</td><td>${sig}</td></tr>`}).join("");
   const box=`<div class="box2"><h3>📊 Edition check: avg sale vs lowest ask</h3><p>Avg sale = average of the last 10 sales (special serials left out). If the lowest ask is <b>below</b> the avg sale, it's a buy signal. If it's <b>above</b>, wait. True value is Nothing But Stats' estimate.</p>
     <div class="edwrap"><table class="ed"><tr><th>Edition</th><th>Lowest ask</th><th>Avg sale (10)</th><th>True value</th><th>Listed</th><th>Signal</th></tr>${rows}</table></div></div>`;
-  let L=LST.filter(x=>SETS[x.set]&&(!window._lset||x.set===window._lset)).map(x=>({...x,a:"list",t:x.listed_at||"",v:VAL[`${x.set}:${x.serial}`]||VAL[x.set]||AVG[x.set]}));
-  L.sort(sort==="low"?(a,b)=>a.price-b.price:sort==="new"?(a,b)=>String(b.t).localeCompare(String(a.t)):(a,b)=>a.price/(a.v||1e9)-b.price/(b.v||1e9));
-  const bar=`<div class="chips" style="margin:2px 0 8px"><em>Sort</em>${SORTS.map(([k,l])=>`<button data-s="${k}" class="${k===sort?"on":""}">${l}</button>`).join("")}${window._lset?`<button data-s="clear">✕ ${esc(SETS[window._lset][0])} only</button>`:""}</div>`;
+  let L=LST.filter(x=>SETS[x.set]&&(!window._lset||x.set===window._lset)&&(tier==="all"||TIER[x.set]===tier)).map(x=>({...x,a:"list",t:x.listed_at||"",v:VAL[`${x.set}:${x.serial}`]||VAL[x.set]||AVG[x.set]}));
+  L.sort(sort==="low"?(a,b)=>a.price-b.price:sort==="high"?(a,b)=>b.price-a.price:sort==="new"?(a,b)=>String(b.t).localeCompare(String(a.t)):(a,b)=>a.price/(a.v||1e9)-b.price/(b.v||1e9));
+  const bar=window._lset?`<div class="chips" style="margin:2px 0 8px"><button data-s="clear">✕ Showing ${esc(SETS[window._lset][0])} only</button></div>`:"";
   const list=L.slice(0,shown).map(e=>{const[S]=SETS[e.set],i=EVI.push(e)-1,c="var(--blue)";
     if(view==="cards")return `<div class="card" style="--c:${c}" data-i="${i}"><img loading="lazy" src="${img(e)}" alt=""><div><span class="type">🏷️ FOR SALE</span><div class="nm">${esc(S)} <span>#${e.serial}</span></div><div class="who">listed by ${esc(disp(e.seller))||"?"}</div>${deal(e)}</div>
       <div class="rt"><div class="price">${money(e.price)}</div>${e.v?`<div class="val">Value ${money(e.v)}</div>`:""}<div class="ago">${e.t?ago(e.t):""}</div></div></div>`;
     return `<div class="row" style="--c:${c}" data-i="${i}"><img loading="lazy" src="${img(e)}" alt=""><div><div class="t">🏷️ <b>${esc(S)} #${e.serial}</b> ${deal(e)}</div><div class="s">by ${esc(disp(e.seller))||"?"}${e.v?` · value ${money(e.v)}`:""}</div></div><div class="r"><b>${money(e.price)}</b><i>${e.t?ago(e.t):""}</i></div></div>`}).join("");
   f.className="";f.innerHTML=box+bar+`<div class="${view}" style="display:flex;flex-direction:column;gap:${view==="list"?0:8}px">${list||'<div class="empty">No listings right now.</div>'}</div>`;
   if(view==="list")f.lastElementChild.style.cssText+="background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden";
-  f.querySelectorAll("[data-s]").forEach(b=>b.onclick=ev=>{ev.stopPropagation();if(b.dataset.s==="clear")window._lset=null;else sort=b.dataset.s;shown=60;render()});
+  f.querySelectorAll("[data-s]").forEach(b=>b.onclick=ev=>{ev.stopPropagation();window._lset=null;shown=60;render()});
   f.querySelectorAll("tr[data-set]").forEach(r=>r.onclick=ev=>{ev.stopPropagation();window._lset=r.dataset.set;shown=60;render()});
   m.hidden=L.length<=shown;m.textContent=`Show more (${(L.length-shown).toLocaleString()} more listings)`}
 function offersBox(){if(!OFF||!OFF.top)return `<div class="box2"><h3>🤝 Best open offers</h3><p>Offer tracking starts with the latest bot update. Best offers per edition will show here.</p></div>`;
