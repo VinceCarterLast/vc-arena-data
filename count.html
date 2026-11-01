@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VC Countdown · VC15 Tracker</title>
+<meta name="description" content="How many Vince Carter moments are left on NBA Top Shot, live, and how close we are to the 2026, 2031 and 2041 goals.">
+<meta property="og:title" content="VC Countdown · VC15 Tracker">
+<meta property="og:description" content="Vince Carter moments left on NBA Top Shot, live.">
+<link rel="icon" href="favicon.ico"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d14;--fg:#f2f0ea;--muted:#8a8f9a;--red:#e8603c;--gold:#f2c94c;--line:#2a2d35}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:500 16px Barlow,system-ui,sans-serif;overflow:hidden}
+main{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px 70px;text-align:center}
+.kicker{font:700 clamp(12px,1.6vw,18px) Barlow,sans-serif;letter-spacing:.32em;color:var(--muted);text-transform:uppercase}
+#num{font:900 clamp(100px,min(24vw,38vh),340px)/1.05 'Barlow Condensed',sans-serif;letter-spacing:.01em;margin:10px 0 4px;font-variant-numeric:tabular-nums;transition:color .6s,text-shadow .6s}
+#num.flash{color:#ff4b5c;text-shadow:0 0 60px rgba(255,60,80,.6)}
+.sub{font:600 clamp(16px,2.4vw,28px) Barlow,sans-serif;color:var(--fg);opacity:.9}
+#goal{margin-top:clamp(26px,5vh,54px);width:min(640px,100%);transition:opacity .5s}
+#goal.fade{opacity:0}
+.gt{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font:800 clamp(18px,2.6vw,30px) 'Barlow Condensed',sans-serif;letter-spacing:.02em}
+.gt b{color:var(--gold)}.gt span{color:var(--muted);font-weight:700}
+.bar{height:14px;border-radius:8px;background:#1b1e27;border:1px solid var(--line);margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--gold));border-radius:8px;transition:width 1s}
+.gs{margin-top:8px;font-size:clamp(13px,1.5vw,16px);color:var(--muted)}
+.dots{display:flex;gap:10px;justify-content:center;margin-top:16px}
+.dots button{width:11px;height:11px;border-radius:50%;border:0;background:#3a3f4c;cursor:pointer;padding:0}
+.dots button.on{background:var(--gold)}
+#last{margin-top:clamp(20px,4vh,40px);font-size:clamp(13px,1.6vw,17px);color:var(--muted)}#last b{color:var(--red)}
+footer{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;font:800 clamp(13px,1.5vw,17px) 'Barlow Condensed',sans-serif;letter-spacing:.06em;color:var(--muted)}
+footer a{color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+<main>
+  <div class="kicker">VC15 Tracker · Live</div>
+  <div id="num">15,318</div>
+  <div class="sub">Vince Carter moments left on NBA Top Shot</div>
+  <div id="goal"></div>
+  <div class="dots" id="dots"></div>
+  <div id="last"></div>
+</main>
+<footer><a href="./">🏟️ VC15TRACKER.COM</a><span id="clock"></span><span>@VC15Tracker</span></footer>
+<script>
+"use strict";
+const MINTED=15695;
+// goals: 2026 (2 more retirements), 5 years, 15 years
+const GOALS=[{y:"2026",n:15316,lab:"2026 goal"},{y:"2031",n:14000,lab:"2031 goal"},{y:"2041",n:10000,lab:"2041 goal"}];
+const NAMES={archive:"Archive Set",tsd:"TSD Common",rib:"RIB '05-06 Rare",fandom:"Vintage Vibes Fandom",origin:"RIB Origin Rare",asg:"ASG Legendary",cosmic:"TSD Cosmic",dallas:"Dallas Standard",galac:"Dallas Galactic",omega:"Dallas Omega"};
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+let S={existing:15318,last:{set:"archive",serial:7408,t:"2026-09-14T00:00:00Z"}},gi=0,shown=null;
+const $=id=>document.getElementById(id);
+function animateTo(n){const el=$("num");if(shown===null){el.textContent=n.toLocaleString();shown=n;return}
+  if(n===shown)return;const from=shown,t0=performance.now(),d=1400;if(n<from){el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2600)}
+  const step=t=>{const k=Math.min(1,(t-t0)/d),v=Math.round(from+(n-from)*(1-Math.pow(1-k,3)));el.textContent=v.toLocaleString();if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step);shown=n}
+function paintGoal(){const g=GOALS[gi],left=S.existing-g.n,done=left<=0,retired=MINTED-S.existing,need=MINTED-g.n,pct=Math.max(0,Math.min(100,retired/need*100));
+  $("goal").innerHTML=`<div class="gt"><span>🎯 ${g.lab}: <b>${g.n.toLocaleString()}</b></span><span>${done?"✅ reached!":left.toLocaleString()+" to go"}</span></div>
+    <div class="bar"><i style="width:${pct.toFixed(1)}%"></i></div><div class="gs">${retired.toLocaleString()} of ${need.toLocaleString()} retired · ${pct<10?pct.toFixed(1):Math.round(pct)}%</div>`;
+  $("dots").innerHTML=GOALS.map((x,i)=>`<button class="${i===gi?"on":""}" aria-label="${x.lab}" data-i="${i}"></button>`).join("");
+  $("dots").querySelectorAll("button").forEach(b=>b.onclick=()=>{gi=+b.dataset.i;paintGoal();restart()})}
+function paintLast(){const l=S.last;if(!l||!l.set){$("last").textContent="";return}const d=l.t?new Date(l.t):null;
+  $("last").innerHTML=`Last retired for good: <b>${NAMES[l.set]||l.set} #${l.serial}</b>${d&&!isNaN(d)?` · ${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}`:""}`}
+let timer;function restart(){clearInterval(timer);timer=setInterval(()=>{$("goal").classList.add("fade");setTimeout(()=>{gi=(gi+1)%GOALS.length;paintGoal();$("goal").classList.remove("fade")},500)},8000)}
+async function poll(){try{const r=await fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/supply.json?t="+Date.now(),{cache:"no-store"});if(r.ok){const d=await r.json();if(d&&d.existing>0){S=d}}}catch(e){}
+  animateTo(S.existing);paintGoal();paintLast()}
+// start on the nearest goal that hasn't been reached
+gi=Math.max(0,GOALS.findIndex(g=>S.existing>g.n));
+// date and time (Eastern), so any screenshot shows when it was taken
+function tick(){$("clock").textContent=new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"short",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"}).format(new Date())+" ET"}
+tick();setInterval(tick,15000);
+poll();restart();setInterval(poll,60000);
+</script>
+</body>
+</html>

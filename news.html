@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Top Shot News · VC15 Tracker</title>
+<meta name="description" content="What NBA Top Shot has announced, and what's been delivered. A friendly checklist by VC15 Tracker.">
+<meta property="og:title" content="Top Shot News · VC15 Tracker">
+<meta property="og:description" content="Announcements, events and giveaways, checked off as they happen.">
+<link rel="icon" href="favicon.ico"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d14;--panel:#141826;--line:#2a3045;--fg:#f1ede4;--muted:#9aa0b4;--gold:#f2c94c;--green:#3ee07f;--blue:#4dabf7;--purple:#b197fc}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:500 15px Barlow,system-ui,sans-serif}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 16px 4px;max-width:900px;margin:0 auto}
+header h1{margin:0;font:900 32px 'Barlow Condensed',sans-serif}header h1 b{color:var(--gold)}
+header a{margin-left:auto;text-decoration:none;font:700 13px Barlow,sans-serif;background:#22273a;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
+.sub{max-width:900px;margin:0 auto;padding:0 16px 12px;color:var(--muted)}
+main{max-width:900px;margin:0 auto;padding:0 16px 40px}
+.sum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media (max-width:600px){.sum{grid-template-columns:repeat(2,1fr)}}
+.sum div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.sum b{display:block;font:900 30px 'Barlow Condensed',sans-serif}.sum span{font-size:13px;color:var(--muted)}
+.sect{display:flex;gap:8px;margin-bottom:12px}.sect button{flex:1;background:#1b2032;border:2px solid var(--line);color:var(--fg);border-radius:12px;padding:11px;font:800 17px 'Barlow Condensed',sans-serif;letter-spacing:.03em;cursor:pointer}.sect button.on{border-color:var(--gold);background:#2a2614}
+.resp{margin-top:8px;padding:8px 10px;border-radius:8px;background:#0f1320;border:1px solid var(--line)}.resp::before{content:"🏀 Top Shot: ";font-weight:700;color:var(--gold)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tabs button{background:#1b2032;border:1px solid var(--line);color:var(--fg);border-radius:20px;padding:7px 12px;font:700 13px Barlow,sans-serif;cursor:pointer}
+.tabs button.on{background:var(--gold);color:#1b1608;border-color:var(--gold)}
+.item{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.item h2{margin:0;font:800 22px 'Barlow Condensed',sans-serif;letter-spacing:.01em}
+.badge{font:800 12px Barlow,sans-serif;border-radius:20px;padding:4px 10px;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);white-space:nowrap}
+.item p{margin:8px 0 0;line-height:1.45}
+.note{color:var(--fg);opacity:.85}.note::before{content:"📝 "}
+.meta{margin-top:8px;font-size:12.5px;color:var(--muted)}
+.how{margin-top:20px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;color:var(--muted);line-height:1.5}
+.how b{color:var(--fg)}
+footer{text-align:center;color:var(--muted);font:800 13px 'Barlow Condensed',sans-serif;letter-spacing:.08em;padding:0 0 30px}
+</style>
+</head>
+<body>
+<header><h1>TOP SHOT <b>NEWS</b></h1><a href="./">🏟️ VC15 Tracker</a></header>
+<p class="sub">What NBA Top Shot has announced, checked off as it happens. Here to help the community keep up, and help the team keep track.</p>
+<main>
+  <div class="sect" id="sect"><button data-s="news" class="on">📰 Announcements</button><button data-s="fb">💬 Community feedback</button></div>
+  <div class="sum" id="sum"></div>
+  <div class="tabs" id="tabs"></div>
+  <div id="list"></div>
+  <div class="how" id="howFb" hidden><b>About community feedback:</b> we summarize constructive, actionable feedback in neutral terms and track Top Shot's progress on it. Not every request is listed, and listing one doesn't mean we agree with it. Personal attacks and posts targeting players, leagues or fan groups aren't included. Have an idea or an update? Message <b>@VC15Tracker</b> on X.</div>
+  <div class="how" id="howNews"><b>How this works:</b> we add announcements from Top Shot's posts, blog and status page, then check them off when they happen. Spotted a giveaway, a delivered pack or a correction? Message <b>@VC15Tracker</b> on X and we'll update it.<br><span id="upd"></span></div>
+</main>
+<footer>VC15TRACKER.COM · @VC15Tracker · not affiliated with NBA Top Shot or Dapper Labs</footer>
+<script>
+"use strict";
+const ST={done:["✅ Delivered","var(--green)"],progress:["🟡 In progress","var(--gold)"],coming:["🔵 Coming up","var(--blue)"],checking:["❔ Checking","var(--purple)"]};
+const FB={done:["✅ Done","var(--green)"],working:["🛠️ Being worked on","var(--gold)"],heard:["🆕 Heard","var(--blue)"],notplanned:["⏸️ Not planned","var(--muted)"]};
+let SEC="news";
+const FALLBACK={updated:"2026-10-31",items:[]};
+const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=d=>{if(!d)return "";const t=new Date(d+"T12:00:00Z");return isNaN(t)?d:t.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"})};
+let DATA=FALLBACK,tab="all";
+function render(){
+  document.querySelectorAll("#sect button").forEach(b=>{b.classList.toggle("on",b.dataset.s===SEC);b.onclick=()=>{SEC=b.dataset.s;tab="all";render()}});
+  document.getElementById("howFb").hidden=SEC!=="fb";document.getElementById("howNews").hidden=SEC!=="news";
+  if(SEC==="fb")return renderFb();
+  const it=DATA.items||[],cnt=k=>it.filter(x=>x.status===k).length;
+  document.getElementById("sum").innerHTML=Object.entries(ST).map(([k,[l]])=>`<div><b>${cnt(k)}</b><span>${l}</span></div>`).join("");
+  document.getElementById("tabs").innerHTML=[["all","All"],...Object.entries(ST).map(([k,[l]])=>[k,l])].map(([k,l])=>`<button data-k="${k}" class="${k===tab?"on":""}">${l}</button>`).join("");
+  document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{tab=b.dataset.k;render()});
+  const order={coming:0,progress:1,checking:2,done:3};
+  const show=it.filter(x=>tab==="all"||x.status===tab).sort((a,b)=>(order[a.status]-order[b.status])||String(b.date).localeCompare(a.date));
+  document.getElementById("list").innerHTML=show.map(x=>{const[l,c]=ST[x.status]||["•","var(--muted)"];
+    return `<div class="item" style="--c:${c}"><div class="top"><h2>${esc(x.title)}</h2><span class="badge">${l}</span></div>
+      <p>${esc(x.promise)}</p>${x.note?`<p class="note">${esc(x.note)}</p>`:""}
+      <div class="meta">Announced ${fmt(x.date)}${x.due?` · Due ${fmt(x.due)}`:""}${x.source?` · Source: ${esc(x.source)}`:""}</div></div>`}).join("")||`<p style="color:var(--muted)">Nothing here yet.</p>`;
+  document.getElementById("upd").textContent=DATA.updated?`Last updated ${fmt(DATA.updated)}.`:""}
+function renderFb(){const it=DATA.feedback||[],cnt=k=>it.filter(x=>x.status===k).length;
+  document.getElementById("sum").innerHTML=Object.entries(FB).map(([k,[l]])=>`<div><b>${cnt(k)}</b><span>${l}</span></div>`).join("");
+  document.getElementById("tabs").innerHTML=[["all","All"],...Object.entries(FB).map(([k,[l]])=>[k,l])].map(([k,l])=>`<button data-k="${k}" class="${k===tab?"on":""}">${l}</button>`).join("");
+  document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{tab=b.dataset.k;render()});
+  const order={working:0,heard:1,done:2,notplanned:3};
+  const show=it.filter(x=>tab==="all"||x.status===tab).sort((a,b)=>(order[a.status]-order[b.status])||String(b.date).localeCompare(a.date));
+  document.getElementById("list").innerHTML=show.map(x=>{const[l,c]=FB[x.status]||["•","var(--muted)"];
+    return `<div class="item" style="--c:${c}"><div class="top"><h2>${esc(x.title)}</h2><span class="badge">${l}</span></div>
+      <p>${esc(x.request)}</p>${x.note?`<p class="note">${esc(x.note)}</p>`:""}${x.response?`<p class="resp">${esc(x.response)}</p>`:""}
+      <div class="meta">Shared ${fmt(x.date)}</div></div>`}).join("")||`<p style="color:var(--muted)">No feedback tracked yet.</p>`}
+if(location.hash==="#feedback")SEC="fb";
+fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/news.json?t="+Date.now(),{cache:"no-store"})
+  .then(r=>r.ok?r.json():Promise.reject()).catch(()=>fetch("news.json").then(r=>r.json())).then(d=>{if(d&&d.items)DATA=d;render()}).catch(render);
+render();
+</script>
+</body>
+</html>

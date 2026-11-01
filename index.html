@@ -289,14 +289,14 @@ em.dl.good{background:rgba(62,224,127,.15);color:#3ee07f}em.dl.fair{background:r
 .lastsale p.hot{color:#ffcf6b;font-weight:700}
 body.tl #feed,body.simu #feed,body.simo #feed,body.rec #feed{display:none!important}
 @media (max-width:700px){#feed{bottom:calc(70px + env(safe-area-inset-bottom,0px));font-size:12.5px}}
-.ballBtn{background:#1f8a5a!important;color:#fff!important}body:not(.studio) #ballOpen,body:not(.studio) #raceOpen,body:not(.studio) #loOpen{display:none!important}#raceModal textarea,#loModal textarea{width:100%;box-sizing:border-box;background:#0b0d14;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px;font:14px var(--body)}.rck{display:flex!important;gap:8px;align-items:center;flex-direction:row!important}
-:is(#ballModal,#raceModal,#loModal){position:fixed;inset:0;z-index:40;background:rgba(5,6,10,.7);display:flex;align-items:flex-start;justify-content:center;padding:60px 12px}:is(#ballModal,#raceModal,#loModal)[hidden]{display:none}
-:is(#ballModal,#raceModal,#loModal) .rm{width:min(480px,100%);background:#141826;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
-:is(#ballModal,#raceModal,#loModal) .rmHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}:is(#ballModal,#raceModal,#loModal) .rmHead b{font:800 19px var(--body)}:is(#ballModal,#raceModal,#loModal) .rmHead button{background:#22273a;border:1px solid var(--line);color:var(--fg);border-radius:50%;width:30px;height:30px;cursor:pointer}
-:is(#ballModal,#raceModal,#loModal) .bl{display:block;font:600 13px var(--body);margin-top:10px}:is(#ballModal,#raceModal,#loModal) select,:is(#ballModal,#raceModal,#loModal) textarea{display:block;width:100%;box-sizing:border-box;margin-top:5px;font:500 14px var(--body);color:var(--fg);background:#0f1220;border:1px solid var(--line);border-radius:8px;padding:8px}
-:is(#ballModal,#raceModal,#loModal) .bc{margin:10px 0 0;font-size:14px}:is(#ballModal,#raceModal,#loModal) .miss{color:#ff8a80}
-:is(#ballModal,#raceModal,#loModal) .rmB{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}:is(#ballModal,#raceModal,#loModal) .rmB .simBtn{flex:1;min-width:120px;display:block;font:700 13.5px var(--body);border-radius:8px;padding:10px;cursor:pointer;border:0;background:var(--gold);color:#1b1608}:is(#ballModal,#raceModal,#loModal) .rmB .simBtn.alt{background:#22273a;color:var(--fg);border:1px solid var(--line)}
-:is(#ballModal,#raceModal,#loModal) small{display:block;margin-top:8px;color:var(--muted);font-size:12px}
+.ballBtn{background:#1f8a5a!important;color:#fff!important}body:not(.studio) #ballOpen,body:not(.studio) #raceOpen,body:not(.studio) #loOpen,body:not(.studio) #rpOpen{display:none!important}#rpModal input,#raceModal textarea,#loModal textarea{width:100%;box-sizing:border-box;background:#0b0d14;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px;font:14px var(--body)}.rck{display:flex!important;gap:8px;align-items:center;flex-direction:row!important}
+:is(#ballModal,#raceModal,#loModal,#rpModal){position:fixed;inset:0;z-index:40;background:rgba(5,6,10,.7);display:flex;align-items:flex-start;justify-content:center;padding:60px 12px}:is(#ballModal,#raceModal,#loModal,#rpModal)[hidden]{display:none}
+:is(#ballModal,#raceModal,#loModal,#rpModal) .rm{width:min(480px,100%);background:#141826;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+:is(#ballModal,#raceModal,#loModal,#rpModal) .rmHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}:is(#ballModal,#raceModal,#loModal,#rpModal) .rmHead b{font:800 19px var(--body)}:is(#ballModal,#raceModal,#loModal,#rpModal) .rmHead button{background:#22273a;border:1px solid var(--line);color:var(--fg);border-radius:50%;width:30px;height:30px;cursor:pointer}
+:is(#ballModal,#raceModal,#loModal,#rpModal) .bl{display:block;font:600 13px var(--body);margin-top:10px}:is(#ballModal,#raceModal,#loModal,#rpModal) select,:is(#ballModal,#raceModal,#loModal,#rpModal) textarea{display:block;width:100%;box-sizing:border-box;margin-top:5px;font:500 14px var(--body);color:var(--fg);background:#0f1220;border:1px solid var(--line);border-radius:8px;padding:8px}
+:is(#ballModal,#raceModal,#loModal,#rpModal) .bc{margin:10px 0 0;font-size:14px}:is(#ballModal,#raceModal,#loModal,#rpModal) .miss{color:#ff8a80}
+:is(#ballModal,#raceModal,#loModal,#rpModal) .rmB{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}:is(#ballModal,#raceModal,#loModal,#rpModal) .rmB .simBtn{flex:1;min-width:120px;display:block;font:700 13.5px var(--body);border-radius:8px;padding:10px;cursor:pointer;border:0;background:var(--gold);color:#1b1608}:is(#ballModal,#raceModal,#loModal,#rpModal) .rmB .simBtn.alt{background:#22273a;color:var(--fg);border:1px solid var(--line)}
+:is(#ballModal,#raceModal,#loModal,#rpModal) small{display:block;margin-top:8px;color:var(--muted);font-size:12px}
 </style>
 
 <canvas id="arena" aria-label="The VC Arena seen from above: one seat per Vince Carter moment"></canvas>
@@ -306,7 +306,7 @@ body.tl #feed,body.simu #feed,body.simo #feed,body.rec #feed{display:none!import
     <h1>The <span>VC</span> Arena<em class="pre" title="Early preview: est. 26·10·26, still being tuned before the full launch">PRESEASON</em></h1>
     <p>15,695 seats, one for every VC moment ever minted.<span class="sample live on" id="asof">Real owners</span><span class="sample live" id="live">Sample listings</span></p>
   </div>
-  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><a class="statsBtn gamesBtn" href="games.html">🎮 Giveaway games</a><button class="tlBtn tmapBtn" id="tmapBtn">🎟️ Ticket map</button><button class="tlBtn" id="tlOpen">▶ Timelapse (past)</button><button class="tlBtn simTop" id="simOpen">🔮 Simulator (future)</button><button class="tlBtn ballBtn" id="ballOpen">🏖️ Beach ball</button><button class="tlBtn ballBtn" id="loOpen">🎲 Lights-Out</button><button class="tlBtn ballBtn" id="raceOpen">🏁 Marble race</button>
+  <div class="right"><a class="statsBtn" href="stats.html">📊 Stats <i>NEW</i></a><a class="statsBtn gamesBtn" href="games.html">🎮 Giveaway games</a><button class="tlBtn tmapBtn" id="tmapBtn">🎟️ Ticket map</button><button class="tlBtn" id="tlOpen">▶ Timelapse (past)</button><button class="tlBtn simTop" id="simOpen">🔮 Simulator (future)</button><button class="tlBtn ballBtn" id="ballOpen">🏖️ Beach ball</button><button class="tlBtn ballBtn" id="rpOpen">🧾 Reports</button><button class="tlBtn ballBtn" id="loOpen">🎲 Lights-Out</button><button class="tlBtn ballBtn" id="raceOpen">🏁 Marble race</button>
   <div class="search">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
     <input id="q" type="search" placeholder="Find your seats… try “mcuban”" autocomplete="off">
@@ -1877,17 +1877,17 @@ function drawFlatCourt(){const N="#24325a";
   ctx.fillStyle="#ce1141";ctx.beginPath();ctx.arc(0,0,34,0,6.2832);ctx.fill();ctx.fillStyle="#fff";ctx.font="800 34px 'Barlow Condensed',sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
   ctx.save();if(ROT)ctx.rotate(-ROT);ctx.fillText("15",0,2);ctx.restore()}
 function drawTicketMap(){
-  ctx.save();ctx.setTransform(DPR,0,0,DPR,0,0);ctx.fillStyle="#f4f5f7";ctx.fillRect(0,0,W,H);ctx.restore();
-  tmapRing(RING_OUT,"#e6e8ec");TSECT=TSECT||tmapSections();
-  ctx.fillStyle="#ffffff";for(const sc of TSECT){ctx.beginPath();sc.pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}
-  ctx.fillStyle="#cfd3da";for(const sc of TSECT)if(sc.tun){const p=rrPath(CW+sc.tun.a,CH+sc.tun.a,70+sc.tun.a),[x,y]=p.at(sc.tun.u%1),[x2,y2]=p.at((sc.tun.u+.002)%1),ang=Math.atan2(y2-y,x2-x);
+  ctx.save();ctx.setTransform(DPR,0,0,DPR,0,0);ctx.fillStyle="#efeef6";ctx.fillRect(0,0,W,H);ctx.restore();
+  tmapRing(RING_OUT,"#ffffff");TSECT=TSECT||tmapSections();
+  ctx.fillStyle="#cdc6ee";for(const sc of TSECT){ctx.beginPath();sc.pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}
+  ctx.fillStyle="#ffffff";for(const sc of TSECT)if(sc.tun){const p=rrPath(CW+sc.tun.a,CH+sc.tun.a,70+sc.tun.a),[x,y]=p.at(sc.tun.u%1),[x2,y2]=p.at((sc.tun.u+.002)%1),ang=Math.atan2(y2-y,x2-x);
     ctx.save();ctx.translate(x,y);ctx.rotate(ang);ctx.fillRect(-7,-9,14,22);ctx.restore()}
   drawFlatCourt();
-  if(cam.s>.45){ctx.fillStyle="#7d8291";ctx.textAlign="center";ctx.textBaseline="middle";ctx.font=`700 ${Math.max(7,9/cam.s)}px Barlow,sans-serif`;for(const sc of TSECT){ctx.save();ctx.translate(sc.lab[0],sc.lab[1]);if(ROT)ctx.rotate(-ROT);ctx.fillText(String(sc.num),0,0);ctx.restore()}}
+  if(cam.s>.45){ctx.fillStyle="#4b4570";ctx.textAlign="center";ctx.textBaseline="middle";ctx.font=`700 ${Math.max(7,9/cam.s)}px Barlow,sans-serif`;for(const sc of TSECT){ctx.save();ctx.translate(sc.lab[0],sc.lab[1]);if(ROT)ctx.rotate(-ROT);ctx.fillText(String(sc.num),0,0);ctx.restore()}}
   const v0=toWorld(0,0),v1=toWorld(W,H),held=[],sale=[],gone=[],pk=[];
   for(const m of seats){if(m.x<v0.x-10||m.x>v1.x+10||m.y<v0.y-10||m.y>v1.y+10)continue;(m.burned?gone:m.pack?pk:m.price>0?sale:held).push(m)}
   const dots=(arr,r,col)=>{ctx.fillStyle=col;ctx.beginPath();for(const m of arr){ctx.moveTo(m.x+r,m.y);ctx.arc(m.x,m.y,r,0,6.2832)}ctx.fill()};
-  dots(held,SEAT*.3,"#c4c8d0");dots(pk,SEAT*.34,"#d9a441");
+  dots(held,SEAT*.3,"#a79ddc");dots(pk,SEAT*.34,"#d9a441");
   ctx.strokeStyle="#e0455a";ctx.lineWidth=SEAT*.12;ctx.beginPath();for(const m of gone){ctx.moveTo(m.x+SEAT*.26,m.y);ctx.arc(m.x,m.y,SEAT*.26,0,6.2832)}ctx.stroke();
   dots(sale,SEAT*.42,"#2b63d9");
   if(cam.s>2.2){ctx.fillStyle="#fff";ctx.font="700 2.2px 'IBM Plex Mono',monospace";ctx.textAlign="center";ctx.textBaseline="middle";for(const m of sale)ctx.fillText(String(m.serial),m.x,m.y+.2,SEAT*.8)}
@@ -1902,13 +1902,15 @@ function drawTicketMap(){
   drawPriceTags();
   // legend + get-in price (screen space), tidy for screenshots
   ctx.setTransform(DPR,0,0,DPR,0,0);const all=seats.filter(m=>m.price>0&&!m.burned&&!m.pack),low=all.length?Math.min(...all.map(m=>m.price)):0;
-  const narrow=W<700,x0=12,y0=document.body.classList.contains("rec")?12:narrow?184:182,F="'Barlow Condensed',sans-serif";
+  const narrow=W<700,x0=12,y0=document.body.classList.contains("rec")?12:Math.max(narrow?184:182,((document.querySelector(".search")||{getBoundingClientRect:()=>({bottom:0})}).getBoundingClientRect().bottom||0)+12),F="'Barlow Condensed',sans-serif";
   ctx.fillStyle="rgba(255,255,255,.95)";ctx.strokeStyle="#d9dce2";ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(x0,y0,narrow?W-24:430,W<400?100:74,10);ctx.fill();ctx.stroke();
   ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillStyle="#1d2230";ctx.font=`800 ${narrow?20:22}px ${F}`;
   ctx.fillText(low?`Get-in price ${money(low)} · ${all.length.toLocaleString()} for sale`:"No VC moments listed right now",x0+14,y0+22);
-  const lg=[["#2b63d9","For sale",1],["#c4c8d0","Held",1],["#d9a441","In a pack",1],["#e0455a","Retired",0]];let lx=x0+14,ly=y0+(narrow?54:52);ctx.font=`600 ${narrow?13:14}px Barlow,sans-serif`;
+  const lg=[["#2b63d9","For sale",1],["#a79ddc","Held",1],["#d9a441","In a pack",1],["#e0455a","Retired",0]];let lx=x0+14,ly=y0+(narrow?54:52);ctx.font=`600 ${narrow?13:14}px Barlow,sans-serif`;
   for(const[c,t,f]of lg){ctx.beginPath();ctx.arc(lx+6,ly,6,0,6.2832);if(f){ctx.fillStyle=c;ctx.fill()}else{ctx.strokeStyle=c;ctx.lineWidth=2.4;ctx.stroke()}ctx.fillStyle="#3a4050";ctx.fillText(t,lx+17,ly);lx+=ctx.measureText(t).width+42;if(narrow&&lx>W-120){lx=x0+14;ly+=24}}
-  ctx.textAlign="right";ctx.fillStyle="#6b7080";ctx.font=`800 ${narrow?13:15}px ${F}`;ctx.fillText(SITE+" · @VC15Tracker",W-14,H-14)}
+  ctx.textAlign="right";ctx.fillStyle="#6b7080";ctx.font=`800 ${narrow?13:15}px ${F}`;ctx.fillText(SITE+" · @VC15Tracker",W-14,H-14);
+  ctx.textAlign="left";ctx.font=`600 ${narrow?11:12}px Barlow,sans-serif`;ctx.fillStyle="#7d8291";ctx.fillText("As of "+nowET(),x0+4,y0+(W<400?100:74)+18)}
+function nowET(){try{return new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"}).format(new Date())+" ET"}catch(e){return new Date().toLocaleString()}}
 {const b=document.getElementById("tmapBtn");const lab=()=>b.textContent=TMAP?"🏟️ Arena view":"🎟️ Ticket map";lab();
   b.onclick=()=>{TMAP=!TMAP;try{localStorage.setItem("vcTmap",TMAP?"1":"0")}catch(e){}lab();dirty=true}}
 // ?zoom=dallas (or any set: tsd, rib, origin, asg, cosmic, archive, fandom) opens zoomed on that section, handy for screenshots
@@ -1918,6 +1920,86 @@ function zoomToSets(keys){const ss=seats.filter(m=>keys.includes(m.set));if(!ss.
   cam={x:(x0+x1)/2,y:(y0+y1)/2-(top-bot)/2/s,s};dirty=true;return true}
 setTimeout(()=>{try{const z=new URLSearchParams(location.search).get("zoom");if(!z)return;const k=z.toLowerCase();
   zoomToSets(k==="dallas"?["dallas","galac","omega"]:k==="courtside"?["dallas","galac","omega","asg","cosmic"]:k.split(","))}catch(e){}},400);
+// ---------- 🧾 monthly reports (studio): Monthly Activity + Supply Snapshot cards, as PNGs ----------
+const RP_NAME={archive:["Archive Set","Common · Summer '21"],fandom:["Vintage Vibes","Fandom · Summer '21"],tsd:["TSD Common","Series 1"],
+  rib:["RIB '05-06","Rare"],origin:["RIB Origin","Rare"],asg:["ASG Legendary","Series 3"],cosmic:["TSD Cosmic","Series 1"],
+  dallas:["Dallas Standard","Playoff"],galac:["Dallas Galactic","Playoff"],omega:["Dallas Omega","Playoff"]};
+const RP_SNAP={omega:["Dallas Omega","Playoff"],galac:["Dallas Galactic","Playoff"],dallas:["Dallas Standard","Playoff"],cosmic:["TSD Cosmic","Series 1"],
+  asg:["ASG Legendary","Series 3"],origin:["Rare","RIB Origin"],fandom:["Fandom","Summer '21"],rib:["Rare","RIB '05-06"],tsd:["TSD Common","Series 1"],archive:["Archive Set","Summer '21"]};
+const RPC={bg:"#111318",card:"#181b22",line:"#2a2d35",fg:"#f2f0ea",mut:"#8a8f9a",or:"#e8603c",gold:"#e9b949",burnBg:"#1d1612",lockBg:"#1d1a12"};
+const MONTHS=["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
+function rpStats(){const per={};let minted=0,burned=0,locked=0;
+  for(const S of SETS){const live=S.list.filter(m=>!m.burned),b=S.list.length-live.length;per[S.key]={minted:S.minted,burned:Math.max(b,S.minted-S.list.length+b),existing:0};
+    per[S.key].existing=S.minted-per[S.key].burned;minted+=S.minted;burned+=per[S.key].burned;locked+=live.filter(m=>m.locked).length}
+  return{per,minted,burned,existing:minted-burned,locked}}
+function rpBox(c,x,y,w,h,bg,border){c.fillStyle=bg;c.strokeStyle=border||RPC.line;c.lineWidth=2;c.beginPath();c.roundRect(x,y,w,h,22);c.fill();c.stroke()}
+function rpText(c,t,x,y,font,col,align){c.font=font;c.fillStyle=col;c.textAlign=align||"left";c.fillText(t,x,y)}
+function rpTrack(c,t,x,y,size,col,sp,align){c.font=`600 ${size}px Barlow,sans-serif`;c.fillStyle=col;if("letterSpacing" in c)c.letterSpacing=sp+"px";c.textAlign=align||"left";c.fillText(t,x,y);if("letterSpacing" in c)c.letterSpacing="0px"}
+function rpImg(c,k,x,y,w,h){c.fillStyle="#000";c.beginPath();c.roundRect(x,y,w,h,[22,0,0,22]);c.fill();const im=PIMG[k];if(im&&im.complete&&im.naturalWidth){const s=Math.min(w,h)*.88;c.drawImage(im,x+(w-s)/2,y+(h-s)/2,s,s)}}
+function rpFit(c,t,x,y,size,maxW,col){let z=size;c.font=`800 ${z}px 'Barlow Condensed',sans-serif`;while(z>40&&c.measureText(t).width>maxW){z-=4;c.font=`800 ${z}px 'Barlow Condensed',sans-serif`}c.fillStyle=col;c.textAlign="left";c.fillText(t,x,y)}
+function rpFonts(){return document.fonts?Promise.all(["800 100px 'Barlow Condensed'","700 50px 'Barlow Condensed'","500 20px Barlow","600 20px Barlow","700 20px Barlow"].map(f=>document.fonts.load(f).catch(()=>{}))):Promise.resolve()}
+function rpFooter(c,W,y){c.strokeStyle=RPC.line;c.lineWidth=2;c.beginPath();c.moveTo(107,y);c.lineTo(W-107,y);c.stroke();
+  rpText(c,"@VC15Tracker",W-107,y+95,"800 46px 'Barlow Condensed',sans-serif",RPC.fg,"right");rpText(c,"Vince Carter · Top Shot supply",W-107,y+140,"500 26px Barlow,sans-serif",RPC.mut,"right")}
+// Monthly Activity for year y, month mo (0-11). lockStart = total locked at the start of the month (from last month's snapshot)
+function drawMonthly(y,mo,lockStart){const st=rpStats(),start=Date.UTC(y,mo,1),end=Date.UTC(y,mo+1,1);
+  const burns=[];for(const S of SETS)for(const m of S.list)if(m.burned&&m.burnedAt){const t=DAY0+m.burnedAt*DAY;if(t>=start&&t<end)burns.push(m)}
+  burns.sort((a,b)=>a.burnedAt-b.burnedAt||a.set.localeCompare(b.set));
+  const later=[];for(const S of SETS)for(const m of S.list)if(m.burned&&m.burnedAt&&DAY0+m.burnedAt*DAY>=end)later.push(m);   // burned after this month
+  const burnedEnd=st.burned-later.length,burnedStart=burnedEnd-burns.length,exEnd=st.minted-burnedEnd,exStart=exEnd+burns.length;
+  const cols=2,rows=Math.ceil(burns.length/cols),cardH=385,W=2000,H=1000+Math.max(1,rows)*(cardH+30)+320;
+  const cv2=document.createElement("canvas");cv2.width=W;cv2.height=H;const c=cv2.getContext("2d");c.fillStyle=RPC.bg;c.fillRect(0,0,W,H);c.textBaseline="alphabetic";
+  rpTrack(c,"VC15 TRACKER · MONTHLY ACTIVITY",107,138,34,RPC.mut,6);
+  rpFit(c,`${MONTHS[mo]} ${y}`,100,312,188,W-214-330,RPC.fg);
+  const last=new Date(end-DAY).getUTCDate(),mon3=MON[mo];rpTrack(c,"PERIOD",W-107,228,28,RPC.mut,5,"right");rpText(c,`1–${last} ${mon3}`,W-107,300,"700 58px 'Barlow Condensed',sans-serif",RPC.fg,"right");
+  c.fillStyle=RPC.or;c.fillRect(107,368,W-214,4);
+  const bw=(W-214-56)/3,by=440,bh=348;
+  rpBox(c,107,by,bw,bh,RPC.burnBg,"#4a2a1e");rpTrack(c,"🔥 BURNED",148,507,30,RPC.or,4);rpText(c,String(burns.length),148,635,"800 120px 'Barlow Condensed',sans-serif",RPC.fg);rpText(c,`All-time total ${burnedStart} → ${burnedEnd}`,148,693,"500 28px Barlow,sans-serif",RPC.fg);
+  const x2=107+bw+28;rpBox(c,x2,by,bw,bh,RPC.lockBg,"#4a3f1e");rpTrack(c,"🔒 LOCKED (NET)",x2+41,507,30,RPC.gold,4);
+  if(lockStart!=null&&!isNaN(lockStart)){const net=st.locked-lockStart;rpText(c,(net>0?"+":"")+net,x2+41,635,"800 120px 'Barlow Condensed',sans-serif",RPC.fg);rpText(c,`Total ${lockStart.toLocaleString()} → ${st.locked.toLocaleString()}`,x2+41,693,"500 28px Barlow,sans-serif",RPC.mut)}
+  else{rpText(c,st.locked.toLocaleString(),x2+41,635,"800 120px 'Barlow Condensed',sans-serif",RPC.fg);rpText(c,"Currently locked",x2+41,693,"500 28px Barlow,sans-serif",RPC.mut)}
+  const x3=x2+bw+28;rpBox(c,x3,by,bw,bh,RPC.card);rpTrack(c,"EXISTING SUPPLY",x3+41,507,30,RPC.mut,4);rpText(c,exEnd.toLocaleString(),x3+41,635,"800 120px 'Barlow Condensed',sans-serif",RPC.fg);
+  rpText(c,burns.length?`Down ${burns.length} from ${exStart.toLocaleString()}`:"No change this month",x3+41,693,"500 28px Barlow,sans-serif",RPC.fg);
+  rpText(c,"BURNED THIS MONTH",107,915,"800 64px 'Barlow Condensed',sans-serif",RPC.fg);
+  if(burns.length){const days=new Set(burns.map(m=>m.burnedAt));rpText(c,days.size===1&&burns.length>1?`All on ${new Date(DAY0+burns[0].burnedAt*DAY).getUTCDate()} ${mon3}`:`${burns.length} moment${burns.length===1?"":"s"} retired for good`,W-107,915,"500 30px Barlow,sans-serif",RPC.mut,"right")}
+  const cw=(W-214-28)/2;
+  burns.forEach((m,i)=>{const cx=107+(i%cols)*(cw+28),cy=962+Math.floor(i/cols)*(cardH+30);rpBox(c,cx,cy,cw,cardH,RPC.card);rpImg(c,m.set,cx+1,cy+1,cardH-2,cardH-2);
+    const tx=cx+cardH+40,[nm,sub]=RP_NAME[m.set]||[m.set,""],d=new Date(DAY0+m.burnedAt*DAY);
+    rpTrack(c,`🔥 BURNED ${d.getUTCDate()} ${mon3.toUpperCase()}`,tx,cy+64,26,RPC.or,4);rpText(c,nm,tx,cy+125,"700 46px Barlow,sans-serif",RPC.fg);rpText(c,sub,tx,cy+170,"500 28px Barlow,sans-serif",RPC.mut);
+    rpText(c,"#"+m.serial,tx,cy+272,"800 96px 'Barlow Condensed',sans-serif",RPC.fg);c.fillStyle=RPC.line;c.fillRect(tx,cy+300,cw-cardH-80,2);
+    const S=SK[m.set],laterInSet=later.filter(x=>x.set===m.set).length,ex=st.per[m.set].existing+laterInSet;rpText(c,`Supply now ${ex.toLocaleString()} of ${S.minted.toLocaleString()}`,tx,cy+345,"500 26px Barlow,sans-serif",RPC.mut)});
+  if(!burns.length)rpText(c,"No VC moments were retired this month.",107,1030,"500 34px Barlow,sans-serif",RPC.mut);
+  rpFooter(c,W,H-260);return cv2}
+function drawSnapshot(dateStr){const st=rpStats(),W=1720,order=["omega","galac","dallas","cosmic","asg","origin","fandom","rib","tsd","archive"];
+  const H=2000,cv2=document.createElement("canvas");cv2.width=W;cv2.height=H;const c=cv2.getContext("2d");c.fillStyle=RPC.bg;c.fillRect(0,0,W,H);
+  rpTrack(c,"VC15 TRACKER · VINCE CARTER TOP SHOT",85,110,28,RPC.mut,6);rpFit(c,"SUPPLY SNAPSHOT",80,250,150,W-302-300,RPC.fg);
+  rpTrack(c,"AS OF",W-217,182,24,RPC.mut,4,"right");rpText(c,dateStr,W-217,236,"700 44px 'Barlow Condensed',sans-serif",RPC.fg,"right");
+  c.fillStyle=RPC.or;c.fillRect(85,292,W-302,4);
+  const bw=(W-302-66)/4,boxes=[["ORIGINAL",st.minted,"Total ever minted",RPC.card,RPC.line,RPC.mut],["EXISTING",st.existing,"Still in circulation",RPC.card,RPC.line,RPC.mut],
+    ["🔥 BURNED",st.burned,"All-time",RPC.burnBg,"#4a2a1e",RPC.or],["🔒 LOCKED",st.locked,"Currently locked",RPC.lockBg,"#4a3f1e",RPC.gold]];
+  boxes.forEach(([t,v,s,bg,bd,col],i)=>{const x=85+i*(bw+22);rpBox(c,x,348,bw,226,bg,bd);rpTrack(c,t,x+32,404,22,col,4);rpText(c,v.toLocaleString(),x+32,496,"800 82px 'Barlow Condensed',sans-serif",RPC.fg);rpText(c,s,x+32,540,"500 22px Barlow,sans-serif",RPC.mut)});
+  rpText(c,"SUPPLY BY SET",85,676,"800 48px 'Barlow Condensed',sans-serif",RPC.fg);rpText(c,"Scarcest to most common",W-217,676,"500 22px Barlow,sans-serif",RPC.mut,"right");
+  const cw=(W-302-88)/5,ch=470;
+  order.forEach((k,i)=>{const x=85+(i%5)*(cw+22),y=713+Math.floor(i/5)*(ch+24),p=st.per[k],[nm,sub]=RP_SNAP[k];
+    rpBox(c,x,y,cw,ch,RPC.card);c.fillStyle="#000";c.beginPath();c.roundRect(x+1,y+1,cw-2,263,[22,22,0,0]);c.fill();const im=PIMG[k];if(im&&im.complete&&im.naturalWidth){const s=240;c.drawImage(im,x+(cw-s)/2,y+12,s,s)}
+    rpText(c,p.existing.toLocaleString(),x+22,y+335,"800 56px 'Barlow Condensed',sans-serif",RPC.fg);rpText(c,nm,x+22,y+370,"600 22px Barlow,sans-serif",RPC.fg);rpText(c,sub,x+22,y+400,"500 18px Barlow,sans-serif",RPC.mut);
+    c.fillStyle=RPC.line;c.fillRect(x+22,y+416,cw-44,1.5);rpText(c,`${p.minted.toLocaleString()} minted  ·  `,x+22,y+446,"500 17px Barlow,sans-serif",RPC.mut);
+    const w0=c.measureText(`${p.minted.toLocaleString()} minted  ·  `).width;rpText(c,`${p.burned} burned`,x+22+w0,y+446,`${p.burned?600:500} 17px Barlow,sans-serif`,p.burned?RPC.or:RPC.mut)});
+  c.save();c.translate(-107+85,0);rpFooter(c,W-302+214-2*85+170,H-215);c.restore();return cv2}
+function rpSave(cv2,name){cv2.toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove()},"image/png")}
+const rpM=document.createElement("div");rpM.id="rpModal";rpM.hidden=true;document.body.appendChild(rpM);
+document.getElementById("rpOpen").onclick=()=>{const now=new Date(),pm=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()-(now.getUTCDate()<=7?1:0),1));
+  let saved={};try{saved=JSON.parse(localStorage.getItem("vcLockSnap")||"{}")}catch(e){}
+  const key=`${pm.getUTCFullYear()}-${pm.getUTCMonth()}`;rpM.hidden=false;
+  rpM.innerHTML=`<div class="rm"><div class="rmHead"><b>🧾 Monthly reports</b><button data-x aria-label="Close">✕</button></div>
+   <label class="bl">Month<input type="month" id="rpMonth" value="${pm.getUTCFullYear()}-${String(pm.getUTCMonth()+1).padStart(2,"0")}"></label>
+   <label class="bl">Locked at the start of that month (from last month's Supply Snapshot)<input type="text" id="rpLock" value="${saved[key]??""}" placeholder="e.g. 5955"></label>
+   <div class="rmB"><button class="simBtn" data-m>📅 Monthly Activity PNG</button><button class="simBtn alt" data-s>📊 Supply Snapshot PNG</button></div>
+   <small>Uses the owner data the site has loaded (${esc(String(DATA.asOf||""))}). Run your data update first so the month is complete. The Supply Snapshot also remembers today's locked total, so next month's "Locked (net)" fills in by itself.</small></div>`;
+  rpM.querySelector("[data-x]").onclick=()=>rpM.hidden=true;
+  rpM.querySelector("[data-m]").onclick=async()=>{await rpFonts();const[yy,mm]=rpM.querySelector("#rpMonth").value.split("-").map(Number),ls=parseInt(String(rpM.querySelector("#rpLock").value).replace(/,/g,""));
+    rpSave(drawMonthly(yy,mm-1,isNaN(ls)?null:ls),`vc15-monthly-${MONTHS[mm-1].toLowerCase()}-${yy}.png`)};
+  rpM.querySelector("[data-s]").onclick=async()=>{await rpFonts();const d=new Date(),st=rpStats();try{const s2=JSON.parse(localStorage.getItem("vcLockSnap")||"{}");s2[`${d.getUTCFullYear()}-${d.getUTCMonth()}`]=st.locked;localStorage.setItem("vcLockSnap",JSON.stringify(s2))}catch(e){}
+    rpSave(drawSnapshot(`${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`),`vc15-supply-snapshot-${d.toISOString().slice(0,10)}.png`)}};
 // ---------- live activity feed (activity.json, pushed by the sales bot within a minute or two of each event) ----------
 let LIVE_FEED=[],FEED_I=0;
 function histFeed(){if(HIST_FEED)return HIST_FEED;const out=[],cut=NOW-30*DAY,nm=i=>i>=0&&DATA.names[i]!=null?DATA.names[i]:"";
