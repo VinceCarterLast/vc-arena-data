@@ -199,10 +199,13 @@ $("pub").onclick=()=>{const t="!predict "+location.origin+location.pathname+"#b=
 $("share").onclick=e=>{const u=location.origin+location.pathname+"#b="+btoa(unescape(encodeURIComponent(JSON.stringify(S))));navigator.clipboard&&navigator.clipboard.writeText(u);e.target.textContent="✅ Link copied";setTimeout(()=>e.target.textContent="🔗 Share board link",1500)};
 // ---- automatic live score: the bot on the Mac mini pushes score.json (from ESPN) every minute during the game ----
 const SCORE_URL="https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/score.json";
-let lastUpd="";
+let lastUpd="",liveOK=true;
 async function pollScore(){try{const r=await fetch(SCORE_URL+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const g=await r.json();
   const[ab]=split(S.tA),[bb]=split(S.tB),T=g.teams||{},el=$("live");
   if(!(ab in T)||!(bb in T)){el.className="live";el.textContent="⚪ Live score not available for this game. The host updates it.";return}
+  const now=Date.now(),st=Date.parse(g.start||0),up=Date.parse(g.updated||0);
+  if(!g.final&&st&&now>st+5*60e3&&now-up>10*60e3){liveOK=false;el.className="live";el.textContent="✋ Score updated by the host";return}
+  liveOK=true;
   if(g.updated&&g.updated!==lastUpd){lastUpd=g.updated;
     if(g.state!=="pre"){S.a=T[ab];S.b=T[bb];S.final=!!g.final;S.q=g.half?3:g.period>=5?6:g.period===4?5:g.period===3?4:g.period===2?2:g.period===1?1:S.q;S.clock=g.final?"":(g.half?"":g.clock||"")}
     render()}
@@ -213,9 +216,12 @@ if(/[?&]host\b/.test(location.search)&&!/#b=/.test(location.hash)){
   const n=t=>String(t||"").split("\n").filter(l=>l.trim()).length;
   fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/predict.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{
     if(!d||n(d.picks)<n(S.picks))return;for(const k of["tA","tB","when","prize","prizeImg","picks"])if(d[k]!=null){S[k]=d[k];$(k).value=d[k]}save();render()}).catch(()=>{})}
-if(!/[?&]host\b/.test(location.search)&&!/#b=/.test(location.hash)){
+function loadBoard(){if(/[?&]host\b/.test(location.search)||/#b=/.test(location.hash))return;
   fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/predict.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{
-    if(!d)return;for(const k of["tA","tB","when","prize","prizeImg","picks"])if(d[k]!=null){S[k]=d[k];$(k).value=d[k]}render()}).catch(()=>{})}
+    if(!d)return;for(const k of["tA","tB","when","prize","prizeImg","picks"])if(d[k]!=null){S[k]=d[k];$(k).value=d[k]}
+    if(!liveOK)for(const k of["a","b","q","final","clock"])if(d[k]!=null)S[k]=d[k];
+    render()}).catch(()=>{})}
+loadBoard();setInterval(loadBoard,60000);
 if(/[?&]host\b/.test(location.search))document.body.classList.add("hosting");
 if(document.body.classList.contains("hosting"))$("viewNote").hidden=true;
 render();pollScore();setInterval(pollScore,30000);
