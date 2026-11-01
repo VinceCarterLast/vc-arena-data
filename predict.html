@@ -32,7 +32,7 @@ main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;padding:0 1
 .team .nm{font:700 13px var(--body);color:rgba(255,255,255,.8)}
 .team.a{background:linear-gradient(160deg,var(--a),#001d52);box-shadow:inset 0 -4px 0 var(--a2)}
 .team.b{background:linear-gradient(160deg,var(--b),#130b45);box-shadow:inset 0 -4px 0 var(--b2)}
-.score{font:900 clamp(46px,9vw,84px) Orbitron,monospace;color:#ffd84a;text-shadow:0 0 18px rgba(255,200,40,.55);min-width:2.2ch;text-align:center;background:#0d0f16;border-radius:10px;padding:2px 10px;margin-top:6px}
+.score{font:900 clamp(56px,10vw,96px) 'Barlow Condensed',sans-serif;color:#ffd84a;text-shadow:0 0 18px rgba(255,200,40,.55);min-width:2.2ch;text-align:center;background:#0d0f16;border-radius:10px;padding:2px 10px;margin-top:6px}
 .mid{display:flex;flex-direction:column;align-items:center;gap:6px}
 .qtr{font:900 22px Orbitron,monospace;color:#ff5a3c;text-shadow:0 0 12px rgba(255,80,40,.5)}
 .vs{font:800 13px var(--body);color:var(--muted)}
@@ -139,8 +139,9 @@ let S={tA:"BUF Bills",tB:"BAL Ravens",when:"SUNDAY · NOV 1 · 1:00 PM ET",prize
 const QS=["PRE","Q1","Q2","HALF","Q3","Q4","OT","FINAL"];
 // state comes from a shared link (#b=...) or this browser's last session
 function load(){try{const h=location.hash.match(/#b=(.+)/);if(h){S={...S,...JSON.parse(decodeURIComponent(escape(atob(h[1]))))};return}}catch(e){}
+  if(!/[?&]host\b/.test(location.search))return;   // only the host page uses saved data; visitors see predict.json
   try{const d=JSON.parse(localStorage.getItem("vcPredict")||"null");if(d)S={...S,...d}}catch(e){}}
-function save(){try{localStorage.setItem("vcPredict",JSON.stringify(S))}catch(e){}}
+function save(){if(!/[?&]host\b/.test(location.search))return;try{localStorage.setItem("vcPredict",JSON.stringify(S))}catch(e){}}
 const split=t=>{const m=String(t).trim().match(/^(\S+)\s*(.*)$/);return m?[m[1].toUpperCase().slice(0,4),m[2]||m[1]]:["T","Team"]};
 function parse(){const[ab,nm]=split(S.tA),[bb,nmb]=split(S.tB),out=[],bad=[];
   const aw=new RegExp(`\\b(${ab}|${nm.split(" ").pop()})\\b`,"i"),bw=new RegExp(`\\b(${bb}|${nmb.split(" ").pop()})\\b`,"i");
