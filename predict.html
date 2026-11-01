@@ -124,7 +124,8 @@ textarea{min-height:150px;resize:vertical}
       <button class="btn" id="final">🏁 Final</button>
       <button class="btn" id="copy">📋 Copy results</button>
       <button class="btn" id="share">🔗 Share board link</button>
-      <button class="btn" id="dl">⬇ Download predict.json</button>
+      <button class="btn" id="pub" style="background:#5865F2;color:#fff">📤 Publish to site</button> <button class="btn" id="dl">⬇ Download predict.json</button>
+      <div id="pubTip" style="display:none;font-size:13px;margin-top:6px">✅ Copied. Paste it in your Discord private channel and send it. The bot puts it on the site.</div>
     </div>
     <span class="note">You must pick the right winner. Among those, closest = fewest total points off (both teams' differences added). If nobody picked the winner, closest score wins. Tie: whoever replied first (higher in the list). Free to enter, no purchase needed.</span>
   </div>
@@ -192,6 +193,9 @@ function resultText(){const{list}=parse();const r=rankPicks(list);const[ab]=spli
 $("copy").onclick=e=>{navigator.clipboard&&navigator.clipboard.writeText(resultText());e.target.textContent="✅ Copied";setTimeout(()=>e.target.textContent="📋 Copy results",1500)};
 $("dl").onclick=()=>{const d={tA:S.tA,tB:S.tB,when:S.when,prize:S.prize,prizeImg:S.prizeImg,picks:S.picks,updated:new Date().toISOString()};
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,1)],{type:"application/json"}));a.download="predict.json";document.body.appendChild(a);a.click();a.remove()};
+$("pub").onclick=()=>{const t="!predict "+location.origin+location.pathname+"#b="+btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+  const done=()=>{$("pubTip").style.display="block";setTimeout(()=>location.href="discord://",600)};
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(done,()=>{prompt("Copy this and paste it in Discord:",t)});else prompt("Copy this and paste it in Discord:",t)};
 $("share").onclick=e=>{const u=location.origin+location.pathname+"#b="+btoa(unescape(encodeURIComponent(JSON.stringify(S))));navigator.clipboard&&navigator.clipboard.writeText(u);e.target.textContent="✅ Link copied";setTimeout(()=>e.target.textContent="🔗 Share board link",1500)};
 // ---- automatic live score: the bot on the Mac mini pushes score.json (from ESPN) every minute during the game ----
 const SCORE_URL="https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/score.json";
