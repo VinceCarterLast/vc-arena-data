@@ -124,6 +124,7 @@ textarea{min-height:150px;resize:vertical}
       <button class="btn" id="final">🏁 Final</button>
       <button class="btn" id="copy">📋 Copy results</button>
       <button class="btn" id="share">🔗 Share board link</button>
+      <button class="btn" id="dl">⬇ Download predict.json</button>
     </div>
     <span class="note">You must pick the right winner. Among those, closest = fewest total points off (both teams' differences added). If nobody picked the winner, closest score wins. Tie: whoever replied first (higher in the list). Free to enter, no purchase needed.</span>
   </div>
@@ -188,6 +189,8 @@ $("hostBtn").onclick=()=>document.body.classList.toggle("hosting");
 function resultText(){const{list}=parse();const r=rankPicks(list);const[ab]=split(S.tA),[bb]=split(S.tB);
   return `🏈 ${S.final?"FINAL":QS[S.q]}: ${ab} ${S.a} - ${bb} ${S.b}\n`+(r[0]?`🏆 ${S.final?"Winner":"Leading"}: ${r[0].name} (picked ${r[0].a}-${r[0].b}${r[0].d===0?", exact!":`, off by ${r[0].d}`})\n`:"")+(r[1]?`🥈 ${r[1].name} (${r[1].a}-${r[1].b})\n`:"")+(r[2]?`🥉 ${r[2].name} (${r[2].a}-${r[2].b})\n`:"")+`${list.length} players · free to play · vc15tracker.com/predict.html`}
 $("copy").onclick=e=>{navigator.clipboard&&navigator.clipboard.writeText(resultText());e.target.textContent="✅ Copied";setTimeout(()=>e.target.textContent="📋 Copy results",1500)};
+$("dl").onclick=()=>{const d={tA:S.tA,tB:S.tB,when:S.when,prize:S.prize,prizeImg:S.prizeImg,picks:S.picks,updated:new Date().toISOString()};
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,1)],{type:"application/json"}));a.download="predict.json";document.body.appendChild(a);a.click();a.remove()};
 $("share").onclick=e=>{const u=location.origin+location.pathname+"#b="+btoa(unescape(encodeURIComponent(JSON.stringify(S))));navigator.clipboard&&navigator.clipboard.writeText(u);e.target.textContent="✅ Link copied";setTimeout(()=>e.target.textContent="🔗 Share board link",1500)};
 // ---- automatic live score: the bot on the Mac mini pushes score.json (from ESPN) every minute during the game ----
 const SCORE_URL="https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/score.json";
@@ -200,6 +203,9 @@ async function pollScore(){try{const r=await fetch(SCORE_URL+"?t="+Date.now(),{c
     render()}
   el.className="live"+(g.state==="in"?" on":"");el.textContent=g.state==="in"?`🟢 LIVE · score updates automatically · ${g.detail||""}`:g.final?"🏁 Final score":`⏰ ${g.detail||"Kickoff soon"} · the score will update by itself`}catch(e){}}
 load();for(const id of["tA","tB","when","prize","prizeImg","picks"])$(id).value=S[id]||"";
+if(!/[?&]host\b/.test(location.search)&&!/#b=/.test(location.hash)){
+  fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/predict.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{
+    if(!d)return;for(const k of["tA","tB","when","prize","prizeImg","picks"])if(d[k]!=null){S[k]=d[k];$(k).value=d[k]}render()}).catch(()=>{})}
 if(/[?&]host\b/.test(location.search))document.body.classList.add("hosting");
 if(document.body.classList.contains("hosting"))$("viewNote").hidden=true;
 render();pollScore();setInterval(pollScore,30000);
