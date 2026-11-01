@@ -19,7 +19,7 @@ header h1{margin:0;font:900 32px 'Barlow Condensed',sans-serif}header h1 b{color
 header a{margin-left:auto;text-decoration:none;font:700 13px Barlow,sans-serif;background:#22273a;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
 .sub{max-width:900px;margin:0 auto;padding:0 16px 12px;color:var(--muted)}
 main{max-width:900px;margin:0 auto;padding:0 16px 40px}
-.sum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:14px}
 @media (max-width:600px){.sum{grid-template-columns:repeat(2,1fr)}}
 .sum div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 .sum b{display:block;font:900 30px 'Barlow Condensed',sans-serif}.sum span{font-size:13px;color:var(--muted)}
@@ -33,6 +33,8 @@ main{max-width:900px;margin:0 auto;padding:0 16px 40px}
 .item h2{margin:0;font:800 22px 'Barlow Condensed',sans-serif;letter-spacing:.01em}
 .badge{font:800 12px Barlow,sans-serif;border-radius:20px;padding:4px 10px;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);white-space:nowrap}
 .item p{margin:8px 0 0;line-height:1.45}
+.half{display:inline-block;width:.85em;height:.85em;border-radius:50%;border:2px solid #ff922b;background:linear-gradient(90deg,#ff922b 50%,transparent 50%);vertical-align:-1px;margin-right:5px;box-sizing:border-box}
+.item{cursor:pointer}.more{display:none}.item.open .more{display:block}.tap{margin-top:6px;font-size:12.5px;color:var(--muted)}.item.open .tap{display:none}
 .note{color:var(--fg);opacity:.85}.note::before{content:"📝 "}
 .meta{margin-top:8px;font-size:12.5px;color:var(--muted)}
 .how{margin-top:20px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;color:var(--muted);line-height:1.5}
@@ -41,7 +43,9 @@ footer{text-align:center;color:var(--muted);font:800 13px 'Barlow Condensed',san
 </style>
 </head>
 <body>
-<header><h1>TOP SHOT <b>NEWS</b></h1><a href="./">🏟️ VC15 Tracker</a></header>
+<script src="nav.js"></script>
+<div style="height:var(--navh,52px)"></div>
+<header><h1>TOP SHOT <b>NEWS</b></h1></header>
 <p class="sub">What NBA Top Shot has announced, checked off as it happens. Here to help the community keep up, and help the team keep track.</p>
 <main>
   <div class="sect" id="sect"><button data-s="news" class="on">📰 Announcements</button><button data-s="fb">💬 Community feedback</button></div>
@@ -54,8 +58,8 @@ footer{text-align:center;color:var(--muted);font:800 13px 'Barlow Condensed',san
 <footer>VC15TRACKER.COM · @VC15Tracker · not affiliated with NBA Top Shot or Dapper Labs</footer>
 <script>
 "use strict";
-const ST={done:["✅ Delivered","var(--green)"],progress:["🟡 In progress","var(--gold)"],coming:["🔵 Coming up","var(--blue)"],checking:["❔ Checking","var(--purple)"]};
-const FB={done:["✅ Done","var(--green)"],working:["🛠️ Being worked on","var(--gold)"],heard:["🆕 Heard","var(--blue)"],notplanned:["⏸️ Not planned","var(--muted)"]};
+const ST={done:["✅ Delivered","var(--green)"],partial:["<i class=\"half\"></i>Partly delivered","#ff922b"],progress:["🟡 In progress","var(--gold)"],coming:["🔵 Coming up","var(--blue)"],checking:["❔ Checking","var(--purple)"]};
+const FB={done:["✅ Done","var(--green)"],partial:["<i class=\"half\"></i>Partly done","#ff922b"],working:["🛠️ Being worked on","var(--gold)"],heard:["🆕 Heard","var(--blue)"],notplanned:["⏸️ Not planned","var(--muted)"]};
 let SEC="news";
 const FALLBACK={updated:"2026-10-31",items:[]};
 const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -69,24 +73,25 @@ function render(){
   document.getElementById("sum").innerHTML=Object.entries(ST).map(([k,[l]])=>`<div><b>${cnt(k)}</b><span>${l}</span></div>`).join("");
   document.getElementById("tabs").innerHTML=[["all","All"],...Object.entries(ST).map(([k,[l]])=>[k,l])].map(([k,l])=>`<button data-k="${k}" class="${k===tab?"on":""}">${l}</button>`).join("");
   document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{tab=b.dataset.k;render()});
-  const order={coming:0,progress:1,checking:2,done:3};
+  const order={coming:0,progress:1,checking:2,partial:3,done:4};
   const show=it.filter(x=>tab==="all"||x.status===tab).sort((a,b)=>(order[a.status]-order[b.status])||String(b.date).localeCompare(a.date));
   document.getElementById("list").innerHTML=show.map(x=>{const[l,c]=ST[x.status]||["•","var(--muted)"];
     return `<div class="item" style="--c:${c}"><div class="top"><h2>${esc(x.title)}</h2><span class="badge">${l}</span></div>
-      <p>${esc(x.promise)}</p>${x.note?`<p class="note">${esc(x.note)}</p>`:""}
-      <div class="meta">Announced ${fmt(x.date)}${x.due?` · Due ${fmt(x.due)}`:""}${x.source?` · Source: ${esc(x.source)}`:""}</div></div>`}).join("")||`<p style="color:var(--muted)">Nothing here yet.</p>`;
+      <div class="tap">Tap for details ▾</div><div class="more"><p>${esc(x.promise)}</p>${x.note?`<p class="note">${esc(x.note)}</p>`:""}
+      <div class="meta">Announced ${fmt(x.date)}${x.due?` · Due ${fmt(x.due)}`:""}${x.source?` · Source: ${esc(x.source)}`:""}</div></div></div>`}).join("")||`<p style="color:var(--muted)">Nothing here yet.</p>`;
   document.getElementById("upd").textContent=DATA.updated?`Last updated ${fmt(DATA.updated)}.`:""}
 function renderFb(){const it=DATA.feedback||[],cnt=k=>it.filter(x=>x.status===k).length;
   document.getElementById("sum").innerHTML=Object.entries(FB).map(([k,[l]])=>`<div><b>${cnt(k)}</b><span>${l}</span></div>`).join("");
   document.getElementById("tabs").innerHTML=[["all","All"],...Object.entries(FB).map(([k,[l]])=>[k,l])].map(([k,l])=>`<button data-k="${k}" class="${k===tab?"on":""}">${l}</button>`).join("");
   document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{tab=b.dataset.k;render()});
-  const order={working:0,heard:1,done:2,notplanned:3};
+  const order={working:0,heard:1,partial:2,done:3,notplanned:4};
   const show=it.filter(x=>tab==="all"||x.status===tab).sort((a,b)=>(order[a.status]-order[b.status])||String(b.date).localeCompare(a.date));
   document.getElementById("list").innerHTML=show.map(x=>{const[l,c]=FB[x.status]||["•","var(--muted)"];
     return `<div class="item" style="--c:${c}"><div class="top"><h2>${esc(x.title)}</h2><span class="badge">${l}</span></div>
-      <p>${esc(x.request)}</p>${x.note?`<p class="note">${esc(x.note)}</p>`:""}${x.response?`<p class="resp">${esc(x.response)}</p>`:""}
-      <div class="meta">Shared ${fmt(x.date)}</div></div>`}).join("")||`<p style="color:var(--muted)">No feedback tracked yet.</p>`}
+      ${x.response?`<p class="resp">${esc(x.response)}</p>`:""}<div class="tap">Tap for details ▾</div><div class="more"><p>${esc(x.request)}</p>${x.note?`<p class="note">${esc(x.note)}</p>`:""}
+      <div class="meta">Shared ${fmt(x.date)}</div></div></div>`}).join("")||`<p style="color:var(--muted)">No feedback tracked yet.</p>`}
 if(location.hash==="#feedback")SEC="fb";
+document.getElementById("list").addEventListener("click",e=>{const it=e.target.closest(".item");if(it)it.classList.toggle("open")});
 fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/news.json?t="+Date.now(),{cache:"no-store"})
   .then(r=>r.ok?r.json():Promise.reject()).catch(()=>fetch("news.json").then(r=>r.json())).then(d=>{if(d&&d.items)DATA=d;render()}).catch(render);
 render();

@@ -4,153 +4,168 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script>/* old arena links (studio, zoom, ticket map, seat links) still open the arena */
-if(/[?&](studio|zoom|map|seat|owner|q)\b/.test(location.search)||/^#(seat|o|s)=/.test(location.hash))location.replace("arena.html"+location.search+location.hash);</script>
+if(/[?&](studio|zoom|map|seat|owner|q|filter)\b/.test(location.search))location.replace("arena.html"+location.search+location.hash);</script>
 <title>VC15 Tracker · Live Vince Carter activity on NBA Top Shot</title>
-<meta name="description" content="Live Vince Carter activity on NBA Top Shot: every sale, listing, gift and retirement, with deal checks and supply.">
+<meta name="description" content="Live Vince Carter activity on NBA Top Shot: every sale, listing, gift, lock and retirement, with true values by Nothing But Stats.">
 <meta property="og:title" content="VC15 Tracker"><meta property="og:description" content="Live Vince Carter activity on NBA Top Shot.">
 <meta name="twitter:card" content="summary"><meta name="twitter:site" content="@VC15Tracker">
 <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0b0d14;--panel:#141826;--line:#2a3045;--fg:#f1ede4;--muted:#9aa0b4;--gold:#f2c94c;--green:#3ee07f;--red:#ff4b5c;--blue:#4dabf7;--purple:#b197fc;--pink:#f783ac;--sand:#d6b98a}
+:root{--bg:#0b0d14;--panel:#141826;--line:#2a3045;--fg:#f1ede4;--muted:#9aa0b4;--gold:#f2c94c;--green:#3ee07f;--red:#ff4b5c;--blue:#4dabf7;--pink:#f783ac;--sand:#d6b98a;--lock:#ffd43b}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--fg);font:500 15px Barlow,system-ui,sans-serif}
 a{color:inherit}
-.top{position:sticky;top:0;z-index:5;background:rgba(11,13,20,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.bar{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 16px}
-.logo{font:900 26px 'Barlow Condensed',sans-serif;text-decoration:none;white-space:nowrap}.logo b{color:var(--gold)}
-nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}nav::-webkit-scrollbar{display:none}
-nav a{white-space:nowrap;text-decoration:none;font:700 14px Barlow,sans-serif;color:var(--muted);padding:8px 11px;border-radius:9px}
-nav a:hover{color:var(--fg);background:#1b2032}nav a.on{color:#1b1608;background:var(--gold)}
-nav a.soon{opacity:.5}
-@media (max-width:700px){.bar{flex-direction:column;align-items:stretch;gap:6px}.logo{font-size:22px}}
-main{max-width:1100px;margin:0 auto;padding:14px 16px 40px}
-.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-@media (max-width:700px){.strip{grid-template-columns:repeat(2,1fr)}}
+main{max-width:1000px;margin:0 auto;padding:calc(var(--navh,52px) + 14px) 16px 40px}
+.strip{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media (max-width:760px){.strip{grid-template-columns:repeat(2,1fr)}.strip a:first-child{grid-column:1/-1}}
 .strip a{display:block;text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
-.strip b{display:block;font:900 30px 'Barlow Condensed',sans-serif;line-height:1.05}.strip span{font-size:13px;color:var(--muted)}
-.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:16px 0 12px}
+.strip b{display:block;font:900 28px 'Barlow Condensed',sans-serif;line-height:1.05}.strip span{font-size:12.5px;color:var(--muted)}
+.nbs{display:flex;justify-content:flex-end;margin-top:6px;font-size:12.5px;color:var(--muted)}.nbs a{color:var(--gold);text-decoration:none;font-weight:700}
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0 8px}
 .tools h1{margin:0 auto 0 0;font:900 24px 'Barlow Condensed',sans-serif;display:flex;align-items:center;gap:8px}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:p 1.6s infinite}@keyframes p{50%{opacity:.35}}
-.chips,.seg{display:flex;gap:4px;flex-wrap:wrap}
-.chips button,.seg button{background:#1b2032;border:1px solid var(--line);color:var(--fg);border-radius:20px;padding:7px 11px;font:700 13px Barlow,sans-serif;cursor:pointer}
-.chips button.on,.seg button.on{background:var(--fg);color:#14161f;border-color:var(--fg)}
-.seg{background:#1b2032;border:1px solid var(--line);border-radius:22px;padding:3px}.seg button{border:0;background:none}
-/* cards */
-#feed.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
-@media (max-width:520px){#feed.cards{grid-template-columns:repeat(2,1fr);gap:8px}.card .price{font-size:22px}.card .body{padding:8px 9px 10px}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;position:relative;transition:transform .15s}
-.card:hover{transform:translateY(-2px)}
-.card .pic{aspect-ratio:1;background:#000;display:flex;align-items:center;justify-content:center;position:relative}
-.card .pic img{width:88%;height:88%;object-fit:contain}
-.card .type{position:absolute;top:8px;left:8px;font:800 11px Barlow,sans-serif;letter-spacing:.06em;padding:4px 8px;border-radius:20px;background:var(--c);color:#0b0d14}
-.card .ago{position:absolute;top:8px;right:8px;font:700 11px Barlow,sans-serif;padding:4px 7px;border-radius:20px;background:rgba(0,0,0,.6);color:#ddd}
-.card .body{padding:10px 12px 12px;border-top:3px solid var(--c)}
-.card .price{font:900 28px 'Barlow Condensed',sans-serif;line-height:1}
-.card .nm{margin-top:3px;font-weight:700}.card .sn{color:var(--muted);font-size:13px}
-.deal{display:inline-block;margin-top:6px;font:800 11.5px Barlow,sans-serif;padding:3px 8px;border-radius:20px}
+.viewbox{display:flex;align-items:center;gap:6px;border:2px solid var(--green);border-radius:24px;padding:3px 4px 3px 12px;font:700 12.5px Barlow,sans-serif;color:var(--muted)}
+.viewbox button{background:none;border:0;color:var(--fg);border-radius:20px;padding:6px 11px;font:700 13px Barlow,sans-serif;cursor:pointer}.viewbox button.on{background:var(--green);color:#0b0d14}
+.filters{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.chips{display:flex;gap:5px;flex-wrap:wrap;align-items:center}.chips em{font:700 12px Barlow,sans-serif;color:var(--muted);font-style:normal;width:44px}
+.chips button{background:#1b2032;border:1px solid var(--line);color:var(--fg);border-radius:20px;padding:6px 11px;font:700 13px Barlow,sans-serif;cursor:pointer}
+.chips button.on{background:var(--fg);color:#14161f;border-color:var(--fg)}
+/* wide cards: newest at the top, one per row */
+#feed{display:flex;flex-direction:column;gap:8px}
+.card{display:grid;grid-template-columns:110px 1fr auto;gap:14px;align-items:center;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:14px;padding:8px 12px 8px 8px;cursor:pointer}
+.card:hover{background:#181d2c}
+.card img{width:110px;height:110px;object-fit:contain;background:#000;border-radius:10px}
+.card .type{display:inline-block;font:800 11px Barlow,sans-serif;letter-spacing:.06em;padding:3px 8px;border-radius:20px;background:var(--c);color:#0b0d14}
+.card .nm{margin-top:5px;font:800 19px Barlow,sans-serif}.card .nm span{color:var(--muted);font-weight:700}
+.card .who{font-size:13.5px;color:var(--muted);margin-top:2px}
+.card .rt{text-align:right}.card .price{font:900 30px 'Barlow Condensed',sans-serif;line-height:1}.card .val{font-size:12.5px;color:var(--muted);margin-top:3px}
+.card .ago{font-size:12.5px;color:var(--muted);margin-top:4px}
+.deal{display:inline-block;margin-top:5px;font:800 11.5px Barlow,sans-serif;padding:3px 8px;border-radius:20px}
 .deal.good{background:#173d27;color:var(--green)}.deal.fair{background:#3a3214;color:var(--gold)}.deal.hi{background:#3d1a1f;color:#ff8a95}
-/* list */
-#feed.list{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.row{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid #1f2436;border-left:3px solid var(--c);cursor:pointer}
+.info{background:none;border:1px solid var(--line);color:var(--muted);border-radius:50%;width:26px;height:26px;cursor:pointer;font:700 13px Barlow,sans-serif;margin-top:6px}
+@media (max-width:560px){.card{grid-template-columns:76px 1fr auto;gap:10px}.card img{width:76px;height:76px}.card .nm{font-size:16px}.card .price{font-size:23px}}
+/* compact list */
+#feed.list{gap:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.row{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:7px 12px;border-bottom:1px solid #1f2436;border-left:3px solid var(--c);cursor:pointer}
 .row:last-child{border-bottom:0}.row:hover{background:#181d2c}
-.row img{width:40px;height:40px;object-fit:contain;background:#000;border-radius:6px}
+.row img{width:34px;height:34px;object-fit:contain;background:#000;border-radius:6px}
 .row .t{font-weight:600;line-height:1.3}.row .t b{font-weight:800}.row .s{font-size:12.5px;color:var(--muted)}
-.row .r{text-align:right;white-space:nowrap}.row .r b{font:900 19px 'Barlow Condensed',sans-serif;display:block}.row .r i{font-style:normal;font-size:12px;color:var(--muted)}
+.row .r{text-align:right;white-space:nowrap}.row .r b{font:900 18px 'Barlow Condensed',sans-serif;display:block}.row .r i{font-style:normal;font-size:12px;color:var(--muted)}
 .empty{color:var(--muted);padding:30px;text-align:center}
-/* details */
-#det{position:fixed;inset:0;background:rgba(5,6,10,.72);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}#det[hidden]{display:none}
+.more{display:block;margin:12px auto 0;background:#1b2032;border:1px solid var(--line);color:var(--fg);border-radius:10px;padding:10px 16px;font:700 14px Barlow,sans-serif;cursor:pointer}
+#det{position:fixed;inset:0;background:rgba(5,6,10,.72);display:flex;align-items:center;justify-content:center;padding:16px;z-index:60}#det[hidden]{display:none}
 #det .box{width:min(440px,100%);background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-#det .pic{background:#000;display:flex;justify-content:center;padding:14px}#det .pic img{width:min(260px,70%);aspect-ratio:1;object-fit:contain}
+#det .pic{background:#000;display:flex;justify-content:center;padding:14px}#det .pic img{width:min(240px,65%);aspect-ratio:1;object-fit:contain}
 #det .in{padding:14px 16px 16px}#det h2{margin:0;font:900 30px 'Barlow Condensed',sans-serif}
 #det .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:12px 0;font-size:14px}#det .kv span{color:var(--muted)}
 #det .btns{display:flex;gap:8px}#det .btns a,#det .btns button{flex:1;text-align:center;text-decoration:none;border:1px solid var(--line);background:#22273a;color:var(--fg);border-radius:10px;padding:11px;font:800 14px Barlow,sans-serif;cursor:pointer}
 #det .btns a.go{background:var(--gold);color:#1b1608;border-color:var(--gold)}
-footer{max-width:1100px;margin:0 auto;padding:0 16px 30px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font:700 13px Barlow,sans-serif}
+footer{max-width:1000px;margin:0 auto;padding:0 16px 30px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font:700 13px Barlow,sans-serif}footer a{color:var(--gold);text-decoration:none}
 </style>
 </head>
 <body>
-<div class="top"><div class="bar">
-  <a class="logo" href="./">VC15 <b>TRACKER</b></a>
-  <nav>
-    <a href="./" class="on">📡 Live</a>
-    <a href="arena.html">🏟️ Arena</a>
-    <a href="count.html">📉 Countdown</a>
-    <a href="stats.html">📊 Stats</a>
-    <a href="news.html">📰 News</a>
-    <a href="games.html">🎮 Games</a>
-    <a href="predict.html">🏈 Predictor</a>
-    <a class="soon" href="#" onclick="alert('⚡ Fast Break helper is coming soon!');return false">⚡ Fast Break</a>
-  </nav>
-</div></div>
+<script src="nav.js"></script>
 <main>
   <div class="strip">
     <a href="count.html"><b id="sLeft">15,318</b><span>VC moments left</span></a>
-    <a href="arena.html?filter=burn"><b id="sRet">–</b><span>Retired this month 🟥</span></a>
+    <a href="#feed" data-f="burn"><b id="sRet">–</b><span id="sRetL">Retired</span></a>
+    <a href="#feed" data-f="sale"><b id="sSales">–</b><span id="sSalesL">Sales</span></a>
+    <a href="#feed" data-f="sale"><b id="sVol">–</b><span id="sVolL">Sales volume</span></a>
     <a href="arena.html?map=ticket"><b id="sLow">–</b><span id="sLowL">Lowest ask</span></a>
-    <a href="#feed"><b id="sToday">–</b><span>Sales in the last 24 h</span></a>
   </div>
+  <div class="nbs">💲 True values powered by&nbsp;<a href="https://www.nothingbutstats.com" target="_blank" rel="noopener">NothingButStats.com</a></div>
   <div class="tools">
     <h1><span class="dot"></span>Live activity</h1>
-    <div class="chips" id="chips"></div>
-    <div class="seg" id="view"><button data-v="cards">▦ Cards</button><button data-v="list">☰ List</button></div>
+    <div class="viewbox">View<button data-v="cards">🖼️ Cards</button><button data-v="list">☰ List</button></div>
   </div>
-  <div id="feed" class="cards"></div>
+  <div class="filters">
+    <div class="chips" id="range"></div>
+    <div class="chips" id="chips"></div>
+  </div>
+  <div id="feed"></div>
+  <button class="more" id="more" hidden>Show more</button>
 </main>
-<footer><span id="upd"></span><span>VC15TRACKER.COM · @VC15Tracker · not affiliated with NBA Top Shot</span></footer>
+<footer><span id="upd"></span><span>Tap a moment to open it on NBA Top Shot · values by <a href="https://www.nothingbutstats.com" target="_blank" rel="noopener">NothingButStats.com</a> · not affiliated with NBA Top Shot</span></footer>
 <div id="det" hidden></div>
 <script>
 "use strict";
 const RAW="https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/";
 const SETS={archive:["Archive Set","Common",10000],tsd:["TSD Common","Base Set · Series 1",3336],rib:["RIB '05-06","Rare",990],fandom:["Vintage Vibes","Fandom",951],
   origin:["RIB Origin","Rare",269],asg:["ASG Legendary","All-Star Classics",50],cosmic:["TSD Cosmic","Legendary",49],dallas:["Dallas Standard","Playoff Classics",44],galac:["Dallas Galactic","Playoff Classics",5],omega:["Dallas Omega","Playoff Classics",1]};
-const TYPE={sale:["SOLD","var(--green)","🟢"],list:["LISTED","var(--blue)","🏷️"],burn:["RETIRED","var(--red)","🟥"],gift:["GIFTED","var(--pink)","🎁"],pack:["PACK","var(--sand)","📦"]};
-const FILTERS=[["all","All"],["sale","🟢 Sales"],["list","🏷️ Listings"],["burn","🟥 Retired"],["gift","🎁 Gifts"],["pack","📦 Packs"]];
-const AVG={asg:1577.6,tsd:19.19,origin:58.6,archive:3.08,rib:20.5,fandom:13.8,cosmic:2983,galac:550,dallas:313,omega:750};   // fallback values
+const TYPE={sale:["SOLD","var(--green)","🟢"],list:["LISTED","var(--blue)","🏷️"],burn:["RETIRED","var(--red)","🟥"],gift:["GIFTED","var(--pink)","🎁"],pack:["PACK","var(--sand)","📦"],lock:["LOCKED","var(--lock)","🔒"],unlock:["UNLOCKED","#adb5bd","🔓"]};
+const FILTERS=[["all","All"],["sale","🟢 Sales"],["list","🏷️ Listings"],["burn","🟥 Retired"],["gift","🎁 Gifts"],["pack","📦 Packs"],["lock","🔒 Locks"]];
+const RANGES=[["1","24 h",1],["7","7 days",7],["30","30 days",30],["y","This year",0],["all","All time",1e5]];
+const AVG={asg:1577.6,tsd:19.19,origin:58.6,archive:3.08,rib:20.5,fandom:13.8,cosmic:2983,galac:550,dallas:313,omega:750};
+const DAY0=Date.UTC(2020,0,1),DAY=864e5;
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money=v=>v==null?"":"$"+(v>=1000?Math.round(v).toLocaleString():(+v).toFixed(2));
-const ago=t=>{const s=(Date.now()-Date.parse(t))/1000;if(s<60)return "now";if(s<3600)return Math.floor(s/60)+" min ago";if(s<86400)return Math.floor(s/3600)+" hr ago";return Math.floor(s/86400)+" d ago"};
+const ago=t=>{const s=(Date.now()-Date.parse(t))/1000;if(s<60)return "now";if(s<3600)return Math.floor(s/60)+" min ago";if(s<86400)return Math.floor(s/3600)+" hr ago";const d=Math.floor(s/86400);return d<60?d+" d ago":new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})};
 const disp=n=>/^0x[0-9a-f]{16}$/i.test(n||"")?n.slice(0,6)+"…"+n.slice(-4):(n||"");
-let EV=[],VAL={},flt="all",view="cards";
-try{view=localStorage.getItem("vcLiveView")||"cards"}catch(e){}
+let LIVE=[],HIST=[],VAL={},TOK={},flt="all",rng="7",view="cards",shown=60;
+try{view=localStorage.getItem("vcLiveView2")||"cards";rng=localStorage.getItem("vcLiveRange")||"7"}catch(e){}
 const img=e=>`img/${SETS[e.set]?e.set:"archive"}.jpg`;
-function deal(e){if(!e.price||(e.a!=="sale"&&e.a!=="list"))return "";const v=VAL[e.set]||AVG[e.set];if(!v)return "";const r=e.price/v;
+const valOf=e=>e.v||VAL[`${e.set}:${e.serial}`]||VAL[e.set]||AVG[e.set];
+function deal(e){if(!e.price||(e.a!=="sale"&&e.a!=="list"))return "";const v=valOf(e);if(!v)return "";const r=e.price/v;
   return r<=.85?`<span class="deal good">✅ Great deal</span>`:r<=1.15?`<span class="deal fair">👍 Fair price</span>`:`<span class="deal hi">⬆ Above value</span>`}
-function who(e){if(e.a==="sale")return `${esc(disp(e.seller))||"?"} → ${esc(disp(e.buyer))||"?"}`;if(e.a==="list")return `by ${esc(disp(e.seller))}`;
-  if(e.a==="gift")return `${esc(disp(e.seller))||"?"} → ${esc(disp(e.buyer))||"?"}`;if(e.a==="pack")return `pulled by ${esc(disp(e.buyer))}`;return e.seller?`by ${esc(disp(e.seller))}`:"gone for good"}
+function who(e){const s=esc(disp(e.seller)),b=esc(disp(e.buyer));
+  return e.a==="sale"||e.a==="gift"?`${s||"?"} → ${b||"?"}`:e.a==="list"?`listed by ${s}`:e.a==="pack"?`pulled by ${b}`:e.a==="lock"?`locked by ${s}`:e.a==="unlock"?`unlocked by ${s}`:s?`retired by ${s}`:"retired for good"}
+function since(){const r=RANGES.find(x=>x[0]===rng);if(rng==="y")return Date.UTC(new Date().getFullYear(),0,1);return Date.now()-r[2]*DAY}
+function all(){const key=e=>e.a+":"+e.set+":"+e.serial+":"+String(e.t).slice(0,10),seen=new Set(LIVE.map(key)),seenLoose=new Set(LIVE.map(e=>e.a+":"+e.set+":"+e.serial));
+  return [...LIVE,...HIST.filter(e=>!seen.has(key(e))&&!(Date.now()-Date.parse(e.t)<3*DAY&&seenLoose.has(e.a+":"+e.set+":"+e.serial)))].sort((a,b)=>Date.parse(b.t)-Date.parse(a.t))}
+function tsLink(e){const id=e.id||TOK[`${e.set}:${e.serial}`];return id?`https://nbatopshot.com/moment/${id}`:""}
 function render(){
-  document.getElementById("chips").innerHTML=FILTERS.map(([k,l])=>`<button data-f="${k}" class="${k===flt?"on":""}">${l}</button>`).join("");
-  document.querySelectorAll("#chips button").forEach(b=>b.onclick=()=>{flt=b.dataset.f;render()});
-  document.querySelectorAll("#view button").forEach(b=>{b.classList.toggle("on",b.dataset.v===view);b.onclick=()=>{view=b.dataset.v;try{localStorage.setItem("vcLiveView",view)}catch(e){}render()}});
-  const f=document.getElementById("feed"),ev=EV.filter(e=>SETS[e.set]&&(flt==="all"||e.a===flt));f.className=view;
-  if(!ev.length){f.innerHTML=`<div class="empty">No ${flt==="all"?"":FILTERS.find(x=>x[0]===flt)[1]+" "}activity yet. It shows up here as it happens.</div>`;return}
-  f.innerHTML=ev.map((e,i)=>{const[S,sub]=SETS[e.set],[T,c,ic]=TYPE[e.a]||["•","var(--muted)","•"],i0=EV.indexOf(e);
-    if(view==="cards")return `<div class="card" style="--c:${c}" data-i="${i0}"><div class="pic"><img loading="lazy" src="${img(e)}" alt=""><span class="type">${T}</span><span class="ago">${ago(e.t)}</span></div>
-      <div class="body"><div class="price">${e.price?money(e.price):ic+" "+T}</div><div class="nm">${esc(S)} <span class="sn">#${e.serial}</span></div><div class="sn">${who(e)}</div>${deal(e)}</div></div>`;
-    return `<div class="row" style="--c:${c}" data-i="${i0}"><img loading="lazy" src="${img(e)}" alt=""><div><div class="t">${ic} <b>${esc(S)} #${e.serial}</b> ${T.toLowerCase()} ${deal(e)}</div><div class="s">${who(e)}</div></div>
-      <div class="r"><b>${e.price?money(e.price):""}</b><i>${ago(e.t)}</i></div></div>`}).join("");
-  f.querySelectorAll("[data-i]").forEach(el=>el.onclick=()=>details(EV[+el.dataset.i]))}
-function details(e){const[S,sub,tot]=SETS[e.set],[T,c,ic]=TYPE[e.a]||["","",""],v=VAL[e.set]||AVG[e.set],d=document.getElementById("det");
-  const rows=[["Event",`${ic} ${T}`],e.price?["Price",money(e.price)]:null,v?["Value",`${money(v)} (Nothing But Stats)`]:null,e.seller?[e.a==="gift"?"From":"Seller",esc(disp(e.seller))]:null,
-    e.buyer?[e.a==="gift"?"To":e.a==="pack"?"Pulled by":"Buyer",esc(disp(e.buyer))]:null,["Edition",`${esc(sub)} · #${e.serial} / ${tot.toLocaleString()}`],["When",new Date(e.t).toLocaleString("en-US",{timeZone:"America/Toronto",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})+" ET"]].filter(Boolean);
+  const lab=RANGES.find(x=>x[0]===rng)[1];
+  document.getElementById("range").innerHTML="<em>When</em>"+RANGES.map(([k,l])=>`<button data-r="${k}" class="${k===rng?"on":""}">${l}</button>`).join("");
+  document.getElementById("chips").innerHTML="<em>Show</em>"+FILTERS.map(([k,l])=>`<button data-f="${k}" class="${k===flt?"on":""}">${l}</button>`).join("");
+  document.querySelectorAll("#range button").forEach(b=>b.onclick=()=>{rng=b.dataset.r;shown=60;try{localStorage.setItem("vcLiveRange",rng)}catch(e){}render()});
+  document.querySelectorAll("#chips button").forEach(b=>b.onclick=()=>{flt=b.dataset.f;shown=60;render()});
+  document.querySelectorAll(".viewbox button").forEach(b=>{b.classList.toggle("on",b.dataset.v===view);b.onclick=()=>{view=b.dataset.v;try{localStorage.setItem("vcLiveView2",view)}catch(e){}render()}});
+  const t0=since(),inR=all().filter(e=>SETS[e.set]&&Date.parse(e.t)>=t0),sales=inR.filter(e=>e.a==="sale"&&e.price);
+  document.getElementById("sRet").textContent=inR.filter(e=>e.a==="burn").length.toLocaleString();document.getElementById("sRetL").textContent=`Retired · ${lab}`;
+  document.getElementById("sSales").textContent=sales.length.toLocaleString();document.getElementById("sSalesL").textContent=`Sales · ${lab}`;
+  document.getElementById("sVol").textContent=money(sales.reduce((a,e)=>a+e.price,0));document.getElementById("sVolL").textContent=`Sales volume · ${lab}`;
+  const ev=inR.filter(e=>flt==="all"||e.a===flt||(flt==="lock"&&e.a==="unlock")),f=document.getElementById("feed");f.className=view;
+  const note=!HIST.length&&rng!=="1"&&rng!=="7"?" Loading older history…":"";
+  if(!ev.length){f.innerHTML=`<div class="empty">Nothing here for ${lab.toLowerCase()} yet.${note}</div>`;document.getElementById("more").hidden=true;return}
+  f.innerHTML=ev.slice(0,shown).map(e=>{const[S,sub]=SETS[e.set],[T,c,ic]=TYPE[e.a]||["•","var(--muted)","•"],v=valOf(e),i=EVI.push(e)-1,price=e.price?money(e.price):"";
+    if(view==="cards")return `<div class="card" style="--c:${c}" data-i="${i}"><img loading="lazy" src="${img(e)}" alt="">
+      <div><span class="type">${ic} ${T}</span><div class="nm">${esc(S)} <span>#${e.serial}</span></div><div class="who">${who(e)}</div>${deal(e)}</div>
+      <div class="rt"><div class="price">${price}</div>${(e.a==="sale"||e.a==="list")&&v?`<div class="val">Value ${money(v)}</div>`:""}<div class="ago">${ago(e.t)}</div><button class="info" data-d="${i}" title="Details">ⓘ</button></div></div>`;
+    return `<div class="row" style="--c:${c}" data-i="${i}"><img loading="lazy" src="${img(e)}" alt=""><div><div class="t">${ic} <b>${esc(S)} #${e.serial}</b> ${T.toLowerCase()} ${deal(e)}</div><div class="s">${who(e)}${(e.a==="sale"||e.a==="list")&&v?` · value ${money(v)}`:""}</div></div>
+      <div class="r"><b>${price}</b><i>${ago(e.t)}</i></div></div>`}).join("");
+  const m=document.getElementById("more");m.hidden=ev.length<=shown;m.textContent=`Show more (${(ev.length-shown).toLocaleString()} older)`}
+let EVI=[];const _r=render;render=function(){EVI=[];_r()};
+document.getElementById("more").onclick=()=>{shown+=100;render()};
+document.getElementById("feed").addEventListener("click",ev=>{const d=ev.target.closest("[data-d]");const el=ev.target.closest("[data-i]");if(!el)return;const e=EVI[+el.dataset.i];
+  if(d){ev.stopPropagation();return details(e)}const u=tsLink(e);if(u)window.open(u,"_blank","noopener");else details(e)});
+document.querySelectorAll(".strip a[data-f]").forEach(a=>a.addEventListener("click",()=>{flt=a.dataset.f;render()}));
+function details(e){const[S,sub,tot]=SETS[e.set],[T,c,ic]=TYPE[e.a]||["","",""],v=valOf(e),d=document.getElementById("det"),u=tsLink(e);
+  const rows=[["Event",`${ic} ${T}`],e.price?["Price",money(e.price)]:null,v?["True value",`${money(v)} <small>(NothingButStats.com)</small>`]:null,e.seller?[e.a==="gift"?"From":e.a==="sale"||e.a==="list"?"Seller":"By",esc(disp(e.seller))]:null,
+    e.buyer?[e.a==="gift"?"To":e.a==="pack"?"Pulled by":"Buyer",esc(disp(e.buyer))]:null,["Edition",`${esc(sub)} · #${e.serial} / ${tot.toLocaleString()}`],["When",new Date(e.t).toLocaleString("en-US",{timeZone:"America/Toronto",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})+" ET"]].filter(Boolean);
   d.innerHTML=`<div class="box"><div class="pic"><img src="${img(e)}" alt=""></div><div class="in"><h2>${esc(S)} #${e.serial}</h2>${deal(e)}
     <div class="kv">${rows.map(([k,x])=>`<span>${k}</span><b>${x}</b>`).join("")}</div>
-    <div class="btns">${e.id?`<a class="go" href="https://nbatopshot.com/moment/${e.id}" target="_blank" rel="noopener">View on Top Shot</a>`:""}<a href="arena.html?seat=${e.set}:${e.serial}">🏟️ See seat</a><button data-x>Close</button></div></div></div>`;
+    <div class="btns">${u?`<a class="go" href="${u}" target="_blank" rel="noopener">Open on Top Shot</a>`:""}<a href="arena.html?seat=${e.set}:${e.serial}">🏟️ See seat</a><button data-x>Close</button></div></div></div>`;
   d.hidden=false;d.querySelector("[data-x]").onclick=()=>d.hidden=true}
 document.getElementById("det").onclick=e=>{if(e.target.id==="det")e.target.hidden=true};
 const get=f=>fetch(RAW+f+"?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).catch(()=>null);
+// older history (completed sales, retirements, gifts) from the arena's data file
+async function loadHistory(){const d=await get("arena_owners.json");if(!d||!d.sets)return;const nm=i=>i>=0&&d.names&&d.names[i]!=null?d.names[i]:"",iso=day=>new Date(DAY0+day*DAY+12*36e5).toISOString(),out=[];
+  for(const[k,R]of Object.entries(d.sets)){if(!SETS[k])continue;
+    for(const[sn,arr]of Object.entries(R.sh||{}))for(const h of arr)if(h[2]!==-1)out.push({t:iso(h[1]),a:"sale",set:k,serial:+sn,price:h[0]/100,seller:nm(h[2]),buyer:nm(h[3]),d:1});
+    (R.bt||[]).forEach((day,i)=>{if(day&&R.f&&(R.f[i]&2))out.push({t:iso(day),a:"burn",set:k,serial:i+1,seller:nm(R.o?R.o[i]:-1),d:1})});
+    for(const[sn,arr]of Object.entries(R.gh||{}))for(const g of arr)out.push({t:iso(g[0]),a:"gift",set:k,serial:+sn,seller:g[1],buyer:g[2],d:1})}
+  HIST=out;render()}
 async function load(){
   const[a,s,l,n]=await Promise.all([get("activity.json"),get("supply.json"),get("listings.json"),VAL.loaded?null:get("nbs_values.json")]);
-  if(n&&n.sets){for(const[k,x]of Object.entries(n.sets))if(x&&x.v&&x.v.c)VAL[k]=x.v.c/100;VAL.loaded=1}
-  if(a&&a.events){EV=a.events.slice().sort((x,y)=>Date.parse(y.t)-Date.parse(x.t));document.getElementById("upd").textContent="Updated "+ago(a.updated||EV[0]&&EV[0].t)}
+  if(n){for(const[k,x]of Object.entries(n.sets||{}))if(x&&x.v&&x.v.c)VAL[k]=x.v.c/100;for(const[k,x]of Object.entries(n.serials||{}))if(x&&x.v&&x.v.c)VAL[k]=x.v.c/100;VAL.loaded=1}
+  if(a&&a.events){LIVE=a.events.slice();document.getElementById("upd").textContent="Updated "+ago(a.updated||(LIVE[0]&&LIVE[0].t))}
   if(s&&s.existing)document.getElementById("sLeft").textContent=s.existing.toLocaleString();
-  if(l&&l.listings){const p=Object.values(l.listings).map(x=>x.price).filter(Boolean);if(p.length){document.getElementById("sLow").textContent=money(Math.min(...p));document.getElementById("sLowL").textContent=`Lowest ask · ${p.length} listed`}}
-  const mStart=new Date();mStart.setDate(1);mStart.setHours(0,0,0,0);
-  document.getElementById("sRet").textContent=EV.filter(e=>e.a==="burn"&&Date.parse(e.t)>=mStart.getTime()).length;
-  document.getElementById("sToday").textContent=EV.filter(e=>e.a==="sale"&&Date.now()-Date.parse(e.t)<864e5).length;
+  if(l&&l.listings){const L=Object.values(l.listings);TOK={};for(const x of L)if(x.token)TOK[`${x.set}:${x.serial}`]=x.token;
+    const p=L.map(x=>x.price).filter(Boolean);if(p.length){document.getElementById("sLow").textContent=money(Math.min(...p));document.getElementById("sLowL").textContent=`Lowest ask · ${p.length} listed`}}
   render()}
-load();setInterval(load,60000);
+load().then(loadHistory);setInterval(load,60000);
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fc4a20ce94824dd2ba5944390faa2ac3"}'></script><!-- End Cloudflare Web Analytics -->
 </body>

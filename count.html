@@ -14,7 +14,7 @@
 :root{--bg:#0b0d14;--fg:#f2f0ea;--muted:#8a8f9a;--red:#e8603c;--gold:#f2c94c;--line:#2a2d35}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:500 16px Barlow,system-ui,sans-serif;overflow:hidden}
-main{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px 70px;text-align:center}
+main{min-height:100%;padding-top:calc(var(--navh,52px) + 10px)!important;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px 70px;text-align:center}
 .kicker{font:700 clamp(12px,1.6vw,18px) Barlow,sans-serif;letter-spacing:.32em;color:var(--muted);text-transform:uppercase}
 #num{font:900 clamp(100px,min(24vw,38vh),340px)/1.05 'Barlow Condensed',sans-serif;letter-spacing:.01em;margin:10px 0 4px;font-variant-numeric:tabular-nums;transition:color .6s,text-shadow .6s}
 #num.flash{color:#ff4b5c;text-shadow:0 0 60px rgba(255,60,80,.6)}
@@ -35,6 +35,7 @@ footer a{color:var(--muted);text-decoration:none}
 </style>
 </head>
 <body>
+<script src="nav.js"></script>
 <main>
   <div class="kicker">VC15 Tracker · Live</div>
   <div id="num">15,318</div>
