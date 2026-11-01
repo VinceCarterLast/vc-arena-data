@@ -208,6 +208,11 @@ async function pollScore(){try{const r=await fetch(SCORE_URL+"?t="+Date.now(),{c
     render()}
   el.className="live"+(g.state==="in"?" on":"");el.textContent=g.state==="in"?`🟢 LIVE · score updates automatically · ${g.detail||""}`:g.final?"🏁 Final score":`⏰ ${g.detail||"Kickoff soon"} · the score will update by itself`}catch(e){}}
 load();for(const id of["tA","tB","when","prize","prizeImg","picks"])$(id).value=S[id]||"";
+// host page: start from the published board unless this phone has more picks saved (unpublished edits)
+if(/[?&]host\b/.test(location.search)&&!/#b=/.test(location.hash)){
+  const n=t=>String(t||"").split("\n").filter(l=>l.trim()).length;
+  fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/predict.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{
+    if(!d||n(d.picks)<n(S.picks))return;for(const k of["tA","tB","when","prize","prizeImg","picks"])if(d[k]!=null){S[k]=d[k];$(k).value=d[k]}save();render()}).catch(()=>{})}
 if(!/[?&]host\b/.test(location.search)&&!/#b=/.test(location.hash)){
   fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/predict.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{
     if(!d)return;for(const k of["tA","tB","when","prize","prizeImg","picks"])if(d[k]!=null){S[k]=d[k];$(k).value=d[k]}render()}).catch(()=>{})}
