@@ -20,7 +20,8 @@ header .tag{font:800 11px var(--body);letter-spacing:.12em;background:var(--gold
 header a{margin-left:auto;text-decoration:none;font:700 13px var(--body);background:#22273a;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
 .sub{padding:0 16px 12px;margin:0;color:var(--muted)}
 main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;padding:0 16px 20px;align-items:start}
-@media (max-width:900px){main{grid-template-columns:1fr}}
+@media (max-width:900px){main{grid-template-columns:minmax(0,1fr)}}
+main>*{min-width:0}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
 .card h2{margin:0 0 8px;font:800 13px var(--body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
 /* scoreboard */
