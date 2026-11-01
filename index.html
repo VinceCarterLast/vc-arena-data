@@ -54,7 +54,13 @@ main{max-width:1000px;margin:0 auto;padding:calc(var(--navh,52px) + 14px) 16px 4
 .row .t{font-weight:600;line-height:1.3}.row .t b{font-weight:800}.row .s{font-size:12.5px;color:var(--muted)}
 .row .r{text-align:right;white-space:nowrap}.row .r b{font:900 18px 'Barlow Condensed',sans-serif;display:block}.row .r i{font-style:normal;font-size:12px;color:var(--muted)}
 .empty{color:var(--muted);padding:30px;text-align:center}
-.more{display:block;margin:12px auto 0;background:#1b2032;border:1px solid var(--line);color:var(--fg);border-radius:10px;padding:10px 16px;font:700 14px Barlow,sans-serif;cursor:pointer}
+.box2{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.box2 h3{margin:0 0 6px;font:900 19px 'Barlow Condensed',sans-serif;letter-spacing:.02em}.box2 p{margin:0 0 8px;color:var(--muted);font-size:13px}
+.ed{width:100%;border-collapse:collapse;font-size:14px}.ed th{text-align:right;color:var(--muted);font:700 12px Barlow,sans-serif;padding:4px 6px}.ed th:first-child,.ed td:first-child{text-align:left}
+.ed td{padding:6px;border-top:1px solid #1f2436;text-align:right;white-space:nowrap}.ed td b{font-weight:800}.ed tr.ck{cursor:pointer}.ed tr.ck:hover td{background:#181d2c}
+.sig{font:800 12px Barlow,sans-serif;padding:3px 8px;border-radius:20px}.sig.need{background:#173d27;color:var(--green)}.sig.avoid{background:#3d1a1f;color:#ff8a95}.sig.ok{background:#22273a;color:var(--muted)}
+.edwrap{overflow-x:auto}
+.more[hidden]{display:none!important}.more{display:block;margin:12px auto 0;background:#1b2032;border:1px solid var(--line);color:var(--fg);border-radius:10px;padding:10px 16px;font:700 14px Barlow,sans-serif;cursor:pointer}
 #det{position:fixed;inset:0;background:rgba(5,6,10,.72);display:flex;align-items:center;justify-content:center;padding:16px;z-index:60}#det[hidden]{display:none}
 #det .box{width:min(440px,100%);background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
 #det .pic{background:#000;display:flex;justify-content:center;padding:14px}#det .pic img{width:min(240px,65%);aspect-ratio:1;object-fit:contain}
@@ -94,8 +100,9 @@ footer{max-width:1000px;margin:0 auto;padding:0 16px 30px;display:flex;justify-c
 const RAW="https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/";
 const SETS={archive:["Archive Set","Common",10000],tsd:["TSD Common","Base Set · Series 1",3336],rib:["RIB '05-06","Rare",990],fandom:["Vintage Vibes","Fandom",951],
   origin:["RIB Origin","Rare",269],asg:["ASG Legendary","All-Star Classics",50],cosmic:["TSD Cosmic","Legendary",49],dallas:["Dallas Standard","Playoff Classics",44],galac:["Dallas Galactic","Playoff Classics",5],omega:["Dallas Omega","Playoff Classics",1]};
-const TYPE={sale:["SOLD","var(--green)","🟢"],list:["LISTED","var(--blue)","🏷️"],burn:["RETIRED","var(--red)","🟥"],gift:["GIFTED","var(--pink)","🎁"],pack:["PACK","var(--sand)","📦"],lock:["LOCKED","var(--lock)","🔒"],unlock:["UNLOCKED","#adb5bd","🔓"]};
-const FILTERS=[["all","All"],["sale","🟢 Sales"],["list","🏷️ Listings"],["burn","🟥 Retired"],["gift","🎁 Gifts"],["pack","📦 Packs"],["lock","🔒 Locks"]];
+const TYPE={offer:["OFFER","#b197fc","🤝"],sale:["SOLD","var(--green)","🟢"],list:["LISTED","var(--blue)","🏷️"],burn:["RETIRED","var(--red)","🟥"],gift:["GIFTED","var(--pink)","🎁"],pack:["PACK","var(--sand)","📦"],lock:["LOCKED","var(--lock)","🔒"],unlock:["UNLOCKED","#adb5bd","🔓"]};
+const FILTERS=[["all","All"],["sale","🟢 Sales"],["list","🏷️ Listings"],["offer","🤝 Offers"],["burn","🟥 Retired"],["gift","🎁 Gifts"],["pack","📦 Packs"],["lock","🔒 Locks"]];
+const SORTS=[["deal","🔥 Best deal"],["low","⬇ Lowest ask"],["new","🕒 Newest"]];
 const RANGES=[["1","24 h",1],["7","7 days",7],["30","30 days",30],["y","This year",0],["all","All time",1e5]];
 const AVG={asg:1577.6,tsd:19.19,origin:58.6,archive:3.08,rib:20.5,fandom:13.8,cosmic:2983,galac:550,dallas:313,omega:750};
 const DAY0=Date.UTC(2020,0,1),DAY=864e5;
@@ -103,8 +110,8 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const money=v=>v==null?"":"$"+(v>=1000?Math.round(v).toLocaleString():(+v).toFixed(2));
 const ago=t=>{const s=(Date.now()-Date.parse(t))/1000;if(s<60)return "now";if(s<3600)return Math.floor(s/60)+" min ago";if(s<86400)return Math.floor(s/3600)+" hr ago";const d=Math.floor(s/86400);return d<60?d+" d ago":new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})};
 const disp=n=>/^0x[0-9a-f]{16}$/i.test(n||"")?n.slice(0,6)+"…"+n.slice(-4):(n||"");
-let LIVE=[],HIST=[],VAL={},TOK={},flt="all",rng="7",view="cards",shown=60;
-try{view=localStorage.getItem("vcLiveView2")||"cards";rng=localStorage.getItem("vcLiveRange")||"7"}catch(e){}
+let LIVE=[],HIST=[],VAL={},TOK={},LST=[],OFF=null,PACKS={},PKCOUNT={},IDS=null,flt="all",rng="all",view="cards",shown=60,sort="deal";
+try{view=localStorage.getItem("vcLiveView2")||"cards";rng=localStorage.getItem("vcLiveRange3")||"all"}catch(e){}
 const img=e=>`img/${SETS[e.set]?e.set:"archive"}.jpg`;
 const valOf=e=>e.v||VAL[`${e.set}:${e.serial}`]||VAL[e.set]||AVG[e.set];
 function deal(e){if(!e.price||(e.a!=="sale"&&e.a!=="list"))return "";const v=valOf(e);if(!v)return "";const r=e.price/v;
@@ -114,39 +121,76 @@ function who(e){const s=esc(disp(e.seller)),b=esc(disp(e.buyer));
 function since(){const r=RANGES.find(x=>x[0]===rng);if(rng==="y")return Date.UTC(new Date().getFullYear(),0,1);return Date.now()-r[2]*DAY}
 function all(){const key=e=>e.a+":"+e.set+":"+e.serial+":"+String(e.t).slice(0,10),seen=new Set(LIVE.map(key)),seenLoose=new Set(LIVE.map(e=>e.a+":"+e.set+":"+e.serial));
   return [...LIVE,...HIST.filter(e=>!seen.has(key(e))&&!(Date.now()-Date.parse(e.t)<3*DAY&&seenLoose.has(e.a+":"+e.set+":"+e.serial)))].sort((a,b)=>Date.parse(b.t)-Date.parse(a.t))}
-function tsLink(e){const id=e.id||TOK[`${e.set}:${e.serial}`];return id?`https://nbatopshot.com/moment/${id}`:""}
+function idOf(k,n){if(!IDS||!IDS.runs[k])return 0;let i=n;for(const[st,c]of IDS.runs[k]){if(i<=c)return st?st+i-1:0;i-=c}return 0}
+function tsLink(e){if(!e.serial&&IDS&&IDS.edition[e.set])return `https://nbatopshot.com/edition/${IDS.edition[e.set]}`;const id=e.id||TOK[`${e.set}:${e.serial}`]||idOf(e.set,e.serial);return id?`https://nbatopshot.com/moment/${id}`:""}
+const GOLDN=(k,n)=>n===1||n===(SETS[k]||[])[2]||(n===15&&!["dallas","galac","omega"].includes(k))||(n===25&&k==="dallas");
+function asp(k){const s=all().filter(e=>e.a==="sale"&&e.set===k&&e.price&&!GOLDN(k,e.serial)).slice(0,10);return s.length?{v:s.reduce((a,e)=>a+e.price,0)/s.length,n:s.length}:null}
 function render(){
   const lab=RANGES.find(x=>x[0]===rng)[1];
   document.getElementById("range").innerHTML="<em>When</em>"+RANGES.map(([k,l])=>`<button data-r="${k}" class="${k===rng?"on":""}">${l}</button>`).join("");
   document.getElementById("chips").innerHTML="<em>Show</em>"+FILTERS.map(([k,l])=>`<button data-f="${k}" class="${k===flt?"on":""}">${l}</button>`).join("");
-  document.querySelectorAll("#range button").forEach(b=>b.onclick=()=>{rng=b.dataset.r;shown=60;try{localStorage.setItem("vcLiveRange",rng)}catch(e){}render()});
+  document.querySelectorAll("#range button").forEach(b=>b.onclick=()=>{rng=b.dataset.r;shown=60;try{localStorage.setItem("vcLiveRange3",rng)}catch(e){}render()});
   document.querySelectorAll("#chips button").forEach(b=>b.onclick=()=>{flt=b.dataset.f;shown=60;render()});
   document.querySelectorAll(".viewbox button").forEach(b=>{b.classList.toggle("on",b.dataset.v===view);b.onclick=()=>{view=b.dataset.v;try{localStorage.setItem("vcLiveView2",view)}catch(e){}render()}});
   const t0=since(),inR=all().filter(e=>SETS[e.set]&&Date.parse(e.t)>=t0),sales=inR.filter(e=>e.a==="sale"&&e.price);
   document.getElementById("sRet").textContent=inR.filter(e=>e.a==="burn").length.toLocaleString();document.getElementById("sRetL").textContent=`Retired · ${lab}`;
   document.getElementById("sSales").textContent=sales.length.toLocaleString();document.getElementById("sSalesL").textContent=`Sales · ${lab}`;
   document.getElementById("sVol").textContent=money(sales.reduce((a,e)=>a+e.price,0));document.getElementById("sVolL").textContent=`Sales volume · ${lab}`;
-  const ev=inR.filter(e=>flt==="all"||e.a===flt||(flt==="lock"&&e.a==="unlock")),f=document.getElementById("feed");f.className=view;
+  const f=document.getElementById("feed");f.className=view;
+  if(flt==="list")return renderListings(f);
+  const extra=flt==="offer"?offersBox():flt==="pack"?packsBox():"";
+  const ev=inR.filter(e=>flt==="all"||e.a===flt||(flt==="lock"&&e.a==="unlock"));
   const note=!HIST.length&&rng!=="1"&&rng!=="7"?" Loading older history…":"";
-  if(!ev.length){f.innerHTML=`<div class="empty">Nothing here for ${lab.toLowerCase()} yet.${note}</div>`;document.getElementById("more").hidden=true;return}
-  f.innerHTML=ev.slice(0,shown).map(e=>{const[S,sub]=SETS[e.set],[T,c,ic]=TYPE[e.a]||["•","var(--muted)","•"],v=valOf(e),i=EVI.push(e)-1,price=e.price?money(e.price):"";
+  const emptyMsg=flt==="lock"?"Locks and unlocks are tracked from Nov 1, 2026 onward. They'll show up here as they happen.":flt==="offer"?"No generous offers spotted yet. The best open offer for each edition is above.":`Nothing here for ${lab.toLowerCase()} yet.${note}`;
+  if(!ev.length){f.className="";f.innerHTML=extra+`<div class="empty">${emptyMsg}</div>`;document.getElementById("more").hidden=true;return}
+  f.innerHTML=(extra?`<div style="display:contents">${extra}</div>`:"")+ev.slice(0,shown).map(e=>{const[S,sub]=SETS[e.set],[T,c,ic]=TYPE[e.a]||["•","var(--muted)","•"],v=valOf(e),i=EVI.push(e)-1,price=e.price?money(e.price):"";
     if(view==="cards")return `<div class="card" style="--c:${c}" data-i="${i}"><img loading="lazy" src="${img(e)}" alt="">
-      <div><span class="type">${ic} ${T}</span><div class="nm">${esc(S)} <span>#${e.serial}</span></div><div class="who">${who(e)}</div>${deal(e)}</div>
+      <div><span class="type">${ic} ${T}</span><div class="nm">${esc(S)} <span>${e.serial?"#"+e.serial:"any serial"}</span></div><div class="who">${e.a==="offer"?`Generous edition offer${e.low?` · low ask ${money(e.low)}`:""}`:who(e)}</div>${deal(e)}</div>
       <div class="rt"><div class="price">${price}</div>${(e.a==="sale"||e.a==="list")&&v?`<div class="val">Value ${money(v)}</div>`:""}<div class="ago">${ago(e.t)}</div><button class="info" data-d="${i}" title="Details">ⓘ</button></div></div>`;
-    return `<div class="row" style="--c:${c}" data-i="${i}"><img loading="lazy" src="${img(e)}" alt=""><div><div class="t">${ic} <b>${esc(S)} #${e.serial}</b> ${T.toLowerCase()} ${deal(e)}</div><div class="s">${who(e)}${(e.a==="sale"||e.a==="list")&&v?` · value ${money(v)}`:""}</div></div>
+    return `<div class="row" style="--c:${c}" data-i="${i}"><img loading="lazy" src="${img(e)}" alt=""><div><div class="t">${ic} <b>${esc(S)} ${e.serial?"#"+e.serial:"(any serial)"}</b> ${T.toLowerCase()} ${deal(e)}</div><div class="s">${who(e)}${(e.a==="sale"||e.a==="list")&&v?` · value ${money(v)}`:""}</div></div>
       <div class="r"><b>${price}</b><i>${ago(e.t)}</i></div></div>`}).join("");
   const m=document.getElementById("more");m.hidden=ev.length<=shown;m.textContent=`Show more (${(ev.length-shown).toLocaleString()} older)`}
-let EVI=[];const _r=render;render=function(){EVI=[];_r()};
+function renderListings(f){const m=document.getElementById("more");
+  const rows=Object.keys(SETS).map(k=>{const L=LST.filter(x=>x.set===k),low=L.length?Math.min(...L.map(x=>x.price)):null,a=asp(k),tv=VAL[k]||AVG[k];
+    const sig=!low||!a?`<span class="sig ok">–</span>`:low<a.v*.95?`<span class="sig need">🔥 Ask below avg sale</span>`:low>a.v*1.05?`<span class="sig avoid">⚠️ Ask above avg sale</span>`:`<span class="sig ok">≈ At avg sale</span>`;
+    return `<tr class="ck" data-set="${k}"><td><b>${esc(SETS[k][0])}</b></td><td>${low?money(low):"none"}</td><td>${a?money(a.v):"–"}</td><td>${tv?money(tv):"–"}</td><td>${L.length}</td><td>${sig}</td></tr>`}).join("");
+  const box=`<div class="box2"><h3>📊 Edition check: avg sale vs lowest ask</h3><p>Avg sale = average of the last 10 sales (special serials left out). If the lowest ask is <b>below</b> the avg sale, it's a buy signal. If it's <b>above</b>, wait. True value is Nothing But Stats' estimate.</p>
+    <div class="edwrap"><table class="ed"><tr><th>Edition</th><th>Lowest ask</th><th>Avg sale (10)</th><th>True value</th><th>Listed</th><th>Signal</th></tr>${rows}</table></div></div>`;
+  let L=LST.filter(x=>SETS[x.set]&&(!window._lset||x.set===window._lset)).map(x=>({...x,a:"list",t:x.listed_at||"",v:VAL[`${x.set}:${x.serial}`]||VAL[x.set]||AVG[x.set]}));
+  L.sort(sort==="low"?(a,b)=>a.price-b.price:sort==="new"?(a,b)=>String(b.t).localeCompare(String(a.t)):(a,b)=>a.price/(a.v||1e9)-b.price/(b.v||1e9));
+  const bar=`<div class="chips" style="margin:2px 0 8px"><em>Sort</em>${SORTS.map(([k,l])=>`<button data-s="${k}" class="${k===sort?"on":""}">${l}</button>`).join("")}${window._lset?`<button data-s="clear">✕ ${esc(SETS[window._lset][0])} only</button>`:""}</div>`;
+  const list=L.slice(0,shown).map(e=>{const[S]=SETS[e.set],i=EVI.push(e)-1,c="var(--blue)";
+    if(view==="cards")return `<div class="card" style="--c:${c}" data-i="${i}"><img loading="lazy" src="${img(e)}" alt=""><div><span class="type">🏷️ FOR SALE</span><div class="nm">${esc(S)} <span>#${e.serial}</span></div><div class="who">listed by ${esc(disp(e.seller))||"?"}</div>${deal(e)}</div>
+      <div class="rt"><div class="price">${money(e.price)}</div>${e.v?`<div class="val">Value ${money(e.v)}</div>`:""}<div class="ago">${e.t?ago(e.t):""}</div></div></div>`;
+    return `<div class="row" style="--c:${c}" data-i="${i}"><img loading="lazy" src="${img(e)}" alt=""><div><div class="t">🏷️ <b>${esc(S)} #${e.serial}</b> ${deal(e)}</div><div class="s">by ${esc(disp(e.seller))||"?"}${e.v?` · value ${money(e.v)}`:""}</div></div><div class="r"><b>${money(e.price)}</b><i>${e.t?ago(e.t):""}</i></div></div>`}).join("");
+  f.className="";f.innerHTML=box+bar+`<div class="${view}" style="display:flex;flex-direction:column;gap:${view==="list"?0:8}px">${list||'<div class="empty">No listings right now.</div>'}</div>`;
+  if(view==="list")f.lastElementChild.style.cssText+="background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden";
+  f.querySelectorAll("[data-s]").forEach(b=>b.onclick=ev=>{ev.stopPropagation();if(b.dataset.s==="clear")window._lset=null;else sort=b.dataset.s;shown=60;render()});
+  f.querySelectorAll("tr[data-set]").forEach(r=>r.onclick=ev=>{ev.stopPropagation();window._lset=r.dataset.set;shown=60;render()});
+  m.hidden=L.length<=shown;m.textContent=`Show more (${(L.length-shown).toLocaleString()} more listings)`}
+function offersBox(){if(!OFF||!OFF.top)return `<div class="box2"><h3>🤝 Best open offers</h3><p>Offer tracking starts with the latest bot update. Best offers per edition will show here.</p></div>`;
+  const rows=Object.keys(SETS).filter(k=>OFF.top[k]).map(k=>{const o=OFF.top[k],L=LST.filter(x=>x.set===k),low=L.length?Math.min(...L.map(x=>x.price)):null,net=o.p*.95;
+    return `<tr><td><b>${esc(SETS[k][0])}</b></td><td><b>${money(o.p)}</b></td><td>${o.n}</td><td>${low?money(low):"–"}</td><td>${low&&net>low?`<span class="sig need">🔁 +${money(net-low)} flip</span>`:`<span class="sig ok">–</span>`}</td></tr>`}).join("");
+  return `<div class="box2"><h3>🤝 Best open offers by edition</h3><p>Generous offers (at or above the lowest ask, or well above true value) also appear below. "Flip" = accept the offer (after Top Shot's 5% fee) and rebuy at the lowest ask.</p>
+    <div class="edwrap"><table class="ed"><tr><th>Edition</th><th>Best offer</th><th>Open offers</th><th>Lowest ask</th><th>Flip</th></tr>${rows||'<tr><td colspan="5">No open offers tracked yet.</td></tr>'}</table></div></div>`}
+function packsBox(){const types=Object.entries(PACKS).map(([pd,p])=>({pd,...p,vc:PKCOUNT[pd]||0})).filter(p=>p.vc).sort((a,b)=>b.vc-a.vc);
+  if(!types.length){const per=Object.entries(SEALED).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]);if(!per.length)return "";const tot=per.reduce((a,x)=>a+x[1],0);
+    return `<div class="box2"><h3>📦 ${tot.toLocaleString()} VC moments still sealed in packs</h3><p>Unopened packs that still hold a Vince Carter moment, by set. Tap a set to see its sealed seats in the arena.</p>
+    <div class="edwrap"><table class="ed"><tr><th>Set</th><th>Still sealed</th></tr>${per.map(([k,n])=>`<tr class="ck" onclick="location.href='arena.html?zoom=${k}'"><td><b>${esc(SETS[k][0])}</b></td><td>${n}</td></tr>`).join("")}</table></div></div>`}
+  return `<div class="box2"><h3>📦 Sealed packs that still hold a VC moment</h3><p>These pack types still have unopened Vince Carter moments inside. Tap one to see packs for sale on Top Shot.</p>
+    <div class="edwrap"><table class="ed"><tr><th>Pack</th><th>VC inside</th><th>Packs listed</th><th>Lowest pack</th></tr>${types.map(p=>`<tr class="ck" data-pd="${esc(p.pd)}"><td><b>${esc(p.t||p.pd)}</b></td><td>${p.vc}</td><td>${p.n||0}</td><td>${p.low?money(p.low/100):"–"}</td></tr>`).join("")}</table></div></div>`}
+document.getElementById("feed").addEventListener("click",ev=>{const r=ev.target.closest("tr[data-pd]");if(r){ev.stopPropagation();window.open("https://nbatopshot.com/search/packs?status=all&packSource=marketplace&packDetail="+encodeURIComponent(r.dataset.pd),"_blank","noopener")}},true);
+let EVI=[],SEALED={};const _r=render;render=function(){EVI=[];_r()};
 document.getElementById("more").onclick=()=>{shown+=100;render()};
 document.getElementById("feed").addEventListener("click",ev=>{const d=ev.target.closest("[data-d]");const el=ev.target.closest("[data-i]");if(!el)return;const e=EVI[+el.dataset.i];
-  if(d){ev.stopPropagation();return details(e)}const u=tsLink(e);if(u)window.open(u,"_blank","noopener");else details(e)});
+  if(d){ev.stopPropagation();return details(e)}const u=tsLink(e);if((e.a==="list"||e.a==="offer")&&u)window.open(u,"_blank","noopener");else details(e)});
 document.querySelectorAll(".strip a[data-f]").forEach(a=>a.addEventListener("click",()=>{flt=a.dataset.f;render()}));
 function details(e){const[S,sub,tot]=SETS[e.set],[T,c,ic]=TYPE[e.a]||["","",""],v=valOf(e),d=document.getElementById("det"),u=tsLink(e);
   const rows=[["Event",`${ic} ${T}`],e.price?["Price",money(e.price)]:null,v?["True value",`${money(v)} <small>(NothingButStats.com)</small>`]:null,e.seller?[e.a==="gift"?"From":e.a==="sale"||e.a==="list"?"Seller":"By",esc(disp(e.seller))]:null,
-    e.buyer?[e.a==="gift"?"To":e.a==="pack"?"Pulled by":"Buyer",esc(disp(e.buyer))]:null,["Edition",`${esc(sub)} · #${e.serial} / ${tot.toLocaleString()}`],["When",new Date(e.t).toLocaleString("en-US",{timeZone:"America/Toronto",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})+" ET"]].filter(Boolean);
-  d.innerHTML=`<div class="box"><div class="pic"><img src="${img(e)}" alt=""></div><div class="in"><h2>${esc(S)} #${e.serial}</h2>${deal(e)}
+    e.buyer?[e.a==="gift"?"To":e.a==="pack"?"Pulled by":"Buyer",esc(disp(e.buyer))]:null,["Edition",e.serial?`${esc(sub)} · #${e.serial} / ${tot.toLocaleString()}`:`${esc(sub)} · edition offer (any serial)`],["When",new Date(e.t).toLocaleString("en-US",{timeZone:"America/Toronto",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})+" ET"]].filter(Boolean);
+  d.innerHTML=`<div class="box"><div class="pic"><img src="${img(e)}" alt=""></div><div class="in"><h2>${esc(S)} ${e.serial?"#"+e.serial:"· any serial"}</h2>${deal(e)}
     <div class="kv">${rows.map(([k,x])=>`<span>${k}</span><b>${x}</b>`).join("")}</div>
-    <div class="btns">${u?`<a class="go" href="${u}" target="_blank" rel="noopener">Open on Top Shot</a>`:""}<a href="arena.html?seat=${e.set}:${e.serial}">🏟️ See seat</a><button data-x>Close</button></div></div></div>`;
+    <div class="btns">${u?`<a class="go" href="${u}" target="_blank" rel="noopener">See moment on Top Shot</a>`:""}${e.serial?`<a href="arena.html?seat=${e.set}:${e.serial}">${e.a==="burn"?"📜 Retirement record":"📜 Moment history"}</a>`:""}<button data-x>Close</button></div></div></div>`;
   d.hidden=false;d.querySelector("[data-x]").onclick=()=>d.hidden=true}
 document.getElementById("det").onclick=e=>{if(e.target.id==="det")e.target.hidden=true};
 const get=f=>fetch(RAW+f+"?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).catch(()=>null);
@@ -155,14 +199,18 @@ async function loadHistory(){const d=await get("arena_owners.json");if(!d||!d.se
   for(const[k,R]of Object.entries(d.sets)){if(!SETS[k])continue;
     for(const[sn,arr]of Object.entries(R.sh||{}))for(const h of arr)if(h[2]!==-1)out.push({t:iso(h[1]),a:"sale",set:k,serial:+sn,price:h[0]/100,seller:nm(h[2]),buyer:nm(h[3]),d:1});
     (R.bt||[]).forEach((day,i)=>{if(day&&R.f&&(R.f[i]&2))out.push({t:iso(day),a:"burn",set:k,serial:i+1,seller:nm(R.o?R.o[i]:-1),d:1})});
-    for(const[sn,arr]of Object.entries(R.gh||{}))for(const g of arr)out.push({t:iso(g[0]),a:"gift",set:k,serial:+sn,seller:g[1],buyer:g[2],d:1})}
+    for(const[sn,arr]of Object.entries(R.gh||{}))for(const g of arr)out.push({t:iso(g[0]),a:"gift",set:k,serial:+sn,seller:g[1],buyer:g[2],d:1});
+    for(const pd of Object.values(R.pkd||{}))PKCOUNT[pd]=(PKCOUNT[pd]||0)+1;
+    SEALED[k]=(R.f||[]).filter(x=>x&4).length}
+  PACKS=d.packs||{};
   HIST=out;render()}
 async function load(){
-  const[a,s,l,n]=await Promise.all([get("activity.json"),get("supply.json"),get("listings.json"),VAL.loaded?null:get("nbs_values.json")]);
+  const[a,s,l,n,o]=await Promise.all([get("activity.json"),get("supply.json"),get("listings.json"),VAL.loaded?null:get("nbs_values.json"),get("offers.json")]);
+  if(o)OFF=o;if(!IDS)IDS=await fetch("tokens.json").then(r=>r.json()).catch(()=>null);
   if(n){for(const[k,x]of Object.entries(n.sets||{}))if(x&&x.v&&x.v.c)VAL[k]=x.v.c/100;for(const[k,x]of Object.entries(n.serials||{}))if(x&&x.v&&x.v.c)VAL[k]=x.v.c/100;VAL.loaded=1}
   if(a&&a.events){LIVE=a.events.slice();document.getElementById("upd").textContent="Updated "+ago(a.updated||(LIVE[0]&&LIVE[0].t))}
   if(s&&s.existing)document.getElementById("sLeft").textContent=s.existing.toLocaleString();
-  if(l&&l.listings){const L=Object.values(l.listings);TOK={};for(const x of L)if(x.token)TOK[`${x.set}:${x.serial}`]=x.token;
+  if(l&&l.listings){const L=Object.values(l.listings);LST=L.filter(x=>x.price);TOK={};for(const x of L)if(x.token)TOK[`${x.set}:${x.serial}`]=x.token;
     const p=L.map(x=>x.price).filter(Boolean);if(p.length){document.getElementById("sLow").textContent=money(Math.min(...p));document.getElementById("sLowL").textContent=`Lowest ask · ${p.length} listed`}}
   render()}
 load().then(loadHistory);setInterval(load,60000);

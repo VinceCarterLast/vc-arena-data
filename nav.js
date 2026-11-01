@@ -2,10 +2,11 @@
 (function(){
   if(!document.body){document.addEventListener("DOMContentLoaded",arguments.callee);return}
   var page=(location.pathname.split("/").pop()||"index.html").toLowerCase();if(page==="")page="index.html";
-  var GROUP={"index.html":"live","live.html":"live","arena.html":"supply","count.html":"supply","stats.html":"stats","news.html":"news","games.html":"games","predict.html":"games"};
+  var mp=(location.search.match(/[?&]map=(\w+)/)||[])[1];var cur=page==="arena.html"?(mp==="ticket"||(!mp&&(function(){try{return localStorage.getItem("vcTmap")==="1"}catch(e){return false}})())?"arena.html?map=ticket":"arena.html?map=arena"):page;
+  var GROUP={"index.html":"live","live.html":"live","arena.html":"supply","count.html":"supply","stats.html":"stats","news.html":"news","games.html":"games","predict.html":"games","new.html":"new"};
   var g=GROUP[page]||"";
-  var TABS=[["live","./","📡 Live"],["supply","arena.html","📊 Supply"],["stats","stats.html","📈 Stats"],["news","news.html","📰 News"],["games","games.html","🎮 Games"],["fast","#fast","⚡ Fast Break"]];
-  var SUB={supply:[["arena.html","🏟️ Arena"],["count.html","📉 Countdown"],["#city","🏙️ VC City"]],games:[["games.html","🦆 Races"],["predict.html","🏈 Score Predictor"]]};
+  var TABS=[["live","./","📡 Live"],["supply","arena.html","📊 Supply"],["stats","stats.html","📈 Stats"],["news","news.html","📰 News"],["games","games.html","🎮 Games"],["new","new.html","🆕 New here?"],["fast","#fast","⚡ Fast Break"]];
+  var SUB={supply:[["arena.html?map=arena","🏟️ Arena"],["arena.html?map=ticket","🎟️ Ticket map"],["count.html","📉 Countdown"],["#city","🏙️ VC City"]],games:[["games.html","🦆 Races"],["predict.html","🏈 Score Predictor"]]};
   var css="#vcnav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(11,13,20,.96);backdrop-filter:blur(8px);border-bottom:1px solid #2a3045;font-family:Barlow,system-ui,sans-serif}"+
   "#vcnav .r{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:8px 14px;height:52px}"+
   "#vcnav .lg{font:900 22px 'Barlow Condensed',system-ui,sans-serif;color:#f1ede4;text-decoration:none;white-space:nowrap;letter-spacing:.01em}#vcnav .lg b{color:#f2c94c}"+
@@ -21,7 +22,7 @@
   var h='<div class="r"><a class="lg" href="./">VC15 <b>TRACKER</b></a><div class="t">';
   TABS.forEach(function(t){h+='<a href="'+t[1]+'" class="'+(t[0]===g?"on":"")+(t[0]==="fast"?" soon":"")+'">'+t[2]+'</a>'});
   h+="</div></div>";
-  if(SUB[g]){h+='<div class="s"><div class="r">';SUB[g].forEach(function(s){var on=s[0]===page;h+='<a href="'+s[0]+'" class="'+(on?"on":"")+'">'+s[1]+(s[0]==="#city"?"<i>SOON</i>":"")+'</a>'});h+="</div></div>"}
+  if(SUB[g]){h+='<div class="s"><div class="r">';SUB[g].forEach(function(s){var on=s[0]===cur;h+='<a href="'+s[0]+'" class="'+(on?"on":"")+'">'+s[1]+(s[0]==="#city"?"<i>SOON</i>":"")+'</a>'});h+="</div></div>"}
   var n=document.createElement("div");n.id="vcnav";n.innerHTML=h;document.body.insertBefore(n,document.body.firstChild);
   function setH(){var px=document.body.classList.contains("rec")?0:n.offsetHeight;document.documentElement.style.setProperty("--navh",px+"px");window.VC_NAVH=px}
   setH();window.addEventListener("resize",setH);

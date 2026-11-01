@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>New here? · VC15 Tracker</title>
+<meta name="description" content="New to NBA Top Shot? How to sign up, get your first Vince Carter moment, and join the VC community.">
+<meta property="og:title" content="New to NBA Top Shot? · VC15 Tracker"><meta property="og:description" content="Sign up, get your first Vince Carter moment, and join the VC family.">
+<link rel="icon" href="favicon.ico" sizes="any"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d14;--panel:#141826;--line:#2a3045;--fg:#f1ede4;--muted:#9aa0b4;--gold:#f2c94c;--green:#3ee07f;--red:#ce1141}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:500 16px Barlow,system-ui,sans-serif}
+a{color:var(--gold)}
+main{max-width:860px;margin:0 auto;padding:calc(var(--navh,52px) + 16px) 16px 50px}
+h1{margin:0;font:900 40px 'Barlow Condensed',sans-serif}h1 b{color:var(--gold)}
+.lead{color:var(--muted);margin:6px 0 18px}
+h2{font:900 26px 'Barlow Condensed',sans-serif;margin:28px 0 10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.video{aspect-ratio:16/9;background:#000;border-radius:14px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);overflow:hidden}
+.video video{width:100%;height:100%}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.steps li .ck{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font:900 15px Barlow,sans-serif;color:var(--muted)}
+.steps li.done .ck{background:var(--green);border-color:var(--green);color:#0b0d14}.steps li.done b{text-decoration:line-through;opacity:.7}
+.steps b{font-size:17px}.steps p{margin:3px 0 0;color:var(--muted);font-size:14px}
+.prog{height:10px;border-radius:6px;background:#1b1e27;border:1px solid var(--line);margin:4px 0 12px;overflow:hidden}.prog i{display:block;height:100%;background:var(--green);transition:width .4s}
+.tl{position:relative;margin-left:12px;border-left:3px solid var(--line);padding-left:20px}
+.tl div{position:relative;margin-bottom:14px}.tl div::before{content:"";position:absolute;left:-29px;top:5px;width:15px;height:15px;border-radius:50%;background:var(--gold);border:3px solid var(--bg)}
+.tl b{color:var(--gold);font:900 20px 'Barlow Condensed',sans-serif;margin-right:8px}.tl span{color:var(--fg)}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.badges div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.badges b{display:block;font-size:16px}.badges span{color:var(--muted);font-size:14px}
+.links{display:grid;gap:8px}.links a{display:block;text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--fg)}.links a b{color:var(--gold)}.links a span{display:block;color:var(--muted);font-size:14px}
+.note{color:var(--muted);font-size:13px;margin-top:8px}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<main>
+  <h1>NEW TO <b>TOP SHOT?</b></h1>
+  <p class="lead">Welcome to the VC family 🏀 Here's everything you need to get started, in a few minutes.</p>
+
+  <div class="video" id="video">🎬 Welcome video coming soon: how to join NBA Top Shot in 2 minutes</div>
+
+  <h2>✅ Your getting-started checklist</h2>
+  <div class="prog"><i id="bar"></i></div>
+  <ul class="steps" id="steps"></ul>
+  <p class="note">Tap a step to check it off. Your progress is saved on this device.</p>
+
+  <h2>🕰️ Top Shot and the VC community, in short</h2>
+  <div class="tl" id="tl"></div>
+
+  <h2>🏷️ Badges you'll see on moments</h2>
+  <div class="badges">
+    <div><b>TSD · Top Shot Debut</b><span>The player's first moment on Top Shot. Vince's TSD is his final career shot, Mar 11, 2020.</span></div>
+    <div><b>RY · Rookie Year</b><span>A moment from the player's rookie season.</span></div>
+    <div><b>RP · Rookie Premiere</b><span>From the player's first game in the league.</span></div>
+    <div><b>RM · Rookie Mint</b><span>Minted while the player was a rookie.</span></div>
+    <div><b>CY · Championship Year</b><span>From a season the player's team won the title.</span></div>
+    <div><b>🔒 Locked</b><span>The owner locked it for a while: it can't be sold until the lock ends.</span></div>
+  </div>
+  <p class="note">Badge rules can change. Check a moment's badge info on Top Shot for the exact meaning.</p>
+
+  <h2>🔗 Good links</h2>
+  <div class="links">
+    <a href="https://nbatopshot.com" target="_blank" rel="noopener"><b>NBA Top Shot</b><span>Sign up, buy, sell and open packs.</span></a>
+    <a href="https://www.nothingbutstats.com" target="_blank" rel="noopener"><b>NothingButStats.com</b><span>True values for moments, based on real sales.</span></a>
+    <a href="./"><b>📡 VC15 Tracker Live</b><span>Every VC sale, listing and retirement, plus the lowest ask.</span></a>
+    <a href="arena.html"><b>🏟️ The VC Arena</b><span>Find your seat: every VC moment ever minted has one.</span></a>
+    <a href="https://x.com/VC15Tracker" target="_blank" rel="noopener"><b>@VC15Tracker on X</b><span>Daily VC news and free giveaways. DM us for the VC Discord link.</span></a>
+  </div>
+</main>
+<script>
+"use strict";
+// Edit these lists any time.
+const STEPS=[
+  ["Sign up for NBA Top Shot","Open nbatopshot.com in your browser and tap Sign up. Pick a username you'll remember.","https://nbatopshot.com"],
+  ["Follow @VC15Tracker and @NBATopShot on X","News, sales, drops and free giveaways.","https://x.com/VC15Tracker"],
+  ["Get your first Vince Carter moment","See the lowest ask on the Live page, or ask us about a welcome gift.","./"],
+  ["Ask @VC15Tracker for the VC Discord link","Once you own a VC moment, DM us on X and we'll send the invite.","https://x.com/VC15Tracker"],
+  ["Find your seat in the VC Arena","Search your Top Shot username to see your seats.","arena.html"],
+  ["Play Fast Break","Pick five players each night and try to hit the target. It's in the Top Shot app.",""],
+  ["Join a giveaway","Look for our free giveaways on X, like the score predictor on Bills game days.","games.html"]];
+const TIMELINE=[
+  ["2020","NBA Top Shot launches, first in a closed beta, then open to everyone. Vince's final career shot becomes his Top Shot Debut (TSD) moment."],
+  ["2021","The NFT boom: Top Shot takes off. The Archive and Vintage Vibes (Fandom) VC sets drop in Summer '21."],
+  ["2024","Vince Carter enters the Basketball Hall of Fame."],
+  ["2026","Fast Break returns and Earn the Moment arrives on Top Shot."],
+  ["Oct 26, 2026","VC15 Tracker launches: the website and @VC15Tracker on X."]];
+let done={};try{done=JSON.parse(localStorage.getItem("vcNewSteps")||"{}")}catch(e){}
+function paint(){const el=document.getElementById("steps");
+  el.innerHTML=STEPS.map(([t,p,u],i)=>`<li data-i="${i}" class="${done[i]?"done":""}"><div class="ck">${done[i]?"✓":i+1}</div><div><b>${t}</b><p>${p}${u?` <a href="${u}" ${u.startsWith("http")?'target="_blank" rel="noopener"':""} onclick="event.stopPropagation()">Open →</a>`:""}</p></div></li>`).join("");
+  el.querySelectorAll("li").forEach(li=>li.onclick=()=>{const i=li.dataset.i;done[i]=!done[i];try{localStorage.setItem("vcNewSteps",JSON.stringify(done))}catch(e){}paint()});
+  const n=Object.values(done).filter(Boolean).length;document.getElementById("bar").style.width=(n/STEPS.length*100)+"%"}
+paint();
+document.getElementById("tl").innerHTML=TIMELINE.map(([y,t])=>`<div><b>${y}</b><span>${t}</span></div>`).join("");
+// show the welcome video once welcome.mp4 is uploaded next to this page
+fetch("welcome.mp4",{method:"HEAD"}).then(r=>{if(r.ok)document.getElementById("video").innerHTML='<video src="welcome.mp4" controls playsinline></video>'}).catch(()=>{});
+</script>
+</body>
+</html>

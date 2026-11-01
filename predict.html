@@ -91,6 +91,7 @@ textarea{min-height:150px;resize:vertical}
       <div class="mid"><div class="qtr" id="qtr">PRE</div><div class="vs">VS</div></div>
       <div class="team b"><div class="ab" id="abB">BAL</div><div class="nm" id="nmB">Ravens</div><div class="score" id="scB">0</div></div>
     </div>
+    <div id="prizeBox" hidden style="display:flex;justify-content:center;margin-top:12px"><div style="text-align:center"><img id="prizePic" alt="Prize" style="max-width:220px;max-height:220px;border-radius:12px;border:2px solid #f2c94c;background:#000"><div style="font:800 13px Barlow,sans-serif;color:#f2c94c;margin-top:6px">🎁 PRIZE</div></div></div>
     <div class="lead" id="lead"></div>
     <div class="live" id="live">⚪ Waiting for the live score…</div>
     <div id="winner"></div>
@@ -105,14 +106,15 @@ textarea{min-height:150px;resize:vertical}
   <div class="legend"><span><i style="background:#2b63d9"></i>Someone picked it</span><span><i style="background:#7b3fe4"></i>2+ people</span><span><i style="background:#f2c94c"></i>Closest right now</span><span><i style="outline:2px solid #ffd84a;background:transparent"></i>Current score</span></div>
 </section>
 <aside>
-  <div class="card"><h2>🏆 Closest right now</h2><ul id="lb"></ul><p class="note" id="lbNote"></p></div>
-  <div class="card" style="margin-top:14px">
+  <div class="card"><h2>🏆 Closest right now</h2><p class="note" id="viewNote" style="margin:0 0 8px">👀 View only. Picks are entered by the host, and official results are posted by @VC15Tracker on X.</p><ul id="lb"></ul><p class="note" id="lbNote"></p></div>
+  <div class="card hostOnly" style="margin-top:14px">
     <h2>Host setup</h2>
     <p class="note" style="margin-top:0">Paste the replies from your post. Each line: a name and a score, with <b id="firstT">Bills</b> score first, like <code>GabeCollects 27-20</code>.</p>
     <div class="hostOnly">
       <div class="two"><div><label>Team 1 (score first)</label><input type="text" id="tA" value="BUF Bills"></div><div><label>Team 2</label><input type="text" id="tB" value="BAL Ravens"></div></div>
       <label>Game time line</label><input type="text" id="when" value="SUNDAY · NOV 1 · 1:00 PM ET">
       <label>Prize (optional)</label><input type="text" id="prize" placeholder="e.g. NFL All Day moment">
+      <label>Prize picture link (optional)</label><input type="text" id="prizeImg" placeholder="Paste an image link, e.g. right-click the moment picture → Copy Image Address">
     </div>
     <label for="picks">Picks</label>
     <textarea id="picks" placeholder="GabeCollects 27-20&#10;@BillsMafia716 31-24&#10;HoopsFan23: 24 17"></textarea>
@@ -132,7 +134,7 @@ textarea{min-height:150px;resize:vertical}
 "use strict";
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let S={tA:"BUF Bills",tB:"BAL Ravens",when:"SUNDAY · NOV 1 · 1:00 PM ET",prize:"",picks:"",a:0,b:0,q:0,final:false};
+let S={tA:"BUF Bills",tB:"BAL Ravens",when:"SUNDAY · NOV 1 · 1:00 PM ET",prize:"",prizeImg:"",picks:"",a:0,b:0,q:0,final:false};
 const QS=["PRE","Q1","Q2","HALF","Q3","Q4","OT","FINAL"];
 // state comes from a shared link (#b=...) or this browser's last session
 function load(){try{const h=location.hash.match(/#b=(.+)/);if(h){S={...S,...JSON.parse(decodeURIComponent(escape(atob(h[1]))))};return}}catch(e){}
@@ -152,6 +154,7 @@ function rankPicks(list){const w=sgn(S.a-S.b);return list.map(p=>({...p,d:Math.a
   .sort((x,y)=>(x.ok===y.ok?0:x.ok?-1:1)||x.d-y.d||x.i-y.i)}
 function render(){const[ab,nm]=split(S.tA),[bb,nmb]=split(S.tB);
   $("abA").textContent=ab;$("nmA").textContent=nm;$("abB").textContent=bb;$("nmB").textContent=nmb;$("hA").textContent=ab;$("hB").textContent=bb;$("firstT").textContent=nm;
+  {const ok=/^https?:\/\/\S+$/i.test(S.prizeImg||"");$("prizeBox").hidden=!ok;$("prizeBox").style.display=ok?"flex":"none";if(ok&&$("prizePic").src!==S.prizeImg)$("prizePic").src=S.prizeImg}
   $("sbTitle").textContent=S.when+(S.prize?` · PRIZE: ${S.prize}`:"");$("scA").textContent=S.a;$("scB").textContent=S.b;$("qtr").textContent=S.final?"FINAL":QS[S.q]+(S.clock&&S.q!==3?" "+S.clock:"");
   const{list,bad}=parse();
   $("parseNote").innerHTML=`<b>${list.length}</b> pick${list.length===1?"":"s"}`+(bad.length?` · <span class="bad">couldn't read: ${bad.slice(0,4).map(esc).join(" | ")}${bad.length>4?"…":""}</span>`:"");
@@ -176,7 +179,7 @@ $("grid").addEventListener("mousemove",e=>{const td=e.target.closest("td");const
   t.hidden=false;t.innerHTML=`<b>${a}-${b}</b><br>${window.__at.get(td.dataset.k).map(p=>esc(p.name)).join("<br>")}`;t.style.left=Math.min(innerWidth-270,e.clientX+12)+"px";t.style.top=(e.clientY+12)+"px"});
 $("grid").addEventListener("mouseleave",()=>$("tip").hidden=true);
 $("grid").addEventListener("click",e=>{const td=e.target.closest("td");if(!td||!window.__at.get(td.dataset.k))return;const[a,b]=td.dataset.k.split(":");alert(`${a}-${b}: `+window.__at.get(td.dataset.k).map(p=>p.name).join(", "))});
-for(const id of["tA","tB","when","prize","picks"])$(id).oninput=()=>{S[id]=$(id).value;render()};
+for(const id of["tA","tB","when","prize","prizeImg","picks"])$(id).oninput=()=>{S[id]=$(id).value;render()};
 document.querySelectorAll(".host button[data-t]").forEach(b=>b.onclick=()=>{const k=b.dataset.t==="A"?"a":"b";S[k]=Math.max(0,S[k]+Number(b.dataset.v));if(S.q===0)S.q=1;S.final=false;S.clock="";render()});
 $("qNext").onclick=()=>{S.q=Math.min(QS.length-2,S.q+1);S.final=false;render()};$("qPrev").onclick=()=>{S.q=Math.max(0,S.q-1);S.final=false;render()};
 $("reset").onclick=()=>{if(!confirm("Reset the score to 0-0 and pre-game? (Picks are kept.)"))return;S.a=0;S.b=0;S.q=0;S.final=false;S.clock="";render()};
@@ -196,8 +199,9 @@ async function pollScore(){try{const r=await fetch(SCORE_URL+"?t="+Date.now(),{c
     if(g.state!=="pre"){S.a=T[ab];S.b=T[bb];S.final=!!g.final;S.q=g.half?3:g.period>=5?6:g.period===4?5:g.period===3?4:g.period===2?2:g.period===1?1:S.q;S.clock=g.final?"":(g.half?"":g.clock||"")}
     render()}
   el.className="live"+(g.state==="in"?" on":"");el.textContent=g.state==="in"?`🟢 LIVE · score updates automatically · ${g.detail||""}`:g.final?"🏁 Final score":`⏰ ${g.detail||"Kickoff soon"} · the score will update by itself`}catch(e){}}
-load();for(const id of["tA","tB","when","prize","picks"])$(id).value=S[id];
+load();for(const id of["tA","tB","when","prize","prizeImg","picks"])$(id).value=S[id]||"";
 if(/[?&]host\b/.test(location.search))document.body.classList.add("hosting");
+if(document.body.classList.contains("hosting"))$("viewNote").hidden=true;
 render();pollScore();setInterval(pollScore,30000);
 </script>
 </body>

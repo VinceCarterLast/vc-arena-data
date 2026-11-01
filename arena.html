@@ -297,7 +297,7 @@ body.tl #feed,body.simu #feed,body.simo #feed,body.rec #feed{display:none!import
 :is(#ballModal,#raceModal,#loModal,#rpModal) .bc{margin:10px 0 0;font-size:14px}:is(#ballModal,#raceModal,#loModal,#rpModal) .miss{color:#ff8a80}
 :is(#ballModal,#raceModal,#loModal,#rpModal) .rmB{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}:is(#ballModal,#raceModal,#loModal,#rpModal) .rmB .simBtn{flex:1;min-width:120px;display:block;font:700 13.5px var(--body);border-radius:8px;padding:10px;cursor:pointer;border:0;background:var(--gold);color:#1b1608}:is(#ballModal,#raceModal,#loModal,#rpModal) .rmB .simBtn.alt{background:#22273a;color:var(--fg);border:1px solid var(--line)}
 :is(#ballModal,#raceModal,#loModal,#rpModal) small{display:block;margin-top:8px;color:var(--muted);font-size:12px}
-.top{top:var(--navh,0px)!important}.legend,.sale{top:calc(112px + var(--navh,0px) + env(safe-area-inset-top,0px))!important}
+.top{top:var(--navh,0px)!important}#tmapBtn,#feed,#feedP{display:none!important}.legend,.sale{top:calc(112px + var(--navh,0px) + env(safe-area-inset-top,0px))!important}
 </style>
 
 <canvas id="arena" aria-label="The VC Arena seen from above: one seat per Vince Carter moment"></canvas>
@@ -1857,7 +1857,7 @@ document.getElementById("loOpen").onclick=()=>{loM.hidden=false;
   for(const [a,v] of [["[data-rec]",false],["[data-recv]",true]])loM.querySelector(a).onclick=()=>{if(busy()||racePeople(sel.value,ta.value,me.checked).people.length<2)return;loM.hidden=true;
     recStart("vc-dice-lights-out"+(v?"-vertical":""),go,()=>LO&&LO.done,0,()=>endLO(),v)}};
 // ---------- 🎟️ Ticket map view (light seat map like ticket sites: grey = held, blue = for sale) ----------
-let TMAP=false;try{TMAP=new URLSearchParams(location.search).get("map")==="ticket"||localStorage.getItem("vcTmap")==="1"}catch(e){}
+let TMAP=false;try{const mp=new URLSearchParams(location.search).get("map");TMAP=mp==="ticket"||(mp!=="arena"&&localStorage.getItem("vcTmap")==="1");localStorage.setItem("vcTmap",TMAP?"1":"0")}catch(e){}
 function tmapRing(d,fill){const p=rrPath(CW+d,CH+d,Math.max(10,70+d));ctx.beginPath();for(let i=0;i<=240;i++){const[x,y]=p.at(i/240);i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath();ctx.fillStyle=fill;ctx.fill()}
 // sections like a real arena map: white blocks with grey aisles, tunnels, and section numbers
 function tmapSections(){const out=[],bands=[[64,r100-ROWP/2+5,24,100],[r100+20,r200-ROWP/2+5,28,200],[r200+24,r300-ROWP/2+5,32,300]];

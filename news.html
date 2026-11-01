@@ -24,6 +24,9 @@ main{max-width:900px;margin:0 auto;padding:0 16px 40px}
 .sum div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 .sum b{display:block;font:900 30px 'Barlow Condensed',sans-serif}.sum span{font-size:13px;color:var(--muted)}
 .sect{display:flex;gap:8px;margin-bottom:12px}.sect button{flex:1;background:#1b2032;border:2px solid var(--line);color:var(--fg);border-radius:12px;padding:11px;font:800 17px 'Barlow Condensed',sans-serif;letter-spacing:.03em;cursor:pointer}.sect button.on{border-color:var(--gold);background:#2a2614}
+.pri{display:inline-block;font:800 11.5px Barlow,sans-serif;border-radius:20px;padding:3px 9px;margin-left:6px;vertical-align:2px}.pri.urgent{background:#4a1018;color:#ff6b7a;animation:blink 1.4s infinite}.pri.important{background:#3a2a10;color:#ffb347}.pri.canwait{background:#1f2436;color:#9aa0b4}@keyframes blink{50%{opacity:.55}}
+.took{display:inline-block;margin-top:6px;font:800 13px Barlow,sans-serif;color:var(--green)}
+.savebtn{margin-top:10px;background:#1b2032;border:1px solid var(--line);color:var(--fg);border-radius:9px;padding:8px 12px;font:700 13px Barlow,sans-serif;cursor:pointer}
 .resp{margin-top:8px;padding:8px 10px;border-radius:8px;background:#0f1320;border:1px solid var(--line)}.resp::before{content:"🏀 Top Shot: ";font-weight:700;color:var(--gold)}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .tabs button{background:#1b2032;border:1px solid var(--line);color:var(--fg);border-radius:20px;padding:7px 12px;font:700 13px Barlow,sans-serif;cursor:pointer}
@@ -61,6 +64,8 @@ footer{text-align:center;color:var(--muted);font:800 13px 'Barlow Condensed',san
 const ST={done:["✅ Delivered","var(--green)"],partial:["<i class=\"half\"></i>Partly delivered","#ff922b"],progress:["🟡 In progress","var(--gold)"],coming:["🔵 Coming up","var(--blue)"],checking:["❔ Checking","var(--purple)"]};
 const FB={done:["✅ Done","var(--green)"],partial:["<i class=\"half\"></i>Partly done","#ff922b"],working:["🛠️ Being worked on","var(--gold)"],heard:["🆕 Heard","var(--blue)"],notplanned:["⏸️ Not planned","var(--muted)"]};
 let SEC="news";
+const PRI={urgent:"🚨 Urgent",important:"⚠️ Important",canwait:"🕒 Can wait"};
+const yrs=(a,b)=>{const d=(Date.parse(b)-Date.parse(a))/864e5;if(!(d>=0))return "";return d<45?Math.max(1,Math.round(d))+" days":d<540?Math.round(d/30.4)+" months":(d/365.25).toFixed(d<3650?1:0).replace(/\.0$/,"")+" years"};
 const FALLBACK={updated:"2026-10-31",items:[]};
 const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=d=>{if(!d)return "";const t=new Date(d+"T12:00:00Z");return isNaN(t)?d:t.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"})};
@@ -77,19 +82,32 @@ function render(){
   const show=it.filter(x=>tab==="all"||x.status===tab).sort((a,b)=>(order[a.status]-order[b.status])||String(b.date).localeCompare(a.date));
   document.getElementById("list").innerHTML=show.map(x=>{const[l,c]=ST[x.status]||["•","var(--muted)"];
     return `<div class="item" style="--c:${c}"><div class="top"><h2>${esc(x.title)}</h2><span class="badge">${l}</span></div>
+      ${x.status==="done"&&x.delivered?`<div class="took">⏱ Took ${yrs(x.date,x.delivered)}</div>`:""}
       <div class="tap">Tap for details ▾</div><div class="more"><p>${esc(x.promise)}</p>${x.note?`<p class="note">${esc(x.note)}</p>`:""}
-      <div class="meta">Announced ${fmt(x.date)}${x.due?` · Due ${fmt(x.due)}`:""}${x.source?` · Source: ${esc(x.source)}`:""}</div></div></div>`}).join("")||`<p style="color:var(--muted)">Nothing here yet.</p>`;
+      <div class="meta">Announced ${fmt(x.date)}${x.due?` · Due ${fmt(x.due)}`:""}${x.delivered?` · Delivered ${fmt(x.delivered)}`:""}${x.source?` · Source: ${x.link?`<a href="${esc(x.link)}" target="_blank" rel="noopener">🔗 ${esc(x.source)}</a>`:esc(x.source)}`:""}</div>
+      <button class="savebtn" data-save="n:${it.indexOf(x)}">📸 Save image for X</button></div></div>`}).join("")||`<p style="color:var(--muted)">Nothing here yet.</p>`;
   document.getElementById("upd").textContent=DATA.updated?`Last updated ${fmt(DATA.updated)}.`:""}
 function renderFb(){const it=DATA.feedback||[],cnt=k=>it.filter(x=>x.status===k).length;
   document.getElementById("sum").innerHTML=Object.entries(FB).map(([k,[l]])=>`<div><b>${cnt(k)}</b><span>${l}</span></div>`).join("");
   document.getElementById("tabs").innerHTML=[["all","All"],...Object.entries(FB).map(([k,[l]])=>[k,l])].map(([k,l])=>`<button data-k="${k}" class="${k===tab?"on":""}">${l}</button>`).join("");
   document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{tab=b.dataset.k;render()});
-  const order={working:0,heard:1,partial:2,done:3,notplanned:4};
-  const show=it.filter(x=>tab==="all"||x.status===tab).sort((a,b)=>(order[a.status]-order[b.status])||String(b.date).localeCompare(a.date));
+  const order={working:0,heard:1,partial:2,done:3,notplanned:4},po={urgent:0,important:1,canwait:2};
+  const show=it.filter(x=>tab==="all"||x.status===tab).sort((a,b)=>((po[a.priority]??3)-(po[b.priority]??3))||(order[a.status]-order[b.status])||String(b.date).localeCompare(a.date));
   document.getElementById("list").innerHTML=show.map(x=>{const[l,c]=FB[x.status]||["•","var(--muted)"];
-    return `<div class="item" style="--c:${c}"><div class="top"><h2>${esc(x.title)}</h2><span class="badge">${l}</span></div>
+    return `<div class="item" style="--c:${c}"><div class="top"><h2>${esc(x.title)}${x.priority&&PRI[x.priority]?`<span class="pri ${x.priority}">${PRI[x.priority]}</span>`:""}</h2><span class="badge">${l}</span></div>
       ${x.response?`<p class="resp">${esc(x.response)}</p>`:""}<div class="tap">Tap for details ▾</div><div class="more"><p>${esc(x.request)}</p>${x.note?`<p class="note">${esc(x.note)}</p>`:""}
-      <div class="meta">Shared ${fmt(x.date)}</div></div></div>`}).join("")||`<p style="color:var(--muted)">No feedback tracked yet.</p>`}
+      <div class="meta">Shared ${fmt(x.date)}${x.link?` · <a href="${esc(x.link)}" target="_blank" rel="noopener">🔗 Source</a>`:""}${x.priority?" · Priority is VC15 Tracker's own estimate":""}</div>
+      <button class="savebtn" data-save="f:${it.indexOf(x)}">📸 Save image for X</button></div></div>`}).join("")||`<p style="color:var(--muted)">No feedback tracked yet.</p>`}
+function saveImg(x,lab,col,kind){const W=1200,H=675,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+  g.fillStyle="#0b0d14";g.fillRect(0,0,W,H);g.fillStyle=col.startsWith("var")?{"var(--green)":"#3ee07f","var(--gold)":"#f2c94c","var(--blue)":"#4dabf7","var(--purple)":"#b197fc","var(--muted)":"#9aa0b4"}[col]||"#f2c94c":col;g.fillRect(0,0,16,H);
+  g.fillStyle="#9aa0b4";g.font="700 30px Barlow,sans-serif";g.fillText(kind==="f"?"TOP SHOT COMMUNITY FEEDBACK":"TOP SHOT NEWS",70,95);
+  g.fillStyle="#f1ede4";let size=92;g.font=`900 ${size}px 'Barlow Condensed',sans-serif`;while(g.measureText(x.title).width>W-140&&size>50){size-=4;g.font=`900 ${size}px 'Barlow Condensed',sans-serif`}g.fillText(x.title,70,215);
+  const st=lab.replace(/<[^>]+>/g,"").trim();g.font="800 48px Barlow,sans-serif";g.fillStyle=g.fillStyle;const sc={"var(--green)":"#3ee07f","var(--gold)":"#f2c94c","var(--blue)":"#4dabf7","var(--purple)":"#b197fc","var(--muted)":"#9aa0b4"}[col]||col;g.fillStyle=sc;g.fillText((kind==="n"&&x.status==="partial"?"◐ ":"")+st,70,320);
+  g.fillStyle="#f1ede4";g.font="600 34px Barlow,sans-serif";const line=x.status==="done"&&x.delivered?`⏱ Took ${yrs(x.date,x.delivered)} · announced ${fmt(x.date)}`:`${kind==="f"?"Shared":"Announced"} ${fmt(x.date)}`;g.fillText(line,70,400);
+  if(x.note){g.fillStyle="#9aa0b4";g.font="500 30px Barlow,sans-serif";let words=x.note.split(" "),l="",y=470;for(const w of words){if(g.measureText(l+w).width>W-140){g.fillText(l,70,y);l="";y+=40;if(y>560)break}l+=w+" "}if(y<=560)g.fillText(l,70,y)}
+  g.fillStyle="#f2c94c";g.font="900 38px 'Barlow Condensed',sans-serif";g.textAlign="right";g.fillText("VC15TRACKER.COM · @VC15Tracker",W-60,H-50);
+  c.toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=(x.title.replace(/[^a-z0-9]+/gi,"-").toLowerCase()||"vc15")+".png";document.body.appendChild(a);a.click();a.remove()},"image/png")}
+document.getElementById("list").addEventListener("click",e=>{const b=e.target.closest("[data-save]");if(!b)return;e.stopPropagation();const[k,i]=b.dataset.save.split(":"),x=(k==="f"?DATA.feedback:DATA.items)[+i],[l,c]=(k==="f"?FB:ST)[x.status]||["",""];document.fonts&&document.fonts.ready.then(()=>saveImg(x,l,c,k))},true);
 if(location.hash==="#feedback")SEC="fb";
 document.getElementById("list").addEventListener("click",e=>{const it=e.target.closest(".item");if(it)it.classList.toggle("open")});
 fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/news.json?t="+Date.now(),{cache:"no-store"})
