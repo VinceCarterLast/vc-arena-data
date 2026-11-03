@@ -25,7 +25,13 @@ h1 b{color:var(--gold)}
 .st.vc b{color:var(--gold)}
 @media (max-width:640px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .wrap{position:relative;background:#070910;border:1px solid var(--line);border-radius:16px;overflow:hidden}
-canvas{display:block;width:100%;height:auto}
+canvas{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
+canvas.drag{cursor:grabbing}
+.zoom{position:absolute;right:10px;bottom:10px;display:flex;gap:6px;z-index:2}
+.zoom button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:rgba(18,21,30,.9);color:var(--fg);font:800 20px Barlow,sans-serif;cursor:pointer}
+.zoom button:hover{border-color:var(--gold)}
+.hint{position:absolute;left:12px;bottom:14px;font-size:12px;color:var(--muted);pointer-events:none}
+.big{transition:opacity .25s}
 .big{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;pointer-events:none}
 .big b{display:block;font:900 clamp(34px,8vw,92px)/1 'Barlow Condensed',sans-serif;color:#fff;text-shadow:0 2px 18px #000,0 0 4px #000}
 .big span{font:700 clamp(11px,1.8vw,18px) Barlow,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#e9f3e9;text-shadow:0 1px 8px #000}
@@ -49,7 +55,9 @@ canvas{display:block;width:100%;height:auto}
     <div class="st"><b id="sEmpty">44,790</b><span>Empty seats</span></div>
   </div>
   <div class="wrap"><canvas id="c" width="1100" height="720"></canvas>
-    <div class="big"><b id="bigPct">0%</b><span>of the seats filled</span></div></div>
+    <div class="big" id="big"><b id="bigPct">0%</b><span>of the seats filled</span></div>
+    <div class="zoom"><button id="zIn" aria-label="Zoom in">+</button><button id="zOut" aria-label="Zoom out">−</button><button id="zReset" aria-label="Reset view">⟲</button></div>
+    <div class="hint" id="hint">Pinch or scroll to zoom · drag to look around</div></div>
   <div class="legend" id="legend"></div>
   <div class="row">
     <button class="btn" id="replay">↻ Fill it again</button>
@@ -92,32 +100,54 @@ function buildSeats(){
 const{pts,s:SP}=buildSeats();
 
 const cv=$("c"),ctx=cv.getContext("2d");
-let W,H,scale,ox,oy,dot;
+let W,H,scale,ox,oy,dot,Z=1,PX=0,PY=0;   // Z = zoom, PX/PY = pan in canvas pixels
 function size(){const dpr=Math.min(2,window.devicePixelRatio||1),cw=cv.clientWidth||1100;
   W=cv.width=Math.round(cw*dpr);H=cv.height=Math.round(cw*dpr*(Wd+2*58+8)/(L+2*58+8));
   scale=Math.min(W/(L+2*58+8),H/(Wd+2*58+8));ox=W/2;oy=H/2;dot=Math.max(1,SP*scale*.78)}
-function field(){
-  const fx=ox-L/2*scale,fy=oy-Wd/2*scale,fw=L*scale,fh=Wd*scale;
+function field(){const scale=SS();
+  const fx=CX()-L/2*scale,fy=CY()-Wd/2*scale,fw=L*scale,fh=Wd*scale;
   ctx.fillStyle="#1f6b35";ctx.fillRect(fx,fy,fw,fh);
   for(let i=0;i<10;i++){ctx.fillStyle=i%2?"#22743a":"#1f6b35";ctx.fillRect(fx+(10+i*10)*scale,fy,10*scale,fh)}
   ctx.fillStyle="#00338d";ctx.fillRect(fx,fy,10*scale,fh);ctx.fillRect(fx+110*scale,fy,10*scale,fh);
   ctx.strokeStyle="rgba(255,255,255,.75)";ctx.lineWidth=Math.max(1,scale*.35);ctx.strokeRect(fx,fy,fw,fh);
   for(let i=1;i<=11;i++){const x=fx+(i*10)*scale;ctx.beginPath();ctx.moveTo(x,fy);ctx.lineTo(x,fy+fh);ctx.stroke()}
-  ctx.fillStyle="#c60c30";ctx.beginPath();ctx.arc(ox,oy,Math.max(3,scale*2.2),0,7);ctx.fill()}
+  ctx.fillStyle="#c60c30";ctx.beginPath();ctx.arc(CX(),CY(),Math.max(3,scale*2.2),0,7);ctx.fill()}
+const SS=()=>scale*Z,CX=()=>ox+PX,CY=()=>oy+PY;
 let order=[];
 function buildOrder(){order=[];for(const t of["legendary","rare","fandom","common"])for(let i=0;i<counts[t];i++)order.push(TIERC[t])}
-function draw(n){
+let shown=0;
+function draw(n){if(n==null)n=shown;shown=n;
   ctx.fillStyle="#070910";ctx.fillRect(0,0,W,H);field();
-  for(let i=0;i<pts.length;i++){const p=pts[i];ctx.fillStyle=i<n?order[i]:"#262f44";ctx.fillRect(ox+p[0]*scale-dot/2,oy+p[1]*scale-dot/2,dot,dot)}}
+  const sc=SS(),cx=CX(),cy=CY(),d=Math.max(1,SP*sc*.78),r=d/2;
+  for(let i=0;i<pts.length;i++){const p=pts[i],x=cx+p[0]*sc,y=cy+p[1]*sc;if(x<-d||y<-d||x>W+d||y>H+d)continue;
+    ctx.fillStyle=i<n?order[i]:"#262f44";if(d>6){ctx.beginPath();ctx.roundRect(x-r,y-r,d,d,d*.25);ctx.fill()}else ctx.fillRect(x-r,y-r,d,d)}
+  $("big").style.opacity=Z>1.15?0:1}
 let anim=0;
-function play(){cancelAnimationFrame(anim);const total=order.length,t0=performance.now(),dur=2600;
+function play(){cancelAnimationFrame(anim);Z=1;PX=PY=0;const total=order.length,t0=performance.now(),dur=2600;
   const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3),n=Math.round(total*e);draw(n);
     $("bigPct").textContent=Math.round(n/SEATS*100)+"%";if(k<1)anim=requestAnimationFrame(step)};anim=requestAnimationFrame(step)}
 function stats(){const vc=order.length;$("sVC").textContent=fmt(vc);$("sPct").textContent=Math.round(vc/SEATS*100)+"%";$("sEmpty").textContent=fmt(SEATS-vc);
   $("legend").innerHTML=["legendary","rare","fandom","common"].map(t=>`<span><i style="background:${TIERC[t]}"></i>${TIERN[t]} · ${fmt(counts[t])}</span>`).join("")+`<span><i style="background:#262f44;border:1px solid #333"></i>Empty seat · ${fmt(SEATS-vc)}</span>`}
 function start(){buildOrder();stats();size();play()}
 start();
-addEventListener("resize",()=>{size();draw(order.length)});
+addEventListener("resize",()=>{size();clampPan();draw()});
+// ---- zoom & pan: wheel, pinch, drag, buttons ----
+const ZMAX=14;
+function clampPan(){const lim=k=>Math.max(0,(k*Z-k)/2);PX=Math.max(-lim(W),Math.min(lim(W),PX));PY=Math.max(-lim(H),Math.min(lim(H),PY))}
+function zoomAt(f,mx,my){const nz=Math.max(1,Math.min(ZMAX,Z*f)),k=nz/Z;   // keep the point under the finger/cursor still
+  PX=(mx-ox)-(mx-ox-PX)*k;PY=(my-oy)-(my-oy-PY)*k;Z=nz;if(Z===1){PX=PY=0}clampPan();draw();$("hint").style.display="none"}
+const toCv=(cx,cy)=>{const b=cv.getBoundingClientRect();return[(cx-b.left)*W/b.width,(cy-b.top)*H/b.height]};
+cv.addEventListener("wheel",e=>{e.preventDefault();const[x,y]=toCv(e.clientX,e.clientY);zoomAt(Math.exp(-e.deltaY*.0015),x,y)},{passive:false});
+const ptr=new Map();let pinch=0;
+cv.addEventListener("pointerdown",e=>{cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);cv.classList.add("drag")});
+cv.addEventListener("pointermove",e=>{if(!ptr.has(e.pointerId))return;const prev=ptr.get(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);
+  const b=cv.getBoundingClientRect(),sx=W/b.width;
+  if(ptr.size===2){const[a,c]=[...ptr.values()],dist=Math.hypot(a[0]-c[0],a[1]-c[1]);if(pinch){const[mx,my]=toCv((a[0]+c[0])/2,(a[1]+c[1])/2);zoomAt(dist/pinch,mx,my)}pinch=dist}
+  else if(ptr.size===1&&Z>1){PX+=(e.clientX-prev[0])*sx;PY+=(e.clientY-prev[1])*sx;clampPan();draw()}});
+const up=e=>{ptr.delete(e.pointerId);if(ptr.size<2)pinch=0;if(!ptr.size)cv.classList.remove("drag")};
+cv.addEventListener("pointerup",up);cv.addEventListener("pointercancel",up);
+let lastTap=0;cv.addEventListener("pointerup",e=>{const t=Date.now();if(t-lastTap<300){const[x,y]=toCv(e.clientX,e.clientY);Z>1.5?(Z=1,PX=PY=0,draw()):zoomAt(4,x,y)}lastTap=t});
+$("zIn").onclick=()=>zoomAt(1.8,W/2,H/2);$("zOut").onclick=()=>zoomAt(1/1.8,W/2,H/2);$("zReset").onclick=()=>{Z=1;PX=PY=0;draw()};
 $("replay").onclick=play;
 
 // live counts: every VC moment that isn't retired
@@ -128,7 +158,7 @@ fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/aren
 
 // ---- save a 1600x1000 image for X ----
 $("save").onclick=()=>{const o=document.createElement("canvas");o.width=1600;o.height=1000;const g=o.getContext("2d");
-  g.fillStyle="#0b0d14";g.fillRect(0,0,1600,1000);draw(order.length);
+  g.fillStyle="#0b0d14";g.fillRect(0,0,1600,1000);const vz=[Z,PX,PY];Z=1;PX=PY=0;draw(order.length);
   const iw=1520,ih=iw*cv.height/cv.width;g.drawImage(cv,40,150,iw,ih);
   g.fillStyle="#f2f0ea";g.font="900 64px 'Barlow Condensed',sans-serif";g.fillText("EVERY VC MOMENT IN HIGHMARK STADIUM",40,90);
   const vc=order.length;g.fillStyle="#8a8f9a";g.font="600 30px Barlow,sans-serif";
@@ -136,6 +166,7 @@ $("save").onclick=()=>{const o=document.createElement("canvas");o.width=1600;o.h
   g.fillStyle="#fff";g.font="900 120px 'Barlow Condensed',sans-serif";g.textAlign="center";g.shadowColor="#000";g.shadowBlur=24;
   g.fillText(Math.round(vc/SEATS*100)+"%",800,150+ih/2+20);g.font="700 28px Barlow,sans-serif";g.fillText("OF THE SEATS FILLED",800,150+ih/2+62);
   g.shadowBlur=0;g.textAlign="right";g.fillStyle="#f2c94c";g.font="700 26px Barlow,sans-serif";g.fillText("vc15tracker.com",1560,980);
+  [Z,PX,PY]=vz;draw();
   const a=document.createElement("a");a.download="vc-highmark.png";a.href=o.toDataURL("image/png");a.click()};
 </script>
 </body>
