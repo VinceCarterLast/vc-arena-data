@@ -3,10 +3,10 @@
   if(!document.body){document.addEventListener("DOMContentLoaded",arguments.callee);return}
   var page=(location.pathname.split("/").pop()||"index.html").toLowerCase();if(page==="")page="index.html";
   var mp=(location.search.match(/[?&]map=(\w+)/)||[])[1];var cur=page==="arena.html"?(mp==="ticket"||(!mp&&(function(){try{return localStorage.getItem("vcTmap")==="1"}catch(e){return false}})())?"arena.html?map=ticket":"arena.html?map=arena"):page;
-  var GROUP={"index.html":"live","live.html":"live","arena.html":"supply","count.html":"supply","stats.html":"stats","news.html":"news","games.html":"games","predict.html":"games","new.html":"new"};
+  var GROUP={"index.html":"live","live.html":"live","arena.html":"supply","count.html":"supply","highmark.html":"supply","stats.html":"stats","news.html":"news","games.html":"games","predict.html":"games","new.html":"new"};
   var g=GROUP[page]||"";
   var TABS=[["live","./","📡 Live"],["supply","arena.html","📊 Supply"],["stats","stats.html","📈 Stats"],["news","news.html","📰 News"],["games","games.html","🎮 Games"],["new","new.html","🆕 New here?"],["fast","#fast","⚡ Fast Break"]];
-  var SUB={supply:[["arena.html?map=arena","🏟️ Arena"],["arena.html?map=ticket","🎟️ Ticket map"],["count.html","📉 Countdown"],["#city","🏙️ VC City"]],games:[["games.html","🦆 Races"],["predict.html","🏈 Score Predictor"]]};
+  var SUB={supply:[["arena.html?map=arena","🏟️ Arena"],["arena.html?map=ticket","🎟️ Ticket map"],["count.html","📉 Countdown"],["highmark.html","🦬 Highmark"],["#city","🏙️ VC City"]],games:[["games.html","🦆 Races"],["predict.html","🏈 Score Predictor"]]};
   var css="#vcnav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(11,13,20,.96);backdrop-filter:blur(8px);border-bottom:1px solid #2a3045;font-family:Barlow,system-ui,sans-serif}"+
   "#vcnav .r{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:8px 14px;height:52px}"+
   "#vcnav .lg{font:900 22px 'Barlow Condensed',system-ui,sans-serif;color:#f1ede4;text-decoration:none;white-space:nowrap;letter-spacing:.01em}#vcnav .lg b{color:#f2c94c}"+

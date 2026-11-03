@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VC at Highmark · VC15 Tracker</title>
+<meta name="description" content="Every Vince Carter Top Shot moment left, seated in the new Highmark Stadium. 60,108 seats, and VC can't fill a third of it.">
+<meta property="og:title" content="Every VC moment in Highmark Stadium">
+<meta property="og:description" content="60,108 seats. Every Vince Carter Top Shot moment left still leaves most of them empty.">
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d14;--fg:#f2f0ea;--muted:#8a8f9a;--gold:#f2c94c;--line:#2a2d35;--card:#12151e}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:500 16px Barlow,system-ui,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:calc(var(--navh,52px) + 14px) 16px 40px}
+h1{font:900 clamp(30px,5.5vw,56px)/1 'Barlow Condensed',sans-serif;margin:0;letter-spacing:.01em;text-transform:uppercase}
+h1 b{color:var(--gold)}
+.lede{color:var(--muted);margin:8px 0 14px;font-size:clamp(14px,1.8vw,18px)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.st{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.st b{display:block;font:800 clamp(22px,3.6vw,36px)/1.05 'Barlow Condensed',sans-serif;font-variant-numeric:tabular-nums}
+.st span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.st.vc b{color:var(--gold)}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.wrap{position:relative;background:#070910;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+canvas{display:block;width:100%;height:auto}
+.big{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;pointer-events:none}
+.big b{display:block;font:900 clamp(34px,8vw,92px)/1 'Barlow Condensed',sans-serif;color:#fff;text-shadow:0 2px 18px #000,0 0 4px #000}
+.big span{font:700 clamp(11px,1.8vw,18px) Barlow,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#e9f3e9;text-shadow:0 1px 8px #000}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:12px 2px;font-size:14px;color:var(--muted)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.btn{background:#1b1f2b;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:9px 14px;font:700 14px Barlow,sans-serif;cursor:pointer}
+.btn:hover{border-color:var(--gold)}
+.note{color:var(--muted);font-size:13px;margin-top:14px;line-height:1.5}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<main>
+  <h1>Every VC moment in <b>Highmark Stadium</b></h1>
+  <p class="lede">The Bills' brand-new stadium is the smallest in the NFL. Seat every Vince Carter Top Shot moment still out there, and watch how much of it stays empty.</p>
+  <div class="stats">
+    <div class="st vc"><b id="sVC">15,318</b><span>VC moments left</span></div>
+    <div class="st"><b>60,108</b><span>Seats at Highmark</span></div>
+    <div class="st"><b id="sPct">25%</b><span>Seats filled</span></div>
+    <div class="st"><b id="sEmpty">44,790</b><span>Empty seats</span></div>
+  </div>
+  <div class="wrap"><canvas id="c" width="1100" height="720"></canvas>
+    <div class="big"><b id="bigPct">0%</b><span>of the seats filled</span></div></div>
+  <div class="legend" id="legend"></div>
+  <div class="row">
+    <button class="btn" id="replay">↻ Fill it again</button>
+    <button class="btn" id="save">⬇ Save image for X</button>
+  </div>
+  <p class="note">One dot = one seat. Gold, red, teal and blue dots are VC moments, best tiers nearest the field; dark dots are empty seats. Seat count: 60,108 (opened 2026). VC count: moments minted minus moments retired, updated by the VC15 Tracker bot. Not affiliated with the Buffalo Bills or the NFL.</p>
+</main>
+<script>
+const SEATS=60108;
+const TIERC={legendary:"#f2c94c",rare:"#e8603c",fandom:"#2ec4b6",common:"#4d8df0"};
+const TIERN={legendary:"Legendary",rare:"Rare",fandom:"Fandom",common:"Common"};
+const TIER={archive:"common",tsd:"common",fandom:"fandom",rib:"rare",origin:"rare",asg:"legendary",cosmic:"legendary",dallas:"legendary",galac:"legendary",omega:"legendary"};
+let counts={legendary:148,rare:1215,fandom:949,common:13006};   // fallback (Nov 1, 2026)
+const $=id=>document.getElementById(id),fmt=n=>n.toLocaleString("en-US");
+
+// ---- seat layout: rounded-rectangle rings around the field, lower bowl, concourse, upper bowl ----
+const L=120,Wd=53.3;                  // field incl. end zones (yards)
+const BANDS=[[7,31],[36,58]];         // lower bowl, upper bowl (yards from the field edge)
+function buildSeats(){
+  let area=0;for(const[a,b]of BANDS)area+=2*(L+Wd)*(b-a)+Math.PI*(b*b-a*a);
+  const s=Math.sqrt(area/SEATS);       // seat spacing so the bowl holds ~60,108
+  const pts=[];
+  for(const[a,b]of BANDS)for(let r=a+s/2;r<b;r+=s){
+    const per=2*(L+Wd)+2*Math.PI*r,n=Math.round(per/s);
+    for(let i=0;i<n;i++){let d=(i+.5)/n*per,x,y;
+      const segs=[[L,0],[Math.PI*r/2,1],[Wd,2],[Math.PI*r/2,3],[L,4],[Math.PI*r/2,5],[Wd,6],[Math.PI*r/2,7]];
+      for(const[len,k]of segs){if(d>len){d-=len;continue}
+        const hx=L/2,hy=Wd/2,t=d/len;
+        if(k===0){x=-hx+t*L;y=-hy-r}
+        else if(k===2){x=hx+r;y=-hy+t*Wd}
+        else if(k===4){x=hx-t*L;y=hy+r}
+        else if(k===6){x=-hx-r;y=hy-t*Wd}
+        else{const c=[[hx,-hy,-Math.PI/2],[hx,hy,0],[-hx,hy,Math.PI/2],[-hx,-hy,Math.PI]][(k-1)/2],ang=c[2]+t*Math.PI/2;x=c[0]+r*Math.cos(ang);y=c[1]+r*Math.sin(ang)}
+        break}
+      pts.push([x,y,r])}}
+  pts.length=Math.min(pts.length,SEATS);while(pts.length<SEATS)pts.push(pts[pts.length-1]);
+  // fill order: closest to the field first, then around each row
+  pts.sort((p,q)=>p[2]-q[2]||Math.atan2(p[1],p[0])-Math.atan2(q[1],q[0]));
+  return{pts,s}}
+const{pts,s:SP}=buildSeats();
+
+const cv=$("c"),ctx=cv.getContext("2d");
+let W,H,scale,ox,oy,dot;
+function size(){const dpr=Math.min(2,window.devicePixelRatio||1),cw=cv.clientWidth||1100;
+  W=cv.width=Math.round(cw*dpr);H=cv.height=Math.round(cw*dpr*(Wd+2*58+8)/(L+2*58+8));
+  scale=Math.min(W/(L+2*58+8),H/(Wd+2*58+8));ox=W/2;oy=H/2;dot=Math.max(1,SP*scale*.78)}
+function field(){
+  const fx=ox-L/2*scale,fy=oy-Wd/2*scale,fw=L*scale,fh=Wd*scale;
+  ctx.fillStyle="#1f6b35";ctx.fillRect(fx,fy,fw,fh);
+  for(let i=0;i<10;i++){ctx.fillStyle=i%2?"#22743a":"#1f6b35";ctx.fillRect(fx+(10+i*10)*scale,fy,10*scale,fh)}
+  ctx.fillStyle="#00338d";ctx.fillRect(fx,fy,10*scale,fh);ctx.fillRect(fx+110*scale,fy,10*scale,fh);
+  ctx.strokeStyle="rgba(255,255,255,.75)";ctx.lineWidth=Math.max(1,scale*.35);ctx.strokeRect(fx,fy,fw,fh);
+  for(let i=1;i<=11;i++){const x=fx+(i*10)*scale;ctx.beginPath();ctx.moveTo(x,fy);ctx.lineTo(x,fy+fh);ctx.stroke()}
+  ctx.fillStyle="#c60c30";ctx.beginPath();ctx.arc(ox,oy,Math.max(3,scale*2.2),0,7);ctx.fill()}
+let order=[];
+function buildOrder(){order=[];for(const t of["legendary","rare","fandom","common"])for(let i=0;i<counts[t];i++)order.push(TIERC[t])}
+function draw(n){
+  ctx.fillStyle="#070910";ctx.fillRect(0,0,W,H);field();
+  for(let i=0;i<pts.length;i++){const p=pts[i];ctx.fillStyle=i<n?order[i]:"#262f44";ctx.fillRect(ox+p[0]*scale-dot/2,oy+p[1]*scale-dot/2,dot,dot)}}
+let anim=0;
+function play(){cancelAnimationFrame(anim);const total=order.length,t0=performance.now(),dur=2600;
+  const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3),n=Math.round(total*e);draw(n);
+    $("bigPct").textContent=Math.round(n/SEATS*100)+"%";if(k<1)anim=requestAnimationFrame(step)};anim=requestAnimationFrame(step)}
+function stats(){const vc=order.length;$("sVC").textContent=fmt(vc);$("sPct").textContent=Math.round(vc/SEATS*100)+"%";$("sEmpty").textContent=fmt(SEATS-vc);
+  $("legend").innerHTML=["legendary","rare","fandom","common"].map(t=>`<span><i style="background:${TIERC[t]}"></i>${TIERN[t]} · ${fmt(counts[t])}</span>`).join("")+`<span><i style="background:#262f44;border:1px solid #333"></i>Empty seat · ${fmt(SEATS-vc)}</span>`}
+function start(){buildOrder();stats();size();play()}
+start();
+addEventListener("resize",()=>{size();draw(order.length)});
+$("replay").onclick=play;
+
+// live counts: every VC moment that isn't retired
+fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/arena_owners.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{
+  if(!d||!d.sets)return;const c={legendary:0,rare:0,fandom:0,common:0};
+  for(const[k,v]of Object.entries(d.sets)){const t=TIER[k];if(!t||!v.f)continue;for(const f of v.f)if(!((f||0)&2))c[t]++}
+  if(c.common>0){counts=c;start()}}).catch(()=>{});
+
+// ---- save a 1600x1000 image for X ----
+$("save").onclick=()=>{const o=document.createElement("canvas");o.width=1600;o.height=1000;const g=o.getContext("2d");
+  g.fillStyle="#0b0d14";g.fillRect(0,0,1600,1000);draw(order.length);
+  const iw=1520,ih=iw*cv.height/cv.width;g.drawImage(cv,40,150,iw,ih);
+  g.fillStyle="#f2f0ea";g.font="900 64px 'Barlow Condensed',sans-serif";g.fillText("EVERY VC MOMENT IN HIGHMARK STADIUM",40,90);
+  const vc=order.length;g.fillStyle="#8a8f9a";g.font="600 30px Barlow,sans-serif";
+  g.fillText(`${fmt(vc)} VC moments left · 60,108 seats · ${Math.round(vc/SEATS*100)}% filled · ${fmt(SEATS-vc)} empty`,40,132);
+  g.fillStyle="#fff";g.font="900 120px 'Barlow Condensed',sans-serif";g.textAlign="center";g.shadowColor="#000";g.shadowBlur=24;
+  g.fillText(Math.round(vc/SEATS*100)+"%",800,150+ih/2+20);g.font="700 28px Barlow,sans-serif";g.fillText("OF THE SEATS FILLED",800,150+ih/2+62);
+  g.shadowBlur=0;g.textAlign="right";g.fillStyle="#f2c94c";g.font="700 26px Barlow,sans-serif";g.fillText("vc15tracker.com",1560,980);
+  const a=document.createElement("a");a.download="vc-highmark.png";a.href=o.toDataURL("image/png");a.click()};
+</script>
+</body>
+</html>
