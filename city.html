@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VC City · VC15 Tracker</title>
+<meta name="description" content="Every Vince Carter Top Shot moment as a home in its own city. Legendary estates on the hill, Archive towers downtown. Retired moments are empty lots.">
+<meta property="og:title" content="VC City: every VC moment is a home">
+<meta property="og:description" content="Legend Hills, Debut Heights, Rare Ridge, Vintage Row and the Archive towers downtown. Every VC moment on Top Shot has an address.">
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d14;--fg:#f2f0ea;--muted:#8a8f9a;--gold:#f2c94c;--line:#2a2d35;--card:#12151e}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:500 16px Barlow,system-ui,sans-serif}
+main{max-width:1200px;margin:0 auto;padding:calc(var(--navh,52px) + 14px) 16px 40px}
+h1{font:900 clamp(30px,5.5vw,56px)/1 'Barlow Condensed',sans-serif;margin:0;text-transform:uppercase}
+h1 b{color:var(--gold)}
+.lede{color:var(--muted);margin:8px 0 12px;font-size:clamp(14px,1.8vw,18px)}
+.wrap{position:relative;background:#070a12;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+canvas{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
+canvas.drag{cursor:grabbing}
+.zoom{position:absolute;right:10px;bottom:10px;display:flex;gap:6px}
+.zoom button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:rgba(18,21,30,.9);color:var(--fg);font:800 20px Barlow,sans-serif;cursor:pointer}
+.zoom button:hover{border-color:var(--gold)}
+@media (max-width:640px){.hint{display:none}}
+.hint{position:absolute;left:12px;bottom:14px;font-size:12px;color:var(--muted);pointer-events:none;text-shadow:0 1px 4px #000}
+#info{position:absolute;left:12px;top:12px;max-width:290px;background:rgba(12,15,22,.94);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px;display:none}
+#info b{font:800 20px 'Barlow Condensed',sans-serif;display:block}
+#info small{color:var(--muted);display:block;margin-top:2px}
+.dist{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:12px}
+.d{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
+.d:hover{border-color:var(--gold)}
+.d b{font:800 19px 'Barlow Condensed',sans-serif;display:flex;align-items:center;gap:7px}
+.d i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.d span{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.d em{font-style:normal;color:var(--fg);font-weight:700}
+.note{color:var(--muted);font-size:13px;margin-top:14px;line-height:1.5}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<main>
+  <h1>Welcome to <b>VC City</b></h1>
+  <p class="lede">Every Vince Carter moment on Top Shot is a home. Legendaries live up in Legend Hills with a view of the whole city, the Archive towers fill downtown, and retired moments leave empty lots behind. Population: <b id="pop" style="color:var(--gold)">15,318</b>.</p>
+  <div class="wrap"><canvas id="c" width="1200" height="760"></canvas>
+    <div id="info"></div>
+    <div class="zoom"><button id="zIn" aria-label="Zoom in">+</button><button id="zOut" aria-label="Zoom out">−</button><button id="zReset" aria-label="Reset view">⟲</button></div>
+    <div class="hint" id="hint">Pinch or scroll to zoom · drag to explore · tap a home</div></div>
+  <div class="dist" id="dist"></div>
+  <p class="note">One home = one VC moment, serial #1 closest to the view. Grey dashed lots are retired (burned) moments. Data from the VC15 Tracker owner scan. Fan-made, not affiliated with NBA Top Shot or Dapper Labs.</p>
+</main>
+<script>
+const $=id=>document.getElementById(id),fmt=n=>n.toLocaleString("en-US");
+// ---- districts (world is 1600 x 1000; the lake is along the bottom, the hills top-right) ----
+const D=[
+ {k:"omega", name:"The Summit",        sub:"Dallas Omega",            tier:"Legendary",col:"#ff4fa3",style:"estate",r:[1430,50,140,110], minted:1},
+ {k:"galac", name:"Galactic Estates",  sub:"Dallas Galactic",         tier:"Legendary",col:"#f4f4f4",style:"estate",r:[1260,50,160,110], minted:5},
+ {k:"dallas",name:"Playoff Point",     sub:"Dallas Standard",         tier:"Legendary",col:"#4aa3ff",style:"estate",r:[1260,170,310,110],minted:44},
+ {k:"cosmic",name:"Cosmic Crest",      sub:"TSD Cosmic",              tier:"Legendary",col:"#a46bff",style:"estate",r:[1060,60,190,160], minted:49},
+ {k:"asg",   name:"All-Star Bluffs",   sub:"ASG Legendary",           tier:"Legendary",col:"#2ec4b6",style:"estate",r:[1060,230,190,150],minted:50},
+ {k:"origin",name:"Origin Lane",       sub:"RIB Origin · Rare",       tier:"Rare",     col:"#c86bff",style:"house", r:[640,250,160,230], minted:269},
+ {k:"rib",   name:"Rare Ridge",        sub:"RIB '05-06 · Rare",       tier:"Rare",     col:"#e8603c",style:"house", r:[810,250,230,230], minted:990},
+ {k:"tsd",   name:"Debut Heights",     sub:"TSD Common (Debut Club)", tier:"Common",   col:"#3fbf6a",style:"house", r:[1060,400,500,460], minted:3336},
+ {k:"fandom",name:"Vintage Vibes Row", sub:"Vintage Vibes · Fandom",  tier:"Fandom",   col:"#ff8fc4",style:"town",  r:[260,520,350,340], minted:951},
+ {k:"archive",name:"Archive Downtown", sub:"Archive Set · Common",    tier:"Common",   col:"#ffd36b",style:"tower", r:[640,500,400,360], minted:10000}];
+const IDX=Object.fromEntries(D.map(d=>[d.k,d]));
+let OWN=null;   // {names, sets:{k:{o:[], f:[]}}}
+
+// lay out homes in a district: a grid (with streets between blocks), serial 1 nearest the view (bottom-left toward the lake & downtown)
+function layout(d){const[x,y,w,h]=d.r,n=d.minted,B=d.style==="tower"?10:d.style==="town"?8:d.style==="house"?6:99,g=d.style==="estate"?0:1.2;
+  let best=null;for(let cols=1;cols<=n;cols++){const rows=Math.ceil(n/cols),Wc=cols+Math.floor((cols-1)/B)*g,Hc=rows+Math.floor((rows-1)/B)*g,cell=Math.min(w/Wc,h/Hc);if(!best||cell>best.cell)best={cols,rows,Wc,Hc,cell};if(rows===1)break}
+  const{cols,cell,Wc,Hc}=best,ox=x+(w-Wc*cell)/2,oy=y+(h-Hc*cell)/2,pos=[];
+  for(let i=0;i<n;i++){const c=i%cols,r=Math.floor(i/cols),rr=best.rows-1-r;   // row 0 = bottom
+    pos.push([ox+(c+Math.floor(c/B)*g+.5)*cell,oy+(rr+Math.floor(rr/B)*g+.5)*cell])}
+  d.pos=pos;d.cell=cell}
+D.forEach(layout);
+
+const cv=$("c"),ctx=cv.getContext("2d");
+const WW=1600,WH=1000;let W,H,scale,ox,oy,Z=1,PX=0,PY=0,DPR=1,NARROW=false;
+function size(){const dpr=Math.min(2,window.devicePixelRatio||1),cw=cv.clientWidth||1200;DPR=dpr;NARROW=cw<700;W=cv.width=Math.round(cw*dpr);H=cv.height=Math.round(cw*dpr*WH/WW);scale=W/WW;ox=0;oy=0}
+const S=()=>scale*Z,TX=x=>ox+PX+x*S(),TY=y=>oy+PY+y*S();
+function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(TX(x),TY(y),w*S(),h*S())}
+
+function ground(){
+  ctx.fillStyle="#0b111c";ctx.fillRect(0,0,W,H);
+  // hills: contour rings
+  for(let i=7;i>=0;i--){ctx.fillStyle=`rgb(${14+i*2},${30+i*5},${24+i*3})`;ctx.beginPath();ctx.ellipse(TX(1360),TY(170),(620-i*62)*S(),(330-i*34)*S(),-.12,0,7);ctx.fill()}
+  // suburbs lawns
+  ctx.fillStyle="#102217";for(const k of["origin","rib","tsd","fandom"]){const r=IDX[k].r;ctx.fillRect(TX(r[0]-6),TY(r[1]-6),(r[2]+12)*S(),(r[3]+12)*S())}
+  // downtown asphalt
+  const a=IDX.archive.r;ctx.fillStyle="#161b26";ctx.fillRect(TX(a[0]-8),TY(a[1]-8),(a[2]+16)*S(),(a[3]+16)*S());
+  // park
+  ctx.fillStyle="#173a24";ctx.beginPath();ctx.roundRect(TX(270),TY(250),340*S(),230*S(),18*S());ctx.fill();
+  ctx.fillStyle="#1d4a2e";for(let i=0;i<26;i++){const px=290+((i*97)%300),py=270+((i*61)%190);ctx.beginPath();ctx.arc(TX(px),TY(py),6*S(),0,7);ctx.fill()}
+  // lake
+  const lg=ctx.createLinearGradient(0,TY(880),0,TY(1000));lg.addColorStop(0,"#0f3558");lg.addColorStop(1,"#0a2440");ctx.fillStyle=lg;ctx.fillRect(0,TY(885),W,H);
+  ctx.strokeStyle="rgba(140,190,255,.18)";ctx.lineWidth=Math.max(1,S()*1.2);for(let i=0;i<10;i++){const y=905+i*10;ctx.beginPath();ctx.moveTo(TX(80+i*130),TY(y));ctx.lineTo(TX(140+i*130),TY(y));ctx.stroke()}
+  // roads
+  ctx.strokeStyle="#262e3d";ctx.lineWidth=Math.max(2,8*S());ctx.lineCap="round";
+  const road=pts=>{ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(TX(x),TY(y)):ctx.moveTo(TX(x),TY(y)));ctx.stroke()};
+  road([[0,875],[1600,875]]);road([[625,240],[625,875]]);road([[1050,40],[1050,875]]);road([[250,505],[1050,505]]);road([[625,240],[1050,240]]);
+  road([[1050,390],[1300,330],[1560,300]]);road([[1050,390],[1600,390]])}
+
+function home(d,i,x,y,burned,lock){const c=d.cell,s=S(),px=c*s;
+  if(burned){if(px>3){ctx.strokeStyle="rgba(150,160,180,.45)";ctx.setLineDash([Math.max(1,px*.15),Math.max(1,px*.12)]);ctx.lineWidth=Math.max(.6,px*.05);ctx.strokeRect(TX(x-c*.38),TY(y-c*.38),c*.76*s,c*.76*s);ctx.setLineDash([])}
+    else rect(x-c*.3,y-c*.3,c*.6,c*.6,"#2a303d");return}
+  if(d.style==="tower"){rect(x-c*.42,y-c*.42,c*.84,c*.84,"#2c3a55");
+    const lit=((i*2654435761)>>>0)%7>1;rect(x-c*.26,y-c*.26,c*.52,c*.52,lit?d.col:"#45506a");return}
+  if(d.style==="town"){rect(x-c*.47,y-c*.4,c*.94,c*.8,d.col);if(px>9)rect(x-c*.47,y-c*.04,c*.94,c*.08,"rgba(0,0,0,.25)");return}
+  if(d.style==="house"){if(px>8)rect(x-c*.48,y-c*.48,c*.96,c*.96,"#173322");rect(x-c*.3,y-c*.3,c*.6,c*.6,d.col);
+    if(px>12){rect(x-c*.3,y-c*.02,c*.6,c*.04,"rgba(0,0,0,.3)");rect(x-c*.08,y+c*.3,c*.16,c*.14,"#c9b38a")}return}
+  // estate: lawn, mansion, pool
+  rect(x-c*.46,y-c*.46,c*.92,c*.92,"#1f5a33");rect(x-c*.3,y-c*.3,c*.42,c*.32,d.col);rect(x-c*.3,y+c*.02,c*.42,c*.02,"rgba(0,0,0,.3)");
+  rect(x+c*.16,y-c*.28,c*.18,c*.26,"#46c6ff");if(px>30){rect(x-c*.06,y+c*.14,c*.4,c*.18,"#2a7a45");rect(x-c*.3,y+c*.3,c*.6,c*.05,"#c9b38a")}}
+
+function labels(){ctx.textAlign="center";ctx.textBaseline="middle";
+  const hide=NARROW&&Z<2.6,lab=(t,cx,cy,fs)=>{ctx.font=`800 ${fs}px 'Barlow Condensed',sans-serif`;ctx.lineWidth=3*DPR;ctx.strokeStyle="rgba(5,7,12,.85)";ctx.strokeText(t,cx,cy);ctx.fillStyle="#fff";ctx.fillText(t,cx,cy)};
+  if(hide)lab("LEGEND HILLS",TX(1310),TY(215),Math.max(10*DPR,Math.min(22*DPR,16*S())));
+  for(const d of D){const[x,y,w,h]=d.r,s=S(),sm=d.style==="estate";if(sm&&hide)continue;
+    let nm=d.name.toUpperCase();if(hide&&d.k==="fandom")nm="VINTAGE ROW";if(hide&&d.k==="archive")nm="DOWNTOWN";if(hide&&d.k==="origin")nm="ORIGIN";if(hide&&d.k==="rib")nm="RARE RIDGE";
+    const fs=Math.max(9*DPR,Math.min((sm?15:22)*DPR,(sm?12:18)*s)),cx=TX(x+w/2),cy=TY(sm?y-8:d.k==="origin"&&hide?y+h*.3:y+h/2);
+    if(cx<-200||cx>W+200||cy<-50||cy>H+50)continue;
+    lab(nm,cx,cy,fs)}
+  const lk=Math.max(9*DPR,Math.min(26*DPR,20*S()));ctx.font=`800 ${lk}px 'Barlow Condensed',sans-serif`;ctx.fillStyle="rgba(170,210,255,.7)";ctx.fillText("LAKE ONTARIO",TX(800),TY(945));
+  ctx.fillStyle="rgba(200,240,210,.55)";ctx.fillText("CARTER PARK",TX(440),TY(365))}
+
+function draw(){ground();
+  for(const d of D){const o=OWN&&OWN.sets[d.k],f=o&&o.f;
+    for(let i=0;i<d.minted;i++){const[x,y]=d.pos[i],sx=TX(x),sy=TY(y),m=d.cell*S();if(sx<-m||sy<-m||sx>W+m||sy>H+m)continue;
+      const fl=f?(f[i]||0):0;home(d,i,x,y,!!(fl&2),!!(fl&1))}}
+  if(sel){const d=IDX[sel.k],[x,y]=d.pos[sel.i],c=d.cell;ctx.strokeStyle="#fff";ctx.lineWidth=2;ctx.strokeRect(TX(x-c*.5)-2,TY(y-c*.5)-2,c*S()+4,c*S()+4)}
+  labels()}
+
+// ---- data: owners + burned/locked flags ----
+function stats(){let pop=0;const rows=D.map(d=>{const f=OWN&&OWN.sets[d.k]&&OWN.sets[d.k].f;let b=0;if(f){for(let i=0;i<d.minted;i++)if((f[i]||0)&2)b++}else b=d.fb||0;pop+=d.minted-b;return[d,b]});
+  $("pop").textContent=fmt(pop);
+  $("dist").innerHTML=rows.map(([d,b])=>`<div class="d" data-k="${d.k}"><b><i style="background:${d.col}"></i>${d.name}</b><span>${d.sub} · <em>${fmt(d.minted-b)}</em> homes${b?` · ${fmt(b)} empty lots`:""}</span></div>`).join("");
+  document.querySelectorAll(".d").forEach(el=>el.onclick=()=>{const d=IDX[el.dataset.k],[x,y,w,h]=d.r;flyTo(x+w/2,y+h/2,Math.min(12,Math.max(1.6,Math.min(WW/(w*1.6),WH/(h*1.6)))));cv.scrollIntoView({behavior:"smooth",block:"center"})})}
+const FB={archive:329,rib:38,origin:6,fandom:2,tsd:1,dallas:1};D.forEach(d=>d.fb=FB[d.k]||0);   // fallback burns (Nov 2026)
+
+// ---- zoom & pan ----
+const ZMAX=40;
+function clampPan(){const minX=W-WW*S(),minY=H-WH*S();PX=Math.min(0,Math.max(minX,PX));PY=Math.min(0,Math.max(minY,PY))}
+function zoomAt(f,mx,my){const nz=Math.max(1,Math.min(ZMAX,Z*f)),k=nz/Z;PX=mx-(mx-PX)*k;PY=my-(my-PY)*k;Z=nz;clampPan();draw();$("hint").style.display="none"}
+function flyTo(wx,wy,z){const z0=Z,p0=[PX,PY],t0=performance.now();
+  const tx=W/2-wx*scale*z,ty=H/2-wy*scale*z;
+  const step=now=>{const k=Math.min(1,(now-t0)/600),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;Z=z0+(z-z0)*e;PX=p0[0]+(tx-p0[0])*e;PY=p0[1]+(ty-p0[1])*e;clampPan();draw();if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
+const toCv=(cx,cy)=>{const b=cv.getBoundingClientRect();return[(cx-b.left)*W/b.width,(cy-b.top)*H/b.height]};
+cv.addEventListener("wheel",e=>{e.preventDefault();const[x,y]=toCv(e.clientX,e.clientY);zoomAt(Math.exp(-e.deltaY*.0015),x,y)},{passive:false});
+const ptr=new Map();let pinch=0,moved=0;
+cv.addEventListener("pointerdown",e=>{cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);moved=0;cv.classList.add("drag")});
+cv.addEventListener("pointermove",e=>{if(!ptr.has(e.pointerId))return;const prev=ptr.get(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);
+  const b=cv.getBoundingClientRect(),sx=W/b.width;moved+=Math.abs(e.clientX-prev[0])+Math.abs(e.clientY-prev[1]);
+  if(ptr.size===2){const[a,c]=[...ptr.values()],dist=Math.hypot(a[0]-c[0],a[1]-c[1]);if(pinch){const[mx,my]=toCv((a[0]+c[0])/2,(a[1]+c[1])/2);zoomAt(dist/pinch,mx,my)}pinch=dist;moved=99}
+  else if(ptr.size===1&&Z>1){PX+=(e.clientX-prev[0])*sx;PY+=(e.clientY-prev[1])*sx;clampPan();draw()}});
+const up=e=>{const wasTap=ptr.size===1&&moved<6;ptr.delete(e.pointerId);if(ptr.size<2)pinch=0;if(!ptr.size)cv.classList.remove("drag");if(wasTap)tap(e)};
+cv.addEventListener("pointerup",up);cv.addEventListener("pointercancel",e=>{ptr.delete(e.pointerId);pinch=0});
+$("zIn").onclick=()=>zoomAt(1.8,W/2,H/2);$("zOut").onclick=()=>zoomAt(1/1.8,W/2,H/2);$("zReset").onclick=()=>{Z=1;PX=PY=0;sel=null;$("info").style.display="none";draw()};
+
+// ---- tap a home ----
+let sel=null;
+function tap(e){const[mx,my]=toCv(e.clientX,e.clientY),wx=(mx-PX)/S(),wy=(my-PY)/S();let best=null;
+  for(const d of D){const[x,y,w,h]=d.r;if(wx<x-20||wx>x+w+20||wy<y-20||wy>y+h+20)continue;
+    for(let i=0;i<d.minted;i++){const[px,py]=d.pos[i],dd=Math.hypot(px-wx,py-wy);if(dd<d.cell*.7&&(!best||dd<best.dd))best={k:d.k,i,dd}}}
+  const box=$("info");if(!best){sel=null;box.style.display="none";draw();return}
+  sel=best;const d=IDX[best.k],o=OWN&&OWN.sets[d.k],fl=o?(o.f[best.i]||0):0,oi=o?o.o[best.i]:-1;
+  const who=fl&2?"Retired (empty lot)":fl&4?"Still in a sealed pack 📦":oi!=null&&oi>=0&&OWN.names[oi]?OWN.names[oi]:"—";
+  box.innerHTML=`<b>${d.name} · #${best.i+1}</b><small>${d.sub} · ${d.tier}</small><div style="margin-top:6px">${fl&2?"🪦":"🏠"} ${esc(who)}${fl&1&&!(fl&2)?" · 🔒 locked":""}</div>`;
+  box.style.display="block";if(Z<3)zoomAt(3.2,mx,my);else draw()}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+size();stats();draw();
+addEventListener("resize",()=>{size();clampPan();draw()});
+fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/arena_owners.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{
+  if(!d||!d.sets)return;OWN={names:d.names||[],sets:{}};for(const[k,v]of Object.entries(d.sets))OWN.sets[k]={o:v.o||[],f:v.f||[]};stats();draw()}).catch(()=>{});
+if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body>
+</html>
