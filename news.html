@@ -71,7 +71,7 @@ footer{text-align:center;color:var(--muted);font:800 13px 'Barlow Condensed',san
 <header><h1>TOP SHOT <b>NEWS</b></h1></header>
 <p class="sub">What NBA Top Shot has announced, checked off as it happens. Here to help the community keep up, and help the team keep track.</p>
 <main>
-  <div class="sect" id="sect"><button data-s="news" class="on">📰 Announcements</button><button data-s="fb">💬 Community feedback</button><button data-s="cal">📅 Calendar</button></div>
+  <div class="sect" id="sect"><button data-s="cal" class="on">📅 Calendar</button><button data-s="news">📰 Announcements</button><button data-s="fb">💬 Community feedback</button></div>
   <div class="sum" id="sum"></div>
   <div class="tabs" id="tabs"></div>
   <div id="list"></div>
@@ -83,7 +83,7 @@ footer{text-align:center;color:var(--muted);font:800 13px 'Barlow Condensed',san
 "use strict";
 const ST={done:["✅ Delivered","var(--green)"],partial:["<i class=\"half\"></i>Partly delivered","#ff922b"],progress:["🟡 In progress","var(--gold)"],coming:["🔵 Coming up","var(--blue)"],checking:["❔ Checking","var(--purple)"]};
 const FB={done:["✅ Done","var(--green)"],partial:["<i class=\"half\"></i>Partly done","#ff922b"],working:["🛠️ Being worked on","var(--gold)"],heard:["🆕 Heard","var(--blue)"],notplanned:["⏸️ Not planned","var(--muted)"]};
-let SEC="news";
+let SEC="cal";
 const PRI={urgent:"🚨 Urgent",important:"⚠️ Important",canwait:"🕒 Can wait"};
 const yrs=(a,b)=>{const d=(Date.parse(b)-Date.parse(a))/864e5;if(!(d>=0))return "";return d<45?Math.max(1,Math.round(d))+" days":d<540?Math.round(d/30.4)+" months":(d/365.25).toFixed(d<3650?1:0).replace(/\.0$/,"")+" years"};
 const FALLBACK={updated:"2026-10-31",items:[]};
@@ -130,6 +130,7 @@ function saveImg(x,lab,col,kind){const W=1200,H=675,c=document.createElement("ca
   c.toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=(x.title.replace(/[^a-z0-9]+/gi,"-").toLowerCase()||"vc15")+".png";document.body.appendChild(a);a.click();a.remove()},"image/png")}
 document.getElementById("list").addEventListener("click",e=>{const b=e.target.closest("[data-save]");if(!b)return;e.stopPropagation();const[k,i]=b.dataset.save.split(":"),x=(k==="f"?DATA.feedback:DATA.items)[+i],[l,c]=(k==="f"?FB:ST)[x.status]||["",""];document.fonts&&document.fonts.ready.then(()=>saveImg(x,l,c,k))},true);
 if(location.hash==="#feedback")SEC="fb";
+if(location.hash==="#announcements"||location.hash==="#news")SEC="news";
 if(location.hash==="#calendar")SEC="cal";
 // ---------------- 📅 Calendar ----------------
 // kinds: vc = Vince Carter anniversary (repeats yearly), moment = the play behind a VC Top Shot moment (yearly),
