@@ -1,0 +1,419 @@
+{
+ "updated": "2026-11-04",
+ "events": [
+  {
+   "date": "1977-01-26",
+   "kind": "vc",
+   "title": "Vince Carter's birthday",
+   "detail": "Born in Daytona Beach, Florida.",
+   "repeat": true
+  },
+  {
+   "date": "1998-06-24",
+   "kind": "vc",
+   "title": "Draft night",
+   "detail": "Picked 5th overall by Golden State, then traded to Toronto for Antawn Jamison.",
+   "repeat": true
+  },
+  {
+   "date": "1999-02-05",
+   "kind": "vc",
+   "title": "NBA debut",
+   "detail": "16 points in a 103-92 Raptors win at Boston after the lockout.",
+   "repeat": true
+  },
+  {
+   "date": "1999-03-13",
+   "kind": "moment",
+   "title": "RIB Origin moment",
+   "detail": "The play behind VC's RIB Origins Rare (269 minted).",
+   "repeat": true
+  },
+  {
+   "date": "2000-02-12",
+   "kind": "vc",
+   "title": "Slam Dunk Contest champion",
+   "detail": "The greatest dunk contest ever. Also the date of his ASG Legendary moment.",
+   "repeat": true
+  },
+  {
+   "date": "2000-09-25",
+   "kind": "vc",
+   "title": "The dunk over Fr\u00e9d\u00e9ric Weis",
+   "detail": "Sydney Olympics: 'le dunk de la mort' over the 7-foot-2 French center.",
+   "repeat": true
+  },
+  {
+   "date": "2004-12-17",
+   "kind": "vc",
+   "title": "Traded to the Nets",
+   "detail": "Toronto sends Vince to New Jersey.",
+   "repeat": true
+  },
+  {
+   "date": "2005-11-07",
+   "kind": "moment",
+   "title": "RIB '05-06 moment",
+   "detail": "The play behind VC's Run It Back 2005-06 Rare (990 minted).",
+   "repeat": true
+  },
+  {
+   "date": "2005-12-21",
+   "kind": "moment",
+   "title": "Vintage Vibes moment",
+   "detail": "The play behind VC's Vintage Vibes Fandom (951 minted).",
+   "repeat": true
+  },
+  {
+   "date": "2006-02-08",
+   "kind": "moment",
+   "title": "Archive moment",
+   "detail": "The play behind VC's Archive Set (10,000 minted).",
+   "repeat": true
+  },
+  {
+   "date": "2014-04-26",
+   "kind": "moment",
+   "title": "Dallas playoff game-winner",
+   "detail": "The play behind VC's Dallas Standard, Galactic and Omega moments.",
+   "repeat": true
+  },
+  {
+   "date": "2020-03-11",
+   "kind": "vc",
+   "title": "His final game",
+   "detail": "Last shot of a 22-season career, the night the NBA shut down. The play behind his TSD and Cosmic moments.",
+   "repeat": true
+  },
+  {
+   "date": "2020-06-25",
+   "kind": "vc",
+   "title": "Retirement announced",
+   "detail": "'I'm officially done playing basketball professionally.'",
+   "repeat": true
+  },
+  {
+   "date": "2024-04-06",
+   "kind": "vc",
+   "title": "Hall of Fame class announced",
+   "detail": "Named to the Naismith Hall of Fame class of 2024.",
+   "repeat": true
+  },
+  {
+   "date": "2024-10-12",
+   "kind": "vc",
+   "title": "Hall of Fame enshrinement",
+   "detail": "Enshrined in Springfield, Massachusetts.",
+   "repeat": true
+  },
+  {
+   "date": "2024-11-02",
+   "kind": "vc",
+   "title": "Raptors retire #15",
+   "detail": "The first jersey the Raptors ever retired.",
+   "repeat": true
+  },
+  {
+   "date": "2026-11-04",
+   "kind": "ts",
+   "title": "Set leaderboard snapshot (12 PM ET)",
+   "detail": "#1 on any of the 12 Rookie Debut, Season Tip-Off or Fresh Threads set leaderboards gets a guaranteed Case and Box order. Locked moments count.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-04",
+   "kind": "ts",
+   "title": "Case trade-in auction opens (3 PM ET)",
+   "detail": "Bid with Rookie Debut moments from any season. Top bid (by total average sale price) wins a Case. Closes Fri, Nov 6 at 2:30 PM ET.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-04",
+   "kind": "ts",
+   "title": "Lendeborg Tip-Off Pack pre-order (until 7 PM ET)",
+   "detail": "1,450 packs \u00b7 $10. Chase Yaxel Lendeborg's /5 and /500 Rookie Debut, LaMelo's /99 Timberwolves debut and Haliburton's /199 return.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-04",
+   "kind": "ts",
+   "title": "Lendeborg trade-in auction closes (7 PM ET)",
+   "detail": "Bid any NBA Rookie Debut, or a Haliburton/LaMelo Top Shot Debut, Rare or better. Top 25 bidders win 2 Tip-Off Packs.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-05",
+   "kind": "ts",
+   "title": "Quests + early access open (3 PM ET)",
+   "detail": "Claim your quests: complete a Rookie Debut, Season Tip-Off or Fresh Threads set, lock a Starting Five, or lock an NBA Ultimate. First to claim get guaranteed orders.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-06",
+   "kind": "ts",
+   "title": "Case trade-in auction closes (2:30 PM ET)",
+   "detail": "Last chance to bid Rookie Debut moments for the Case.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-09",
+   "kind": "ts",
+   "title": "Luka trade-in ends (3 PM ET)",
+   "detail": "Top Shot This: Luka Don\u010di\u0107. Every $10 of Luka moments traded in earns a pack.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-09",
+   "kind": "give",
+   "title": "Bills at Vikings",
+   "detail": "8:15 PM ET \u00b7 Monday Night Football \u00b7 score predictor giveaway on X",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-10",
+   "kind": "ts",
+   "title": "Public pre-orders open (3 PM ET)",
+   "detail": "Anyone can order: Case $2,500 \u00b7 Box $250 \u00b7 Collector Pack $39.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-11",
+   "kind": "ts",
+   "title": "Rookie Debut drop day",
+   "detail": "Ordering closes: Case 3 PM, Box 4 PM, Collector Pack 5 PM ET. Drop-day trade-in auction 11 AM to 6 PM ET (top 50 win 2 AJ Dybantsa Overtime Packs). Trade Ticket Pack on sale 3:30 PM ET.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-11",
+   "kind": "ts",
+   "title": "Season Tip-Off set challenge begins",
+   "detail": "Lock a moment of every player in Season Tip-Off by Jan 4 to earn the Jalen Brunson banner-night moment.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-12",
+   "kind": "ts",
+   "title": "Collector Pack trade-in auction (3 PM ET)",
+   "detail": "Bid with Rookie Debut moments from previous seasons. Top 50 bids (by number of moments) each win a Collector Pack. Closes Fri, Nov 13 at 2:30 PM ET.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-12",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-13",
+   "kind": "ts",
+   "title": "Collector Pack trade-in auction closes (2:30 PM ET)",
+   "detail": "Last chance to bid older Rookie Debut moments.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-13",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-14",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-15",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-15",
+   "kind": "give",
+   "title": "Bills at Jets",
+   "detail": "1:00 PM ET \u00b7 score predictor giveaway on X",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "ts",
+   "title": "Fast Break Run 3 starts",
+   "detail": "Pro theme: Origins, Equinox, Mojo, Deck the Hoops. Runs to Nov 29."
+  },
+  {
+   "date": "2026-11-17",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-18",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-19",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-20",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-21",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-22",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-22",
+   "kind": "give",
+   "title": "Dolphins at Bills",
+   "detail": "1:00 PM ET \u00b7 score predictor giveaway on X",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-23",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-24",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-25",
+   "kind": "ts",
+   "title": "Rookie Debut Overtime Packs (3 PM ET)",
+   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-26",
+   "kind": "give",
+   "title": "Chiefs at Bills",
+   "detail": "8:20 PM ET \u00b7 Thanksgiving \u00b7 score predictor giveaway on X",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-30",
+   "kind": "ts",
+   "title": "Fast Break Run 4 starts",
+   "detail": "Runs to Dec 16."
+  },
+  {
+   "date": "2026-12-06",
+   "kind": "give",
+   "title": "Bills at Patriots",
+   "detail": "4:25 PM ET \u00b7 score predictor giveaway on X",
+   "repeat": false
+  },
+  {
+   "date": "2026-12-13",
+   "kind": "give",
+   "title": "Bills at Packers",
+   "detail": "8:20 PM ET \u00b7 Sunday Night Football \u00b7 score predictor giveaway on X",
+   "repeat": false
+  },
+  {
+   "date": "2026-12-16",
+   "kind": "ts",
+   "title": "Origins drop",
+   "detail": "From the Top Shot 2026-27 roadmap."
+  },
+  {
+   "date": "2026-12-17",
+   "kind": "ts",
+   "title": "Fast Break Run 5 starts",
+   "detail": "2026 Lookback + Deck the Hoops. Runs to Dec 30."
+  },
+  {
+   "date": "2026-12-19",
+   "kind": "give",
+   "title": "Bears at Bills",
+   "detail": "8:20 PM ET \u00b7 score predictor giveaway on X",
+   "repeat": false
+  },
+  {
+   "date": "2026-12-25",
+   "kind": "give",
+   "title": "Bills at Broncos",
+   "detail": "4:30 PM ET \u00b7 Christmas \u00b7 score predictor giveaway on X",
+   "repeat": false
+  },
+  {
+   "date": "2026-12-25",
+   "kind": "ts",
+   "title": "Christmas drop",
+   "detail": "From the Top Shot 2026-27 roadmap."
+  },
+  {
+   "date": "2026-12-31",
+   "kind": "goal",
+   "title": "2026 supply goal deadline",
+   "detail": "Retire more VC moments than were minted in 2026.",
+   "repeat": false
+  },
+  {
+   "date": "2027-01-03",
+   "kind": "give",
+   "title": "Bills at Dolphins",
+   "detail": "1:00 PM ET \u00b7 score predictor giveaway on X",
+   "repeat": false
+  },
+  {
+   "date": "2027-01-04",
+   "kind": "ts",
+   "title": "Season Tip-Off challenge ends (11 PM ET)",
+   "detail": "Last day to lock every Season Tip-Off player for the Jalen Brunson reward. First 5 finishers get the Jukebox /10, next 10 the Hexwave /25.",
+   "repeat": false
+  },
+  {
+   "date": "2027-01-10",
+   "kind": "give",
+   "title": "Jets at Bills",
+   "detail": "Time TBD \u00b7 score predictor giveaway on X",
+   "repeat": false
+  },
+  {
+   "date": "2027-03-30",
+   "kind": "ts",
+   "title": "Fast Break Finals begin",
+   "detail": "Invite only, Mar 30 to Apr 11."
+  }
+ ]
+}
