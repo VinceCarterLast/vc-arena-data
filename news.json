@@ -1,67 +1,75 @@
 {
-  "updated": "2026-10-31",
-  "items": [
-    {
-      "date": "2026-10-30",
-      "title": "Top Shot This: Luka Dončić",
-      "promise": "Trade in Luka Moments all week (Nov 2 to 8). Every $10 traded in earns a pack of his 52-point, 10-assist night. No cap. Packs delivered Nov 9, with /25, /10 and /5 parallels to chase.",
-      "status": "coming",
-      "due": "2026-11-09",
-      "note": "A trade-in event that also reduces supply. We'll check off pack delivery on Nov 9.",
-      "source": "@NBATopShot on X"
-    },
-    {
-      "date": "2026-10-01",
-      "title": "October: a month full of giveaways",
-      "promise": "Top Shot said October would be a month full of giveaways.",
-      "status": "progress",
-      "due": "2026-10-31",
-      "note": "1 giveaway spotted so far. Did we miss one? Tell @VC15Tracker and we'll add it.",
-      "source": "@NBATopShot on X"
-    },
-    {
-      "date": "2026-10-27",
-      "title": "Dapper maintenance and upgrades",
-      "promise": "Up to 48 hours of maintenance for better performance and future improvements, finishing Thursday Oct 29, 9 AM PT.",
-      "status": "done",
-      "due": "2026-10-29",
-      "note": "Back online Oct 29. A bit slow at first while things warm up.",
-      "source": "Dapper status page"
-    },
-    {
-      "date": "2025-10-14",
-      "title": "Referral program: public referral links",
-      "promise": "Anyone can earn 10% on referred sales (Elite partners 15%), with tracking tools for referrers.",
-      "status": "checking",
-      "due": "",
-      "note": "We couldn't find the referral link in the app yet. Feedback sent to the team.",
-      "source": "blog.nbatopshot.com"
-    }
-  ],
-  "feedback": [
-    {
-      "date": "2026-10-30",
-      "title": "Make the referral link easy to find",
-      "request": "Add a \"Refer & Earn\" link in the menu or profile, with a copy-link button and a page showing referrals and earnings.",
-      "status": "heard",
-      "note": "Sent through Top Shot's feedback channel.",
-      "response": ""
-    },
-    {
-      "date": "2026-10-30",
-      "title": "Show new users they're joining with an invite",
-      "request": "When someone opens a referral link, show a banner like \"You're joining with [username]'s invite\" through sign-up, so both sides know it counted.",
-      "status": "heard",
-      "note": "Sent through Top Shot's feedback channel.",
-      "response": ""
-    },
-    {
-      "date": "2026-10-01",
-      "title": "Reduce supply of older moments",
-      "request": "Collectors want ways to retire older moments, such as trade-in and crafting events, so the moments they hold get scarcer.",
-      "status": "working",
-      "note": "Related: Top Shot This trade-in events, starting with Luka (Nov 2 to 8).",
-      "response": ""
-    }
-  ]
+ "updated": "2026-11-04",
+ "items": [
+  {
+   "date": "2026-10-21",
+   "title": "Points Store: changes coming",
+   "status": "progress",
+   "promise": "The Points Store isn't gone. Top Shot is working with partners on changes they believe will be beneficial overall, and didn't want to rush it back out before it's ready. More information to come.",
+   "note": "\"It's not done… working with our partners on a few changes… There'll be more information to come. Hang tight… There's some cool stuff.\" Matt (Vinyls), Coffee with Coultin, Oct 21 (58:51)",
+   "source": "Coffee with Coultin, Oct 21 (58:51)"
+  },
+  {
+   "date": "2026-10-30",
+   "title": "Top Shot This: Luka Dončić",
+   "promise": "Trade in Luka Moments all week (Nov 2 to 8). Every $10 traded in earns a pack of his 52-point, 10-assist night. No cap. Packs delivered Nov 9, with /25, /10 and /5 parallels to chase.",
+   "status": "coming",
+   "due": "2026-11-09",
+   "note": "A trade-in event that also reduces supply. We'll check off pack delivery on Nov 9.",
+   "source": "@NBATopShot on X"
+  },
+  {
+   "date": "2026-10-01",
+   "title": "October: a month full of giveaways",
+   "promise": "Top Shot said October would be a month full of giveaways.",
+   "status": "progress",
+   "due": "2026-10-31",
+   "note": "1 giveaway spotted so far. Did we miss one? Tell @VC15Tracker and we'll add it.",
+   "source": "@NBATopShot on X"
+  },
+  {
+   "date": "2026-10-27",
+   "title": "Dapper maintenance and upgrades",
+   "promise": "Up to 48 hours of maintenance for better performance and future improvements, finishing Thursday Oct 29, 9 AM PT.",
+   "status": "done",
+   "due": "2026-10-29",
+   "note": "Back online Oct 29. A bit slow at first while things warm up.",
+   "source": "Dapper status page"
+  },
+  {
+   "date": "2025-10-14",
+   "title": "Referral program: public referral links",
+   "promise": "Anyone can earn 10% on referred sales (Elite partners 15%), with tracking tools for referrers.",
+   "status": "checking",
+   "due": "",
+   "note": "We couldn't find the referral link in the app yet. Feedback sent to the team.",
+   "source": "blog.nbatopshot.com"
+  }
+ ],
+ "feedback": [
+  {
+   "date": "2026-10-30",
+   "title": "Make the referral link easy to find",
+   "request": "Add a \"Refer & Earn\" link in the menu or profile, with a copy-link button and a page showing referrals and earnings.",
+   "status": "heard",
+   "note": "Sent through Top Shot's feedback channel.",
+   "response": ""
+  },
+  {
+   "date": "2026-10-30",
+   "title": "Show new users they're joining with an invite",
+   "request": "When someone opens a referral link, show a banner like \"You're joining with [username]'s invite\" through sign-up, so both sides know it counted.",
+   "status": "heard",
+   "note": "Sent through Top Shot's feedback channel.",
+   "response": ""
+  },
+  {
+   "date": "2026-10-01",
+   "title": "Reduce supply of older moments",
+   "request": "Collectors want ways to retire older moments, such as trade-in and crafting events, so the moments they hold get scarcer.",
+   "status": "working",
+   "note": "Related: Top Shot This trade-in events, starting with Luka (Nov 2 to 8).",
+   "response": ""
+  }
+ ]
 }
