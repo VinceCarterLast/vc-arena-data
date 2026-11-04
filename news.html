@@ -43,6 +43,26 @@ main{max-width:900px;margin:0 auto;padding:0 16px 40px}
 .how{margin-top:20px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;color:var(--muted);line-height:1.5}
 .how b{color:var(--fg)}
 footer{text-align:center;color:var(--muted);font:800 13px 'Barlow Condensed',sans-serif;letter-spacing:.08em;padding:0 0 30px}
+.cal{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
+.calh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.calh b{font:900 26px 'Barlow Condensed',sans-serif}
+.calh button{background:#1b2032;border:1px solid var(--line);color:var(--fg);border-radius:10px;width:40px;height:36px;font:800 18px Barlow,sans-serif;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.dow{font:700 11px Barlow,sans-serif;color:var(--muted);text-align:center;padding:2px 0;letter-spacing:.06em}
+.day{min-height:62px;background:#0f1320;border:1px solid var(--line);border-radius:9px;padding:4px 5px;cursor:pointer;position:relative}
+.day.out{opacity:.25;cursor:default}.day.today{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}.day.sel{background:#232a40}
+.day .n{font:700 13px Barlow,sans-serif;color:var(--muted)}.day.today .n{color:var(--gold)}
+.day .ic{font-size:14px;line-height:1.15;word-break:break-all}
+@media (max-width:600px){.day{min-height:50px;padding:3px}.day .ic{font-size:12px}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin:10px 2px 0}
+.ev{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;padding:11px 14px;margin-bottom:8px}
+.ev .d{font:700 12.5px Barlow,sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.ev h3{margin:3px 0 0;font:800 20px 'Barlow Condensed',sans-serif}.ev p{margin:5px 0 0;color:#cfcbd8;line-height:1.4}
+.ev .yrs{display:inline-block;margin-left:6px;font:800 12px Barlow,sans-serif;color:#1b1608;background:var(--gold);border-radius:20px;padding:2px 8px;vertical-align:2px}
+.otd{background:linear-gradient(90deg,#3a2f0c,#141826);border:1px solid #6b5716;border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.otd b{color:var(--gold);font:900 15px Barlow,sans-serif;letter-spacing:.08em}.otd h3{margin:4px 0 0;font:900 24px 'Barlow Condensed',sans-serif}
+.listh{font:900 20px 'Barlow Condensed',sans-serif;margin:14px 2px 8px}
+@media (max-width:600px){.sect{gap:6px}.sect button{min-width:0;font-size:14px;padding:9px 4px;line-height:1.15}}
+.sect button{min-width:0}
 </style>
 </head>
 <body>
@@ -51,7 +71,7 @@ footer{text-align:center;color:var(--muted);font:800 13px 'Barlow Condensed',san
 <header><h1>TOP SHOT <b>NEWS</b></h1></header>
 <p class="sub">What NBA Top Shot has announced, checked off as it happens. Here to help the community keep up, and help the team keep track.</p>
 <main>
-  <div class="sect" id="sect"><button data-s="news" class="on">📰 Announcements</button><button data-s="fb">💬 Community feedback</button></div>
+  <div class="sect" id="sect"><button data-s="news" class="on">📰 Announcements</button><button data-s="fb">💬 Community feedback</button><button data-s="cal">📅 Calendar</button></div>
   <div class="sum" id="sum"></div>
   <div class="tabs" id="tabs"></div>
   <div id="list"></div>
@@ -73,6 +93,7 @@ let DATA=FALLBACK,tab="all";
 function render(){
   document.querySelectorAll("#sect button").forEach(b=>{b.classList.toggle("on",b.dataset.s===SEC);b.onclick=()=>{SEC=b.dataset.s;tab="all";render()}});
   document.getElementById("howFb").hidden=SEC!=="fb";document.getElementById("howNews").hidden=SEC!=="news";
+  if(SEC==="cal")return renderCal();
   if(SEC==="fb")return renderFb();
   const it=DATA.items||[],cnt=k=>it.filter(x=>x.status===k).length;
   document.getElementById("sum").innerHTML=Object.entries(ST).map(([k,[l]])=>`<div><b>${cnt(k)}</b><span>${l}</span></div>`).join("");
@@ -109,6 +130,73 @@ function saveImg(x,lab,col,kind){const W=1200,H=675,c=document.createElement("ca
   c.toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=(x.title.replace(/[^a-z0-9]+/gi,"-").toLowerCase()||"vc15")+".png";document.body.appendChild(a);a.click();a.remove()},"image/png")}
 document.getElementById("list").addEventListener("click",e=>{const b=e.target.closest("[data-save]");if(!b)return;e.stopPropagation();const[k,i]=b.dataset.save.split(":"),x=(k==="f"?DATA.feedback:DATA.items)[+i],[l,c]=(k==="f"?FB:ST)[x.status]||["",""];document.fonts&&document.fonts.ready.then(()=>saveImg(x,l,c,k))},true);
 if(location.hash==="#feedback")SEC="fb";
+if(location.hash==="#calendar")SEC="cal";
+// ---------------- 📅 Calendar ----------------
+// kinds: vc = Vince Carter anniversary (repeats yearly), moment = the play behind a VC Top Shot moment (yearly),
+// ts = Top Shot event, give = our giveaways (Bills game days), goal = supply goals. More can be added in news.json -> "calendar".
+const CK={vc:["🏀","VC anniversary","#f2c94c"],moment:["🎞️","VC moment day","#ff8fc4"],ts:["🎟️","Top Shot","#4dabf7"],give:["🏈","Giveaway day","#3ee07f"],goal:["🎯","Supply goal","#b197fc"]};
+const CAL=[
+ {d:"1977-01-26",k:"vc",t:"Vince Carter's birthday",x:"Born in Daytona Beach, Florida."},
+ {d:"1998-06-24",k:"vc",t:"Draft night",x:"Picked 5th overall by Golden State, then traded to Toronto for Antawn Jamison."},
+ {d:"1999-02-05",k:"vc",t:"NBA debut",x:"16 points in a 103-92 Raptors win at Boston after the lockout."},
+ {d:"2000-02-12",k:"vc",t:"Slam Dunk Contest champion",x:"The greatest dunk contest ever. Also the date of his ASG Legendary moment."},
+ {d:"2000-09-25",k:"vc",t:"The dunk over Frédéric Weis",x:"Sydney Olympics: 'le dunk de la mort' over the 7-foot-2 French center."},
+ {d:"2004-12-17",k:"vc",t:"Traded to the Nets",x:"Toronto sends Vince to New Jersey."},
+ {d:"2020-03-11",k:"vc",t:"His final game",x:"Last shot of a 22-season career, the night the NBA shut down. The play behind his TSD and Cosmic moments."},
+ {d:"2020-06-25",k:"vc",t:"Retirement announced",x:"'I'm officially done playing basketball professionally.'"},
+ {d:"2024-04-06",k:"vc",t:"Hall of Fame class announced",x:"Named to the Naismith Hall of Fame class of 2024."},
+ {d:"2024-10-12",k:"vc",t:"Hall of Fame enshrinement",x:"Enshrined in Springfield, Massachusetts."},
+ {d:"2024-11-02",k:"vc",t:"Raptors retire #15",x:"The first jersey the Raptors ever retired."},
+ {d:"1999-03-13",k:"moment",t:"RIB Origin moment",x:"The play behind VC's RIB Origins Rare (269 minted)."},
+ {d:"2005-11-07",k:"moment",t:"RIB '05-06 moment",x:"The play behind VC's Run It Back 2005-06 Rare (990 minted)."},
+ {d:"2005-12-21",k:"moment",t:"Vintage Vibes moment",x:"The play behind VC's Vintage Vibes Fandom (951 minted)."},
+ {d:"2006-02-08",k:"moment",t:"Archive moment",x:"The play behind VC's Archive Set (10,000 minted)."},
+ {d:"2014-04-26",k:"moment",t:"Dallas playoff game-winner",x:"The play behind VC's Dallas Standard, Galactic and Omega moments."},
+ {d:"2026-11-04",k:"ts",t:"Set leaderboard snapshot (12 PM ET)",x:"#1 on any of the 12 Rookie Debut, Season Tip-Off or Fresh Threads set leaderboards gets a guaranteed Case and Box order. Locked moments count.",once:1},
+ {d:"2026-11-04",k:"ts",t:"Case trade-in auction opens (3 PM ET)",x:"Bid with Rookie Debut moments from any season. Top bid (by total average sale price) wins a Case. Closes Fri, Nov 6 at 2:30 PM ET.",once:1},
+ {d:"2026-11-05",k:"ts",t:"Quests + early access open (3 PM ET)",x:"Claim your quests: complete a Rookie Debut, Season Tip-Off or Fresh Threads set, lock a Starting Five, or lock an NBA Ultimate. First to claim get guaranteed orders.",once:1},
+ {d:"2026-11-06",k:"ts",t:"Case trade-in auction closes (2:30 PM ET)",x:"Last chance to bid Rookie Debut moments for the Case.",once:1},
+ {d:"2026-11-10",k:"ts",t:"Public pre-orders open (3 PM ET)",x:"Anyone can order: Case $2,500 · Box $250 · Collector Pack $39.",once:1},
+ {d:"2026-11-11",k:"ts",t:"Rookie Debut drop day",x:"Ordering closes: Case 3 PM, Box 4 PM, Collector Pack 5 PM ET. Drop-day trade-in auction 11 AM to 6 PM ET (top 50 win 2 AJ Dybantsa Overtime Packs). Trade Ticket Pack on sale 3:30 PM ET.",once:1},
+ {d:"2026-11-11",k:"ts",t:"Season Tip-Off set challenge begins",x:"Lock a moment of every player in Season Tip-Off by Jan 4 to earn the Jalen Brunson banner-night moment.",once:1},
+ {d:"2026-11-12",k:"ts",t:"Collector Pack trade-in auction (3 PM ET)",x:"Bid with Rookie Debut moments from previous seasons. Top 50 bids (by number of moments) each win a Collector Pack. Closes Fri, Nov 13 at 2:30 PM ET.",once:1},
+ {d:"2026-11-13",k:"ts",t:"Collector Pack trade-in auction closes (2:30 PM ET)",x:"Last chance to bid older Rookie Debut moments.",once:1},
+ ...Array.from({length:14},(_,i)=>({d:`2026-11-${String(12+i).padStart(2,"0")}`,k:"ts",t:"Rookie Debut Overtime Packs (3 PM ET)",x:"$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",once:1})),
+ {d:"2027-01-04",k:"ts",t:"Season Tip-Off challenge ends (11 PM ET)",x:"Last day to lock every Season Tip-Off player for the Jalen Brunson reward. First 5 finishers get the Jukebox /10, next 10 the Hexwave /25.",once:1},
+ {d:"2026-11-09",k:"ts",t:"Luka trade-in ends (3 PM ET)",x:"Top Shot This: Luka Dončić. Every $10 of Luka moments traded in earns a pack.",once:1},
+ {d:"2026-12-31",k:"goal",t:"2026 supply goal deadline",x:"Retire more VC moments than were minted in 2026.",once:1},
+ ...[["2026-11-09","Bills at Vikings","8:15 PM ET · Monday Night Football"],["2026-11-15","Bills at Jets","1:00 PM ET"],["2026-11-22","Dolphins at Bills","1:00 PM ET"],
+     ["2026-11-26","Chiefs at Bills","8:20 PM ET · Thanksgiving"],["2026-12-06","Bills at Patriots","4:25 PM ET"],["2026-12-13","Bills at Packers","8:20 PM ET · Sunday Night Football"],
+     ["2026-12-19","Bears at Bills","8:20 PM ET"],["2026-12-25","Bills at Broncos","4:30 PM ET · Christmas"],["2027-01-03","Bills at Dolphins","1:00 PM ET"],["2027-01-10","Jets at Bills","Time TBD"]]
+   .map(([d,t,x])=>({d,k:"give",t,x:x+" · score predictor giveaway on X",once:1}))];
+let CM=null,CSEL=null;
+const pad=n=>String(n).padStart(2,"0"),ymd=t=>`${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())}`;
+function calEvents(){return CAL.concat((DATA.calendar||[]).map(e=>({d:e.date||e.d,k:e.kind||e.k||"ts",t:e.title||e.t,x:e.detail||e.x||"",once:e.repeat?0:1})))}
+function onDay(y,m,d){const md=`${pad(m+1)}-${pad(d)}`,full=`${y}-${md}`;
+  return calEvents().filter(e=>e.once?e.d===full:(e.d.slice(5)===md&&+e.d.slice(0,4)<=y)).map(e=>({...e,yrs:e.once?0:y-+e.d.slice(0,4)}))}
+function evHTML(e,y,m,d,showDate){const[ic,lab,c]=CK[e.k]||CK.ts;const when=new Date(y,m,d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});
+  const yr=(e.k==="vc"||e.k==="moment")&&e.yrs>0?`<span class="yrs">${e.t.includes("birthday")?"turns "+e.yrs:e.yrs+" years"}</span>`:"";
+  return `<div class="ev" style="--c:${c}"><div class="d">${ic} ${lab}${showDate?" · "+when:""}${(e.k==="vc"||e.k==="moment")?" · "+e.d.slice(0,4):""}</div><h3>${esc(e.t)}${yr}</h3><p>${esc(e.x)}</p></div>`}
+function renderCal(){const now=new Date();if(!CM)CM=new Date(now.getFullYear(),now.getMonth(),1);
+  const y=CM.getFullYear(),m=CM.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+  document.getElementById("sum").innerHTML="";document.getElementById("tabs").innerHTML="";
+  const today=onDay(now.getFullYear(),now.getMonth(),now.getDate()).filter(e=>e.k==="vc"||e.k==="moment");
+  let h=today.length?`<div class="otd"><b>🏀 ON THIS DAY</b>${today.map(e=>`<h3>${now.getFullYear()-+e.d.slice(0,4)} years ago: ${esc(e.t)}</h3>`).join("")}</div>`:"";
+  h+=`<div class="cal"><div class="calh"><button id="cPrev" aria-label="Previous month">‹</button><b>${CM.toLocaleDateString("en-US",{month:"long",year:"numeric"})}</b><button id="cNext" aria-label="Next month">›</button></div><div class="grid">`;
+  h+=["SUN","MON","TUE","WED","THU","FRI","SAT"].map(x=>`<div class="dow">${x}</div>`).join("");
+  for(let i=0;i<first;i++)h+=`<div class="day out"></div>`;
+  for(let d=1;d<=days;d++){const ev=onDay(y,m,d),isT=ymd(now)===`${y}-${pad(m+1)}-${pad(d)}`,sel=CSEL===`${y}-${pad(m+1)}-${pad(d)}`;
+    h+=`<div class="day${isT?" today":""}${sel?" sel":""}" data-day="${d}"><div class="n">${d}</div><div class="ic">${ev.map(e=>(CK[e.k]||CK.ts)[0]).join("")}</div></div>`}
+  h+=`</div><div class="legend">${Object.values(CK).map(([i,l])=>`<span>${i} ${l}</span>`).join("")}</div></div>`;
+  if(CSEL){const[sy,sm,sd]=CSEL.split("-").map(Number),ev=onDay(sy,sm-1,sd);
+    h+=`<div class="listh">${new Date(sy,sm-1,sd).toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</div>`+(ev.map(e=>evHTML(e,sy,sm-1,sd,false)).join("")||`<p style="color:var(--muted)">Nothing on this day.</p>`)}
+  else{let up="";for(let i=0;i<45;i++){const t=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i);up+=onDay(t.getFullYear(),t.getMonth(),t.getDate()).map(e=>evHTML(e,t.getFullYear(),t.getMonth(),t.getDate(),true)).join("")}
+    h+=`<div class="listh">Coming up · next 45 days</div>`+(up||`<p style="color:var(--muted)">Nothing in the next 45 days.</p>`)}
+  document.getElementById("list").innerHTML=h;
+  document.getElementById("cPrev").onclick=e=>{e.stopPropagation();CM=new Date(y,m-1,1);CSEL=null;renderCal()};
+  document.getElementById("cNext").onclick=e=>{e.stopPropagation();CM=new Date(y,m+1,1);CSEL=null;renderCal()};
+  document.querySelectorAll(".day[data-day]").forEach(el=>el.onclick=e=>{e.stopPropagation();const k=`${y}-${pad(m+1)}-${pad(+el.dataset.day)}`;CSEL=CSEL===k?null:k;renderCal()});
+  document.getElementById("upd").textContent=""}
 document.getElementById("list").addEventListener("click",e=>{const it=e.target.closest(".item");if(it)it.classList.toggle("open")});
 fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/news.json?t="+Date.now(),{cache:"no-store"})
   .then(r=>r.ok?r.json():Promise.reject()).catch(()=>fetch("news.json").then(r=>r.json())).then(d=>{if(d&&d.items)DATA=d;render()}).catch(render);
