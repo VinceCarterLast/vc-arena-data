@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-04",
+ "updated": "2026-11-05",
  "events": [
   {
    "date": "1977-01-26",
@@ -39,7 +39,7 @@
   {
    "date": "2000-09-25",
    "kind": "vc",
-   "title": "The dunk over Fr\u00e9d\u00e9ric Weis",
+   "title": "The dunk over Frédéric Weis",
    "detail": "Sydney Olympics: 'le dunk de la mort' over the 7-foot-2 French center.",
    "repeat": true
   },
@@ -114,6 +114,202 @@
    "repeat": true
   },
   {
+   "date": "2025-10-14",
+   "kind": "hist",
+   "title": "Referral program launched",
+   "detail": "Elite Referrers at 15% commission; public referral links promised for November.",
+   "repeat": true
+  },
+  {
+   "date": "2025-10-21",
+   "kind": "hist",
+   "title": "2025-26 roadmap: 'The New Era'",
+   "detail": "Lower mints, the first autographs, Boxes and Cases, and moment permanence on IPFS.",
+   "repeat": true
+  },
+  {
+   "date": "2025-11-05",
+   "kind": "hist",
+   "title": "Rookie Debut drop",
+   "detail": "First drop of 2025-26: Rookie Debut /1000, Case $2,500, Box $250. This year it's /500.",
+   "repeat": true
+  },
+  {
+   "date": "2025-11-26",
+   "kind": "hist",
+   "title": "Thanksgiving Deposit Match",
+   "detail": "VIP-only match, Nov 26 to Dec 2: 15-25% back as credit. 🔁 Could return this Thanksgiving.",
+   "repeat": true
+  },
+  {
+   "date": "2025-12-03",
+   "kind": "hist",
+   "title": "Rookie Origins drop",
+   "detail": "Debut of Origins, Mojo and the Kingmaker and Skyline 1-of-1s, including a Toronto Raptors Skyline.",
+   "repeat": true
+  },
+  {
+   "date": "2025-12-09",
+   "kind": "hist",
+   "title": "December Mailbag",
+   "detail": "Top Shot owned the Dec 3 drop problems and explained its fixes.",
+   "repeat": true
+  },
+  {
+   "date": "2025-12-11",
+   "kind": "hist",
+   "title": "First-ever Top Shot Breaks",
+   "detail": "Live Case and Box breaks: $150 and $30 spots, teams drawn on-chain live on stream.",
+   "repeat": true
+  },
+  {
+   "date": "2025-12-18",
+   "kind": "hist",
+   "title": "Secret Santa",
+   "detail": "Gift any moment to TopShotSecretSanta and get one back, open to Dec 26. Top Shot called it a 'community tradition.' 🔁 Could return this Christmas.",
+   "repeat": true
+  },
+  {
+   "date": "2025-12-22",
+   "kind": "hist",
+   "title": "Christmas trade-in auctions",
+   "detail": "Two holiday auctions: top 10 won Rookie Debut packs or an Origins Box. 🔁 Could return this Christmas.",
+   "repeat": true
+  },
+  {
+   "date": "2025-12-25",
+   "kind": "hist",
+   "title": "Christmas Day moments",
+   "detail": "Top Shot This moments from the Christmas games, with packs on Dec 26.",
+   "repeat": true
+  },
+  {
+   "date": "2026-01-14",
+   "kind": "hist",
+   "title": "Holo Icon and Metallic Gold LE drop",
+   "detail": "Third roadmap drop, on time. First non-rookie autographs (Top Script).",
+   "repeat": true
+  },
+  {
+   "date": "2026-02-09",
+   "kind": "hist",
+   "title": "All-Star Deposit Match, open to everyone",
+   "detail": "Feb 9-24: 20% for everyone (up to $200), 20-35% for VIPs. 🔁 Could return around All-Star.",
+   "repeat": true
+  },
+  {
+   "date": "2026-02-11",
+   "kind": "hist",
+   "title": "Team leaderboard airdrop #1",
+   "detail": "Top team leaderboard collectors got a Rare or better pack.",
+   "repeat": true
+  },
+  {
+   "date": "2026-02-18",
+   "kind": "hist",
+   "title": "Stars of 2026 drop",
+   "detail": "Freshman Gems and Constellations, including Scottie Barnes.",
+   "repeat": true
+  },
+  {
+   "date": "2026-03-11",
+   "kind": "hist",
+   "title": "Team leaderboard airdrop #2",
+   "detail": "Second seasonal team leaderboard snapshot.",
+   "repeat": true
+  },
+  {
+   "date": "2026-03-13",
+   "kind": "hist",
+   "title": "March Mayhem flash match",
+   "detail": "Weekend-only match, Mar 13-16: 10% for everyone, 15% for VIPs. PayPal added. 🔁 Could return.",
+   "repeat": true
+  },
+  {
+   "date": "2026-03-18",
+   "kind": "hist",
+   "title": "LeBron's first 1-of-1 + Signature Series",
+   "detail": "Metallic Gold LE drop: LeBron Kingmaker, plus the first rookie Signature Series 1-of-1s.",
+   "repeat": true
+  },
+  {
+   "date": "2026-03-25",
+   "kind": "hist",
+   "title": "Flagg 1-of-1 pulled in a Break",
+   "detail": "A collector pulled the Cooper Flagg Signature Series 1-of-1, the best pull in Breaks history.",
+   "repeat": true
+  },
+  {
+   "date": "2026-04-15",
+   "kind": "hist",
+   "title": "Rookie Revelation drop",
+   "detail": "Scarcest rookie Legendaries ever: 35 per rookie.",
+   "repeat": true
+  },
+  {
+   "date": "2026-04-17",
+   "kind": "hist",
+   "title": "Road to the Ring points begin",
+   "detail": "Playoff points to spend in the Points Store. Still waiting on its return.",
+   "repeat": true
+  },
+  {
+   "date": "2026-04-20",
+   "kind": "hist",
+   "title": "Top Shot This: Playoffs Edition",
+   "detail": "$10 packs of the top play the day after each playoff game. 🔁 Could return for the playoffs.",
+   "repeat": true
+  },
+  {
+   "date": "2026-05-13",
+   "kind": "hist",
+   "title": "Team leaderboard airdrop #3",
+   "detail": "Third airdrop, completing the roadmap promise of 'at least 3.'",
+   "repeat": true
+  },
+  {
+   "date": "2026-05-18",
+   "kind": "hist",
+   "title": "The Rally: community deposit match",
+   "detail": "The rate climbed for everyone as the community locked more. 🔁 Could return.",
+   "repeat": true
+  },
+  {
+   "date": "2026-05-20",
+   "kind": "hist",
+   "title": "Playoffs drop",
+   "detail": "Run It Back Playoff Classics and more.",
+   "repeat": true
+  },
+  {
+   "date": "2026-06-08",
+   "kind": "hist",
+   "title": "Every moment saved on IPFS",
+   "detail": "Moment videos became independently verifiable forever, a big community request delivered.",
+   "repeat": true
+  },
+  {
+   "date": "2026-06-22",
+   "kind": "hist",
+   "title": "The Lock-In: offseason match",
+   "detail": "Jun 22 to Jul 2: 10% for everyone, 15% for VIPs. 🔁 Could return in the offseason.",
+   "repeat": true
+  },
+  {
+   "date": "2026-06-24",
+   "kind": "hist",
+   "title": "NBA Finals drop: Knicks champions",
+   "detail": "Knicks' first title in 53 years; Brunson Finals MVP Legendaries.",
+   "repeat": true
+  },
+  {
+   "date": "2026-08-26",
+   "kind": "hist",
+   "title": "Run It Back: Origins + new Top Shot app",
+   "detail": "First rookie 1-of-1s for 20 legends, and the first drop on the new app.",
+   "repeat": true
+  },
+  {
    "date": "2026-11-04",
    "kind": "ts",
    "title": "Set leaderboard snapshot (12 PM ET)",
@@ -131,7 +327,7 @@
    "date": "2026-11-04",
    "kind": "ts",
    "title": "Lendeborg Tip-Off Pack pre-order (until 7 PM ET)",
-   "detail": "1,450 packs \u00b7 $10. Chase Yaxel Lendeborg's /5 and /500 Rookie Debut, LaMelo's /99 Timberwolves debut and Haliburton's /199 return.",
+   "detail": "1,450 packs · $10. Chase Yaxel Lendeborg's /5 and /500 Rookie Debut, LaMelo's /99 Timberwolves debut and Haliburton's /199 return.",
    "repeat": false
   },
   {
@@ -159,21 +355,21 @@
    "date": "2026-11-09",
    "kind": "ts",
    "title": "Luka trade-in ends (3 PM ET)",
-   "detail": "Top Shot This: Luka Don\u010di\u0107. Every $10 of Luka moments traded in earns a pack.",
+   "detail": "Top Shot This: Luka Dončić. Every $10 of Luka moments traded in earns a pack.",
    "repeat": false
   },
   {
    "date": "2026-11-09",
    "kind": "give",
    "title": "Bills at Vikings",
-   "detail": "8:15 PM ET \u00b7 Monday Night Football \u00b7 score predictor giveaway on X",
+   "detail": "8:15 PM ET · Monday Night Football · score predictor giveaway on X",
    "repeat": false
   },
   {
    "date": "2026-11-10",
    "kind": "ts",
    "title": "Public pre-orders open (3 PM ET)",
-   "detail": "Anyone can order: Case $2,500 \u00b7 Box $250 \u00b7 Collector Pack $39.",
+   "detail": "Anyone can order: Case $2,500 · Box $250 · Collector Pack $39.",
    "repeat": false
   },
   {
@@ -201,7 +397,7 @@
    "date": "2026-11-12",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
@@ -215,35 +411,35 @@
    "date": "2026-11-13",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
    "date": "2026-11-14",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
    "date": "2026-11-15",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
    "date": "2026-11-15",
    "kind": "give",
    "title": "Bills at Jets",
-   "detail": "1:00 PM ET \u00b7 score predictor giveaway on X",
+   "detail": "1:00 PM ET · score predictor giveaway on X",
    "repeat": false
   },
   {
    "date": "2026-11-16",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
@@ -256,77 +452,77 @@
    "date": "2026-11-17",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
    "date": "2026-11-18",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
    "date": "2026-11-19",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
    "date": "2026-11-20",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
    "date": "2026-11-21",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
    "date": "2026-11-22",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
    "date": "2026-11-22",
    "kind": "give",
    "title": "Dolphins at Bills",
-   "detail": "1:00 PM ET \u00b7 score predictor giveaway on X",
+   "detail": "1:00 PM ET · score predictor giveaway on X",
    "repeat": false
   },
   {
    "date": "2026-11-23",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
    "date": "2026-11-24",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
    "date": "2026-11-25",
    "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
-   "detail": "$10 \u00b7 3 moments \u00b7 each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
    "date": "2026-11-26",
    "kind": "give",
    "title": "Chiefs at Bills",
-   "detail": "8:20 PM ET \u00b7 Thanksgiving \u00b7 score predictor giveaway on X",
+   "detail": "8:20 PM ET · Thanksgiving · score predictor giveaway on X",
    "repeat": false
   },
   {
@@ -339,14 +535,14 @@
    "date": "2026-12-06",
    "kind": "give",
    "title": "Bills at Patriots",
-   "detail": "4:25 PM ET \u00b7 score predictor giveaway on X",
+   "detail": "4:25 PM ET · score predictor giveaway on X",
    "repeat": false
   },
   {
    "date": "2026-12-13",
    "kind": "give",
    "title": "Bills at Packers",
-   "detail": "8:20 PM ET \u00b7 Sunday Night Football \u00b7 score predictor giveaway on X",
+   "detail": "8:20 PM ET · Sunday Night Football · score predictor giveaway on X",
    "repeat": false
   },
   {
@@ -365,14 +561,14 @@
    "date": "2026-12-19",
    "kind": "give",
    "title": "Bears at Bills",
-   "detail": "8:20 PM ET \u00b7 score predictor giveaway on X",
+   "detail": "8:20 PM ET · score predictor giveaway on X",
    "repeat": false
   },
   {
    "date": "2026-12-25",
    "kind": "give",
    "title": "Bills at Broncos",
-   "detail": "4:30 PM ET \u00b7 Christmas \u00b7 score predictor giveaway on X",
+   "detail": "4:30 PM ET · Christmas · score predictor giveaway on X",
    "repeat": false
   },
   {
@@ -392,7 +588,7 @@
    "date": "2027-01-03",
    "kind": "give",
    "title": "Bills at Dolphins",
-   "detail": "1:00 PM ET \u00b7 score predictor giveaway on X",
+   "detail": "1:00 PM ET · score predictor giveaway on X",
    "repeat": false
   },
   {
@@ -406,7 +602,7 @@
    "date": "2027-01-10",
    "kind": "give",
    "title": "Jets at Bills",
-   "detail": "Time TBD \u00b7 score predictor giveaway on X",
+   "detail": "Time TBD · score predictor giveaway on X",
    "repeat": false
   },
   {

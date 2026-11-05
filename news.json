@@ -1,23 +1,24 @@
 {
- "updated": "2026-11-04",
+ "updated": "2026-11-05",
  "items": [
   {
    "date": "2026-11-04",
    "title": "Lendeborg Tip-Off Pack + trade-in auction",
-   "status": "coming",
+   "status": "done",
    "due": "2026-11-04",
    "promise": "1,450 Tip-Off Packs at $10, pre-order until 7 PM ET, with Yaxel Lendeborg's /5 and /500 Rookie Debut, LaMelo's /99 Timberwolves debut and Haliburton's /199 return inside. Trade-in auction until 7 PM ET: bid any NBA Rookie Debut, or a Haliburton/LaMelo Top Shot Debut, Rare or better. Top 25 bidders win 2 packs each.",
-   "note": "We'll check it off when packs are delivered.",
+   "note": "Pre-order closed and packs were delivered on Nov 4.",
    "source": "Top Shot Discord",
-   "link": "https://nbatopshot.com/?packDetail=8914"
+   "link": "https://nbatopshot.com/?packDetail=8914",
+   "delivered": "2026-11-04"
   },
   {
-   "date": "2026-10-21",
+   "date": "2026-06-17",
    "title": "Points Store: changes coming",
    "status": "progress",
-   "promise": "The Points Store isn't gone. Top Shot is working with partners on changes they believe will be beneficial overall, and didn't want to rush it back out before it's ready. More information to come.",
+   "promise": "When Road to the Ring ended (Jun 26), Top Shot said unused points would roll over to the next run, with more details to come. On Oct 21, Top Shot said the Points Store isn't gone: they're working with partners on changes they believe will be beneficial, and didn't want to rush it back. More info to come.",
    "note": "\"It's not done… working with our partners on a few changes… There'll be more information to come. Hang tight… There's some cool stuff.\" Matt (Vinyls), Coffee with Coultin, Oct 21 (58:51)",
-   "source": "Coffee with Coultin, Oct 21 (58:51)"
+   "source": "Top Shot blog (Jun 17, 2026) + Coffee with Coultin (Oct 21, 58:51)"
   },
   {
    "date": "2026-10-30",
@@ -51,10 +52,145 @@
    "date": "2025-10-14",
    "title": "Referral program: public referral links",
    "promise": "Anyone can earn 10% on referred sales (Elite partners 15%), with tracking tools for referrers.",
-   "status": "checking",
+   "status": "progress",
    "due": "",
    "note": "We couldn't find the referral link in the app yet. Feedback sent to the team.",
    "source": "blog.nbatopshot.com"
+  },
+  {
+   "date": "2025-10-21",
+   "title": "Moments saved forever on IPFS",
+   "status": "done",
+   "promise": "Roadmap promise ('Your Moments, Forever'): moment videos stored so they can be verified independently, without Top Shot.",
+   "delivered": "2026-06-08",
+   "note": "Delivered for every moment from every series, a request the community asked for loudly and repeatedly.",
+   "source": "Top Shot blog (Oct 21, 2025)"
+  },
+  {
+   "date": "2025-10-21",
+   "title": "Signature Series rookie 1-of-1s",
+   "status": "done",
+   "promise": "Roadmap promise: autographed, custom-inscribed 1-of-1 rookie moments.",
+   "delivered": "2026-03-18",
+   "note": "Launched with Flagg and Knueppel in packs. Top Shot expanded 'My Top Fan' from 4 rookies to 10.",
+   "source": "Top Shot blog (Oct 21, 2025)"
+  },
+  {
+   "date": "2025-10-21",
+   "title": "Team leaderboard airdrops (at least 3)",
+   "status": "done",
+   "promise": "Roadmap promise: Rare or Legendary airdrops to top team leaderboard collectors at least 3 times in the season.",
+   "due": "2026-06-30",
+   "delivered": "2026-05-13",
+   "note": "Snapshots on Feb 11, Mar 11 and May 13.",
+   "source": "Top Shot blog (Oct 21, 2025)"
+  },
+  {
+   "date": "2025-10-21",
+   "title": "Seasonal Favorite Team leaderboards",
+   "status": "done",
+   "promise": "Roadmap promise: seasonal team leaderboards in December, with 3+ airdrops.",
+   "due": "2025-12-31",
+   "delivered": "2026-01-06",
+   "note": "Live by early January, a few weeks after the December target.",
+   "source": "Top Shot blog (Oct 21, 2025)"
+  },
+  {
+   "date": "2025-12-09",
+   "title": "'Why This Matters' in big announcements",
+   "status": "done",
+   "promise": "Mailbag promise: add a 'Why This Matters' section to major product announcements.",
+   "delivered": "2026-01-12",
+   "note": "First seen in the Jan 12 athlete partnerships post.",
+   "source": "Top Shot blog (Dec 9, 2025)"
+  },
+  {
+   "date": "2026-10-14",
+   "title": "The Wheel is back",
+   "status": "done",
+   "promise": "'You asked, and it's back.' The Wheel spins every Monday to pick the Flash Challenge stat.",
+   "note": "A community request since 2022.",
+   "source": "Top Shot blog (Oct 14, 2026)"
+  },
+  {
+   "date": "2026-06-08",
+   "title": "IPFS IDs on-chain + pin-your-own guide",
+   "status": "progress",
+   "promise": "Next steps after IPFS: put each moment's IPFS ID into its on-chain record on Flow, and share instructions so collectors can pin their own moments.",
+   "note": "Repeated in the Aug 18 blog.",
+   "source": "Top Shot blog (Jun 8, 2026)"
+  },
+  {
+   "date": "2026-10-14",
+   "title": "Players of the Week rewards + MVP Pack",
+   "status": "progress",
+   "promise": "Weekly East and West Players of the Week as Flash Challenge rewards from Oct 26. Lock every one in a month for the Player of the Month pack; collect them all for the MVP Pack at season end.",
+   "due": "2027-05-31",
+   "source": "Top Shot blog (Oct 14, 2026)"
+  },
+  {
+   "date": "2026-10-14",
+   "title": "A Signature Series 1-of-1 for every partnered athlete",
+   "status": "progress",
+   "promise": "Every partnered Top Shot Athlete gets a Signature Series 1-of-1 this season, with more partners announced as the season goes.",
+   "due": "2027-06-30",
+   "source": "Top Shot blog (Oct 14, 2026)"
+  },
+  {
+   "date": "2026-10-19",
+   "title": "Fast Break Finals + NBA Finals suite",
+   "status": "coming",
+   "promise": "Top 50 in any Classic or Pro run qualifies for the invite-only Fast Break Finals, Mar 30 to Apr 11. Classic Final top 10 win a seat in an NBA Finals suite. Pro Final cash prizes: 'details coming.'",
+   "due": "2027-03-30",
+   "source": "Top Shot blog (Oct 19, 2026)"
+  },
+  {
+   "date": "2026-10-19",
+   "title": "Origins drop and Christmas drop",
+   "status": "coming",
+   "promise": "Origins drop Wed, Dec 16 and a Christmas drop Fri, Dec 25.",
+   "due": "2026-12-25",
+   "source": "Top Shot blog (Oct 19, 2026)"
+  },
+  {
+   "date": "2026-10-20",
+   "title": "Rookie Debut drop",
+   "status": "coming",
+   "promise": "Drop Wed, Nov 11 with early access Nov 5 and public pre-orders Nov 10. Case $2,500 · Box $250 · Collector Pack $39.",
+   "due": "2026-11-11",
+   "note": "Dates have held so far.",
+   "source": "Top Shot blog (Oct 20, 2026)"
+  },
+  {
+   "date": "2026-11-02",
+   "title": "Season Tip-Off challenge reward",
+   "status": "coming",
+   "promise": "Lock a moment of every Season Tip-Off player by Jan 4, 11 PM ET for the Jalen Brunson banner-night moment, minted to the exact number of finishers.",
+   "due": "2027-01-04",
+   "source": "Top Shot blog (Nov 2, 2026)"
+  },
+  {
+   "date": "2026-11-02",
+   "title": "Exclusive packs for completed Rookie Debut and Base sets",
+   "status": "coming",
+   "promise": "Completing Rookie Debut and Base Set earns an exclusive pack once the sets close. Fresh Threads closes after the trade deadline with its own reward.",
+   "source": "Top Shot blog (Nov 2, 2026)"
+  },
+  {
+   "date": "2026-10-14",
+   "title": "Season-long rewards: Squad Goals, Blue Chip, Rookie Yearbook",
+   "status": "coming",
+   "promise": "Squad Goals /10 Ultimate to the top 10 of every team's seasonal leaderboard (snapshot Jul 1, 2027). Blue Chip /3 and Rookie Yearbook /26 after the All-Rookie teams are named. Constellations /99 trade-ins for every 2027 All-Star.",
+   "due": "2027-07-01",
+   "source": "Top Shot blog (Oct 14, 2026)"
+  },
+  {
+   "date": "2026-09-24",
+   "title": "WNBA Finals drop",
+   "status": "coming",
+   "promise": "A WNBA Finals drop (Playoffs, Semifinals and Finals sets) once a champion is crowned. Priority access details 'to come.'",
+   "due": "2026-11-30",
+   "source": "Top Shot blog (Sep 24, 2026)"
   }
  ],
  "feedback": [
@@ -78,7 +214,7 @@
    "date": "2026-10-01",
    "title": "Reduce supply of older moments",
    "request": "Collectors want ways to retire older moments, such as trade-in and crafting events, so the moments they hold get scarcer.",
-   "status": "working",
+   "status": "heard",
    "note": "Related: Top Shot This trade-in events, starting with Luka (Nov 2 to 8).",
    "response": ""
   }
