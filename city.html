@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>VC City · VC15 Tracker</title>
-<meta name="description" content="Every Vince Carter Top Shot moment as a home in its own city. Legendary estates on the hill, Archive towers downtown. Retired moments are empty lots.">
+<meta name="description" content="Every Vince Carter Top Shot moment as a building in a tiny 3D city. Legendary estates on the hill, Archive towers downtown. Retired moments are empty lots.">
 <meta property="og:title" content="VC City: every VC moment is a home">
-<meta property="og:description" content="Legend Hills, Debut Heights, Rare Ridge, Vintage Row and the Archive towers downtown. Every VC moment on Top Shot has an address.">
+<meta property="og:description" content="A tiny 3D city where every Vince Carter moment on Top Shot has an address. Tap any home to see who lives there.">
 <link rel="icon" href="favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
@@ -18,17 +18,25 @@ main{max-width:1200px;margin:0 auto;padding:calc(var(--navh,52px) + 14px) 16px 4
 h1{font:900 clamp(30px,5.5vw,56px)/1 'Barlow Condensed',sans-serif;margin:0;text-transform:uppercase}
 h1 b{color:var(--gold)}
 .lede{color:var(--muted);margin:8px 0 12px;font-size:clamp(14px,1.8vw,18px)}
-.wrap{position:relative;background:#070a12;border:1px solid var(--line);border-radius:16px;overflow:hidden}
-canvas{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
-canvas.drag{cursor:grabbing}
-.zoom{position:absolute;right:10px;bottom:10px;display:flex;gap:6px}
-.zoom button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:rgba(18,21,30,.9);color:var(--fg);font:800 20px Barlow,sans-serif;cursor:pointer}
-.zoom button:hover{border-color:var(--gold)}
-@media (max-width:640px){.hint{display:none}}
-.hint{position:absolute;left:12px;bottom:14px;font-size:12px;color:var(--muted);pointer-events:none;text-shadow:0 1px 4px #000}
+.wrap{position:relative;background:#cfe3ea;border:1px solid var(--line);border-radius:16px;overflow:hidden;height:min(72vh,720px);min-height:420px}
+#c{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#c:active{cursor:grabbing}
+/* tilt-shift: blur the top and bottom bands so the city looks like a miniature model */
+.ts{position:absolute;left:0;right:0;pointer-events:none;-webkit-backdrop-filter:blur(3.5px);backdrop-filter:blur(3.5px)}
+.ts.top{top:0;height:34%;-webkit-mask-image:linear-gradient(#000,transparent);mask-image:linear-gradient(#000,transparent)}
+.ts.bot{bottom:0;height:34%;-webkit-mask-image:linear-gradient(transparent,#000);mask-image:linear-gradient(transparent,#000)}
+.wrap.flat .ts{display:none}
+.tools{position:absolute;right:10px;bottom:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tools button{height:38px;min-width:38px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:rgba(18,21,30,.9);color:var(--fg);font:800 16px Barlow,sans-serif;cursor:pointer}
+.tools button:hover,.tools button.on{border-color:var(--gold)}
+.find{position:absolute;left:10px;bottom:10px;display:flex;gap:6px}
+.find input{height:38px;width:min(220px,46vw);border-radius:10px;border:1px solid var(--line);background:rgba(18,21,30,.92);color:var(--fg);padding:0 10px;font:600 15px Barlow,sans-serif}
+.find input:focus{outline:none;border-color:var(--gold)}
+#found{position:absolute;left:10px;bottom:54px;font:700 13px Barlow,sans-serif;color:#1b1d24;background:rgba(242,201,76,.95);padding:4px 9px;border-radius:8px;display:none}
 #info{position:absolute;left:12px;top:12px;max-width:290px;background:rgba(12,15,22,.94);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px;display:none}
 #info b{font:800 20px 'Barlow Condensed',sans-serif;display:block}
 #info small{color:var(--muted);display:block;margin-top:2px}
+#load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#2a2d35;font:800 20px 'Barlow Condensed',sans-serif;letter-spacing:.04em}
 .dist{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:12px}
 .d{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
 .d:hover{border-color:var(--gold)}
@@ -37,145 +45,245 @@ canvas.drag{cursor:grabbing}
 .d span{display:block;color:var(--muted);font-size:13px;margin-top:2px}
 .d em{font-style:normal;color:var(--fg);font-weight:700}
 .note{color:var(--muted);font-size:13px;margin-top:14px;line-height:1.5}
+@media (max-width:640px){.tools button.txt{display:none}}
 </style>
 </head>
 <body>
 <script src="nav.js"></script>
 <main>
   <h1>Welcome to <b>VC City</b></h1>
-  <p class="lede">Every Vince Carter moment on Top Shot is a home. Legendaries live up in Legend Hills with a view of the whole city, the Archive towers fill downtown, and retired moments leave empty lots behind. Population: <b id="pop" style="color:var(--gold)">15,318</b>.</p>
-  <div class="wrap"><canvas id="c" width="1200" height="760"></canvas>
+  <p class="lede">Every Vince Carter moment on Top Shot is a building. Legendaries live up in Legend Hills, the Archive towers fill downtown, and retired moments leave empty lots behind. Population: <b id="pop" style="color:var(--gold)">15,318</b>.</p>
+  <div class="wrap" id="wrap">
+    <canvas id="c"></canvas>
+    <div class="ts top"></div><div class="ts bot"></div>
+    <div id="load">Building VC City…</div>
     <div id="info"></div>
-    <div class="zoom"><button id="zIn" aria-label="Zoom in">+</button><button id="zOut" aria-label="Zoom out">−</button><button id="zReset" aria-label="Reset view">⟲</button></div>
-    <div class="hint" id="hint">Pinch or scroll to zoom · drag to explore · tap a home</div></div>
+    <div id="found"></div>
+    <div class="find"><input id="q" placeholder="🔎 Find a collector" autocomplete="off" list="names"><datalist id="names"></datalist></div>
+    <div class="tools">
+      <button id="tilt" class="on txt" title="Miniature (tilt-shift) effect">📷 Mini</button>
+      <button id="spin" class="txt" title="Slowly circle the city">🔄</button>
+      <button id="zIn" aria-label="Zoom in">+</button><button id="zOut" aria-label="Zoom out">−</button><button id="zReset" aria-label="Reset view">⟲</button>
+    </div>
+  </div>
   <div class="dist" id="dist"></div>
-  <p class="note">One home = one VC moment, serial #1 closest to the view. Grey dashed lots are retired (burned) moments. Data from the VC15 Tracker owner scan. Fan-made, not affiliated with NBA Top Shot or Dapper Labs.</p>
+  <p class="note">One building = one VC moment. Drag to move, pinch or scroll to zoom, two fingers (or right-drag) to turn. Tap any building to see who lives there. Grey lots are retired (burned) moments. Data from the VC15 Tracker owner scan. Fan-made, not affiliated with NBA Top Shot or Dapper Labs.</p>
 </main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 const $=id=>document.getElementById(id),fmt=n=>n.toLocaleString("en-US");
-// ---- districts (world is 1600 x 1000; the lake is along the bottom, the hills top-right) ----
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const FONT_URL="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/fonts/helvetiker_bold.typeface.json";
+const DATA_URL="https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/arena_owners.json";
+
+// ---- districts: same map as before (world 1600 x 1000, lake along the bottom, hills top-right) ----
 const D=[
- {k:"omega", name:"The Summit",        sub:"Dallas Omega",            tier:"Legendary",col:"#ff4fa3",style:"estate",r:[1430,50,140,110], minted:1},
- {k:"galac", name:"Galactic Estates",  sub:"Dallas Galactic",         tier:"Legendary",col:"#f4f4f4",style:"estate",r:[1260,50,160,110], minted:5},
- {k:"dallas",name:"Playoff Point",     sub:"Dallas Standard",         tier:"Legendary",col:"#4aa3ff",style:"estate",r:[1260,170,310,110],minted:44},
- {k:"cosmic",name:"Cosmic Crest",      sub:"TSD Cosmic",              tier:"Legendary",col:"#a46bff",style:"estate",r:[1060,60,190,160], minted:49},
- {k:"asg",   name:"All-Star Bluffs",   sub:"ASG Legendary",           tier:"Legendary",col:"#2ec4b6",style:"estate",r:[1060,230,190,150],minted:50},
- {k:"origin",name:"Origin Lane",       sub:"RIB Origin · Rare",       tier:"Rare",     col:"#c86bff",style:"house", r:[640,250,160,230], minted:269},
- {k:"rib",   name:"Rare Ridge",        sub:"RIB '05-06 · Rare",       tier:"Rare",     col:"#e8603c",style:"house", r:[810,250,230,230], minted:990},
- {k:"tsd",   name:"Debut Heights",     sub:"TSD Common (Debut Club)", tier:"Common",   col:"#3fbf6a",style:"house", r:[1060,400,500,460], minted:3336},
- {k:"fandom",name:"Vintage Vibes Row", sub:"Vintage Vibes · Fandom",  tier:"Fandom",   col:"#ff8fc4",style:"town",  r:[260,520,350,340], minted:951},
- {k:"archive",name:"Archive Downtown", sub:"Archive Set · Common",    tier:"Common",   col:"#ffd36b",style:"tower", r:[640,500,400,360], minted:10000}];
+ {k:"omega", name:"The Summit",        sub:"Dallas Omega",            tier:"Legendary",col:"#ff4fa3",style:"estate",r:[1430,50,140,110], minted:1,    lift:34},
+ {k:"galac", name:"Galactic Estates",  sub:"Dallas Galactic",         tier:"Legendary",col:"#f4f4f4",style:"estate",r:[1260,50,160,110], minted:5,    lift:28},
+ {k:"dallas",name:"Playoff Point",     sub:"Dallas Standard",         tier:"Legendary",col:"#4aa3ff",style:"estate",r:[1260,170,310,110],minted:44,   lift:22},
+ {k:"cosmic",name:"Cosmic Crest",      sub:"TSD Cosmic",              tier:"Legendary",col:"#a46bff",style:"estate",r:[1060,60,190,160], minted:49,   lift:18},
+ {k:"asg",   name:"All-Star Bluffs",   sub:"ASG Legendary",           tier:"Legendary",col:"#2ec4b6",style:"estate",r:[1060,230,190,150],minted:50,   lift:12},
+ {k:"origin",name:"Origin Lane",       sub:"RIB Origin · Rare",       tier:"Rare",     col:"#c86bff",style:"house", r:[640,250,160,230], minted:269,  lift:2},
+ {k:"rib",   name:"Rare Ridge",        sub:"RIB '05-06 · Rare",       tier:"Rare",     col:"#e8603c",style:"house", r:[810,250,230,230], minted:990,  lift:2},
+ {k:"tsd",   name:"Debut Heights",     sub:"TSD Common (Debut Club)", tier:"Common",   col:"#3fbf6a",style:"house", r:[1060,400,500,460], minted:3336, lift:2},
+ {k:"fandom",name:"Vintage Vibes Row", sub:"Vintage Vibes · Fandom",  tier:"Fandom",   col:"#ff8fc4",style:"town",  r:[260,520,350,340], minted:951,  lift:2},
+ {k:"archive",name:"Archive Downtown", sub:"Archive Set · Common",    tier:"Common",   col:"#ffd36b",style:"tower", r:[640,500,400,360], minted:10000,lift:2}];
 const IDX=Object.fromEntries(D.map(d=>[d.k,d]));
+const FB={archive:329,rib:38,origin:6,fandom:2,tsd:1,dallas:1};D.forEach(d=>d.fb=FB[d.k]||0);   // fallback burns (Nov 2026)
 let OWN=null;   // {names, sets:{k:{o:[], f:[]}}}
 
-// lay out homes in a district: a grid (with streets between blocks), serial 1 nearest the view (bottom-left toward the lake & downtown)
+// same grid layout as the 2D city: serial #1 nearest the viewer (bottom-left)
 function layout(d){const[x,y,w,h]=d.r,n=d.minted,B=d.style==="tower"?10:d.style==="town"?8:d.style==="house"?6:99,g=d.style==="estate"?0:1.2;
   let best=null;for(let cols=1;cols<=n;cols++){const rows=Math.ceil(n/cols),Wc=cols+Math.floor((cols-1)/B)*g,Hc=rows+Math.floor((rows-1)/B)*g,cell=Math.min(w/Wc,h/Hc);if(!best||cell>best.cell)best={cols,rows,Wc,Hc,cell};if(rows===1)break}
   const{cols,cell,Wc,Hc}=best,ox=x+(w-Wc*cell)/2,oy=y+(h-Hc*cell)/2,pos=[];
-  for(let i=0;i<n;i++){const c=i%cols,r=Math.floor(i/cols),rr=best.rows-1-r;   // row 0 = bottom
-    pos.push([ox+(c+Math.floor(c/B)*g+.5)*cell,oy+(rr+Math.floor(rr/B)*g+.5)*cell])}
+  for(let i=0;i<n;i++){const c=i%cols,r=Math.floor(i/cols),rr=best.rows-1-r;pos.push([ox+(c+Math.floor(c/B)*g+.5)*cell,oy+(rr+Math.floor(rr/B)*g+.5)*cell])}
   d.pos=pos;d.cell=cell}
 D.forEach(layout);
+const X=x=>x-800,Z=y=>y-500;                       // 2D map -> 3D ground
+const rnd=(k,i)=>{let h=2166136261;for(const c of k+":"+i){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return((h>>>0)%10000)/10000};
 
-const cv=$("c"),ctx=cv.getContext("2d");
-const WW=1600,WH=1000;let W,H,scale,ox,oy,Z=1,PX=0,PY=0,DPR=1,NARROW=false;
-function size(){const dpr=Math.min(2,window.devicePixelRatio||1),cw=cv.clientWidth||1200;DPR=dpr;NARROW=cw<700;W=cv.width=Math.round(cw*dpr);H=cv.height=Math.round(cw*dpr*WH/WW);scale=W/WW;ox=0;oy=0}
-const S=()=>scale*Z,TX=x=>ox+PX+x*S(),TY=y=>oy+PY+y*S();
-function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(TX(x),TY(y),w*S(),h*S())}
-
-function ground(){
-  ctx.fillStyle="#0b111c";ctx.fillRect(0,0,W,H);
-  // hills: contour rings
-  for(let i=7;i>=0;i--){ctx.fillStyle=`rgb(${14+i*2},${30+i*5},${24+i*3})`;ctx.beginPath();ctx.ellipse(TX(1360),TY(170),(620-i*62)*S(),(330-i*34)*S(),-.12,0,7);ctx.fill()}
-  // suburbs lawns
-  ctx.fillStyle="#102217";for(const k of["origin","rib","tsd","fandom"]){const r=IDX[k].r;ctx.fillRect(TX(r[0]-6),TY(r[1]-6),(r[2]+12)*S(),(r[3]+12)*S())}
-  // downtown asphalt
-  const a=IDX.archive.r;ctx.fillStyle="#161b26";ctx.fillRect(TX(a[0]-8),TY(a[1]-8),(a[2]+16)*S(),(a[3]+16)*S());
-  // park
-  ctx.fillStyle="#173a24";ctx.beginPath();ctx.roundRect(TX(270),TY(250),340*S(),230*S(),18*S());ctx.fill();
-  ctx.fillStyle="#1d4a2e";for(let i=0;i<26;i++){const px=290+((i*97)%300),py=270+((i*61)%190);ctx.beginPath();ctx.arc(TX(px),TY(py),6*S(),0,7);ctx.fill()}
-  // lake
-  const lg=ctx.createLinearGradient(0,TY(880),0,TY(1000));lg.addColorStop(0,"#0f3558");lg.addColorStop(1,"#0a2440");ctx.fillStyle=lg;ctx.fillRect(0,TY(885),W,H);
-  ctx.strokeStyle="rgba(140,190,255,.18)";ctx.lineWidth=Math.max(1,S()*1.2);for(let i=0;i<10;i++){const y=905+i*10;ctx.beginPath();ctx.moveTo(TX(80+i*130),TY(y));ctx.lineTo(TX(140+i*130),TY(y));ctx.stroke()}
-  // roads
-  ctx.strokeStyle="#262e3d";ctx.lineWidth=Math.max(2,8*S());ctx.lineCap="round";
-  const road=pts=>{ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(TX(x),TY(y)):ctx.moveTo(TX(x),TY(y)));ctx.stroke()};
-  road([[0,875],[1600,875]]);road([[625,240],[625,875]]);road([[1050,40],[1050,875]]);road([[250,505],[1050,505]]);road([[625,240],[1050,240]]);
-  road([[1050,390],[1300,330],[1560,300]]);road([[1050,390],[1600,390]])}
-
-function home(d,i,x,y,burned,lock){const c=d.cell,s=S(),px=c*s;
-  if(burned){if(px>3){ctx.strokeStyle="rgba(150,160,180,.45)";ctx.setLineDash([Math.max(1,px*.15),Math.max(1,px*.12)]);ctx.lineWidth=Math.max(.6,px*.05);ctx.strokeRect(TX(x-c*.38),TY(y-c*.38),c*.76*s,c*.76*s);ctx.setLineDash([])}
-    else rect(x-c*.3,y-c*.3,c*.6,c*.6,"#2a303d");return}
-  if(d.style==="tower"){rect(x-c*.42,y-c*.42,c*.84,c*.84,"#2c3a55");
-    const lit=((i*2654435761)>>>0)%7>1;rect(x-c*.26,y-c*.26,c*.52,c*.52,lit?d.col:"#45506a");return}
-  if(d.style==="town"){rect(x-c*.47,y-c*.4,c*.94,c*.8,d.col);if(px>9)rect(x-c*.47,y-c*.04,c*.94,c*.08,"rgba(0,0,0,.25)");return}
-  if(d.style==="house"){if(px>8)rect(x-c*.48,y-c*.48,c*.96,c*.96,"#173322");rect(x-c*.3,y-c*.3,c*.6,c*.6,d.col);
-    if(px>12){rect(x-c*.3,y-c*.02,c*.6,c*.04,"rgba(0,0,0,.3)");rect(x-c*.08,y+c*.3,c*.16,c*.14,"#c9b38a")}return}
-  // estate: lawn, mansion, pool
-  rect(x-c*.46,y-c*.46,c*.92,c*.92,"#1f5a33");rect(x-c*.3,y-c*.3,c*.42,c*.32,d.col);rect(x-c*.3,y+c*.02,c*.42,c*.02,"rgba(0,0,0,.3)");
-  rect(x+c*.16,y-c*.28,c*.18,c*.26,"#46c6ff");if(px>30){rect(x-c*.06,y+c*.14,c*.4,c*.18,"#2a7a45");rect(x-c*.3,y+c*.3,c*.6,c*.05,"#c9b38a")}}
-
-function labels(){ctx.textAlign="center";ctx.textBaseline="middle";
-  const hide=NARROW&&Z<2.6,lab=(t,cx,cy,fs)=>{ctx.font=`800 ${fs}px 'Barlow Condensed',sans-serif`;ctx.lineWidth=3*DPR;ctx.strokeStyle="rgba(5,7,12,.85)";ctx.strokeText(t,cx,cy);ctx.fillStyle="#fff";ctx.fillText(t,cx,cy)};
-  if(hide)lab("LEGEND HILLS",TX(1310),TY(215),Math.max(10*DPR,Math.min(22*DPR,16*S())));
-  for(const d of D){const[x,y,w,h]=d.r,s=S(),sm=d.style==="estate";if(sm&&hide)continue;
-    let nm=d.name.toUpperCase();if(hide&&d.k==="fandom")nm="VINTAGE ROW";if(hide&&d.k==="archive")nm="DOWNTOWN";if(hide&&d.k==="origin")nm="ORIGIN";if(hide&&d.k==="rib")nm="RARE RIDGE";
-    const fs=Math.max(9*DPR,Math.min((sm?15:22)*DPR,(sm?12:18)*s)),cx=TX(x+w/2),cy=TY(sm?y-8:d.k==="origin"&&hide?y+h*.3:y+h/2);
-    if(cx<-200||cx>W+200||cy<-50||cy>H+50)continue;
-    lab(nm,cx,cy,fs)}
-  const lk=Math.max(9*DPR,Math.min(26*DPR,20*S()));ctx.font=`800 ${lk}px 'Barlow Condensed',sans-serif`;ctx.fillStyle="rgba(170,210,255,.7)";ctx.fillText("LAKE ONTARIO",TX(800),TY(945));
-  ctx.fillStyle="rgba(200,240,210,.55)";ctx.fillText("CARTER PARK",TX(440),TY(365))}
-
-function draw(){ground();
-  for(const d of D){const o=OWN&&OWN.sets[d.k],f=o&&o.f;
-    for(let i=0;i<d.minted;i++){const[x,y]=d.pos[i],sx=TX(x),sy=TY(y),m=d.cell*S();if(sx<-m||sy<-m||sx>W+m||sy>H+m)continue;
-      const fl=f?(f[i]||0):0;home(d,i,x,y,!!(fl&2),!!(fl&1))}}
-  if(sel){const d=IDX[sel.k],[x,y]=d.pos[sel.i],c=d.cell;ctx.strokeStyle="#fff";ctx.lineWidth=2;ctx.strokeRect(TX(x-c*.5)-2,TY(y-c*.5)-2,c*S()+4,c*S()+4)}
-  labels()}
-
-// ---- data: owners + burned/locked flags ----
 function stats(){let pop=0;const rows=D.map(d=>{const f=OWN&&OWN.sets[d.k]&&OWN.sets[d.k].f;let b=0;if(f){for(let i=0;i<d.minted;i++)if((f[i]||0)&2)b++}else b=d.fb||0;pop+=d.minted-b;return[d,b]});
   $("pop").textContent=fmt(pop);
   $("dist").innerHTML=rows.map(([d,b])=>`<div class="d" data-k="${d.k}"><b><i style="background:${d.col}"></i>${d.name}</b><span>${d.sub} · <em>${fmt(d.minted-b)}</em> homes${b?` · ${fmt(b)} empty lots`:""}</span></div>`).join("");
-  document.querySelectorAll(".d").forEach(el=>el.onclick=()=>{const d=IDX[el.dataset.k],[x,y,w,h]=d.r;flyTo(x+w/2,y+h/2,Math.min(12,Math.max(1.6,Math.min(WW/(w*1.6),WH/(h*1.6)))));cv.scrollIntoView({behavior:"smooth",block:"center"})})}
-const FB={archive:329,rib:38,origin:6,fandom:2,tsd:1,dallas:1};D.forEach(d=>d.fb=FB[d.k]||0);   // fallback burns (Nov 2026)
+  document.querySelectorAll(".d").forEach(el=>el.onclick=()=>{const d=IDX[el.dataset.k],[x,y,w,h]=d.r;flyTo(X(x+w/2),d.lift,Z(y+h/2),Math.min(9,Math.max(1.6,1100/Math.max(w,h*1.4))));$("wrap").scrollIntoView({behavior:"smooth",block:"center"})})}
+stats();
 
-// ---- zoom & pan ----
-const ZMAX=40;
-function clampPan(){const minX=W-WW*S(),minY=H-WH*S();PX=Math.min(0,Math.max(minX,PX));PY=Math.min(0,Math.max(minY,PY))}
-function zoomAt(f,mx,my){const nz=Math.max(1,Math.min(ZMAX,Z*f)),k=nz/Z;PX=mx-(mx-PX)*k;PY=my-(my-PY)*k;Z=nz;clampPan();draw();$("hint").style.display="none"}
-function flyTo(wx,wy,z){const z0=Z,p0=[PX,PY],t0=performance.now();
-  const tx=W/2-wx*scale*z,ty=H/2-wy*scale*z;
-  const step=now=>{const k=Math.min(1,(now-t0)/600),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;Z=z0+(z-z0)*e;PX=p0[0]+(tx-p0[0])*e;PY=p0[1]+(ty-p0[1])*e;clampPan();draw();if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
-const toCv=(cx,cy)=>{const b=cv.getBoundingClientRect();return[(cx-b.left)*W/b.width,(cy-b.top)*H/b.height]};
-cv.addEventListener("wheel",e=>{e.preventDefault();const[x,y]=toCv(e.clientX,e.clientY);zoomAt(Math.exp(-e.deltaY*.0015),x,y)},{passive:false});
-const ptr=new Map();let pinch=0,moved=0;
-cv.addEventListener("pointerdown",e=>{cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);moved=0;cv.classList.add("drag")});
-cv.addEventListener("pointermove",e=>{if(!ptr.has(e.pointerId))return;const prev=ptr.get(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);
-  const b=cv.getBoundingClientRect(),sx=W/b.width;moved+=Math.abs(e.clientX-prev[0])+Math.abs(e.clientY-prev[1]);
-  if(ptr.size===2){const[a,c]=[...ptr.values()],dist=Math.hypot(a[0]-c[0],a[1]-c[1]);if(pinch){const[mx,my]=toCv((a[0]+c[0])/2,(a[1]+c[1])/2);zoomAt(dist/pinch,mx,my)}pinch=dist;moved=99}
-  else if(ptr.size===1&&Z>1){PX+=(e.clientX-prev[0])*sx;PY+=(e.clientY-prev[1])*sx;clampPan();draw()}});
-const up=e=>{const wasTap=ptr.size===1&&moved<6;ptr.delete(e.pointerId);if(ptr.size<2)pinch=0;if(!ptr.size)cv.classList.remove("drag");if(wasTap)tap(e)};
-cv.addEventListener("pointerup",up);cv.addEventListener("pointercancel",e=>{ptr.delete(e.pointerId);pinch=0});
-$("zIn").onclick=()=>zoomAt(1.8,W/2,H/2);$("zOut").onclick=()=>zoomAt(1/1.8,W/2,H/2);$("zReset").onclick=()=>{Z=1;PX=PY=0;sel=null;$("info").style.display="none";draw()};
+if(!window.THREE){$("load").textContent="Couldn't load the 3D engine. Try the classic map →";$("load").onclick=()=>location.href="city_classic.html";$("load").style.cursor="pointer";throw new Error("no three")}
 
-// ---- tap a home ----
-let sel=null;
-function tap(e){const[mx,my]=toCv(e.clientX,e.clientY),wx=(mx-PX)/S(),wy=(my-PY)/S();let best=null;
-  for(const d of D){const[x,y,w,h]=d.r;if(wx<x-20||wx>x+w+20||wy<y-20||wy>y+h+20)continue;
-    for(let i=0;i<d.minted;i++){const[px,py]=d.pos[i],dd=Math.hypot(px-wx,py-wy);if(dd<d.cell*.7&&(!best||dd<best.dd))best={k:d.k,i,dd}}}
-  const box=$("info");if(!best){sel=null;box.style.display="none";draw();return}
-  sel=best;const d=IDX[best.k],o=OWN&&OWN.sets[d.k],fl=o?(o.f[best.i]||0):0,oi=o?o.o[best.i]:-1;
+// ---- scene ----
+const cv=$("c"),wrap=$("wrap");
+const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene();scene.background=new THREE.Color("#cfe3ea");
+const cam=new THREE.OrthographicCamera(-1,1,1,-1,-4000,6000);
+const HOME={pos:new THREE.Vector3(620,760,900),target:new THREE.Vector3(40,0,40),zoom:1};
+if(innerWidth<700){HOME.target.set(170,0,80);HOME.pos.set(790,760,960)}
+cam.position.copy(HOME.pos);
+const ctl=new THREE.OrbitControls(cam,cv);
+ctl.target.copy(HOME.target);ctl.enableDamping=true;ctl.dampingFactor=.12;ctl.screenSpacePanning=false;
+ctl.minZoom=.6;ctl.maxZoom=40;ctl.minPolarAngle=.35;ctl.maxPolarAngle=1.18;
+ctl.mouseButtons={LEFT:THREE.MOUSE.PAN,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.ROTATE};
+ctl.touches={ONE:THREE.TOUCH.PAN,TWO:THREE.TOUCH.DOLLY_ROTATE};
+ctl.update();
+
+scene.add(new THREE.HemisphereLight(0xffffff,0x8a8070,.62));
+const sun=new THREE.DirectionalLight(0xfff1dc,.75);sun.position.set(-500,900,450);sun.castShadow=true;
+sun.shadow.mapSize.set(innerWidth<700?2048:4096,innerWidth<700?2048:4096);
+Object.assign(sun.shadow.camera,{left:-900,right:900,top:650,bottom:-650,near:10,far:2600});sun.shadow.bias=-.0006;
+scene.add(sun);
+
+const lam=c=>new THREE.MeshLambertMaterial({color:c});
+const box=(w,h,d,c,x,y,z,sh=true)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),lam(c));m.position.set(x,y+h/2,z);m.receiveShadow=true;m.castShadow=sh;scene.add(m);return m};
+
+// ground: asphalt city base, lake, district pads (sidewalk colour), hills
+box(2600,4,2000,"#9cc77f",0,-6,0,false);                       // countryside
+box(1680,4,960,"#6b6e75",0,-4,Z(470),false);                   // city streets
+const lake=new THREE.Mesh(new THREE.BoxGeometry(2600,3,260),new THREE.MeshLambertMaterial({color:"#4f9fd0"}));lake.position.set(0,-2.5,Z(1040));lake.receiveShadow=true;scene.add(lake);
+box(1680,1,18,"#e3d7bd",0,-.5,Z(902),false);                   // lakeshore promenade
+for(const d of D){const[x,y,w,h]=d.r,pad=10;
+  if(d.lift>4){box(w+pad*2+10,d.lift,h+pad*2+10,"#7fb26b",X(x+w/2),0,Z(y+h/2),false)}   // grassy hill
+  box(w+pad*2,1.6,h+pad*2,d.lift>4?"#a9d18e":"#d6cfbf",X(x+w/2),d.lift,Z(y+h/2),false)}
+// centre lines on the main roads
+const ROADS=[[0,490,1050,490],[0,880,1600,880],[1050,392,1600,392],[625,240,625,880],[1050,392,1050,880],[1255,40,1255,392],[40,40,40,880]];
+for(const[x1,y1,x2,y2]of ROADS){const len=Math.hypot(x2-x1,y2-y1),n=Math.floor(len/22),dx=(x2-x1)/len,dy=(y2-y1)/len;
+  const g=new THREE.InstancedMesh(new THREE.BoxGeometry(9,.4,1.6),new THREE.MeshBasicMaterial({color:"#f2e6b8"}),n);const o=new THREE.Object3D();
+  for(let i=0;i<n;i++){o.position.set(X(x1+dx*(i*22+11)),.2,Z(y1+dy*(i*22+11)));o.rotation.y=-Math.atan2(dy,dx);o.updateMatrix();g.setMatrixAt(i,o.matrix)}scene.add(g)}
+
+// ---- buildings (instanced: one draw call per kind) ----
+const PAL={tower:["#e9e4d8","#cfc8b6","#b9b2a3","#d8c3a5","#a9b4bf","#c6ccd2","#e2d2b6"],town:["#b5543c","#c66a4a","#a8493a","#d38b5d","#9c5a4a"],house:["#f1eadc","#e8dcc6","#ddd3c0","#f4f0e6"],estate:["#ffffff","#f6f1e7"]};
+const PICK=[];          // PICK[meshId][instanceId] -> {k,i}
+const MESHES=[];
+function inst(geo,n){const m=new THREE.InstancedMesh(geo,new THREE.MeshLambertMaterial({color:0xffffff}),Math.max(n,1));m.castShadow=true;m.receiveShadow=true;m.count=n;scene.add(m);return m}
+const roofGeo=new THREE.ConeGeometry(.75,.55,4,1);roofGeo.rotateY(Math.PI/4);
+const unit=new THREE.BoxGeometry(1,1,1);unit.translate(0,.5,0);
+let B=null;      // built meshes, rebuilt when owner data arrives
+function flagsOf(d){const o=OWN&&OWN.sets[d.k];return o?o.f:null}
+function build(){
+  if(B)for(const m of B.all){scene.remove(m);m.dispose&&m.dispose()}
+  const o3=new THREE.Object3D(),c=new THREE.Color();
+  const groups={tower:[],town:[],house:[],estate:[],lot:[]};
+  for(const d of D){const f=flagsOf(d);
+    for(let i=0;i<d.minted;i++){const fl=f?(f[i]||0):(i>=d.minted-d.fb?2:0);(fl&2?groups.lot:groups[d.style]).push([d,i,fl])}}
+  const bodies=inst(unit,groups.tower.length+groups.town.length+groups.house.length+groups.estate.length);
+  const roofs=inst(roofGeo,groups.house.length+groups.estate.length);
+  const caps=inst(unit,groups.tower.length+groups.town.length);
+  const lots=inst(unit,groups.lot.length);lots.castShadow=false;
+  const pick=[],lotPick=[];let bi=0,ri=0,ci=0;
+  const put=(m,idx,x,y,z,sx,sy,sz,col,ry=0)=>{o3.position.set(x,y,z);o3.scale.set(sx,sy,sz);o3.rotation.set(0,ry,0);o3.updateMatrix();m.setMatrixAt(idx,o3.matrix);m.setColorAt(idx,c.set(col))};
+  for(const st of ["tower","town","house","estate"])for(const[d,i,fl]of groups[st]){
+    const[px,py]=d.pos[i],x=X(px),z=Z(py),s=d.cell,r=rnd(d.k,i),y=d.lift+1.6,pal=PAL[st],col=pal[Math.floor(r*pal.length)];
+    let h,w=s*.78;
+    if(st==="tower"){const near=1-(py-d.r[1])/d.r[3];h=s*(2.2+r*4.5+near*2.5);w=s*(.62+r*.18)}
+    else if(st==="town")h=s*(.9+r*.6);
+    else if(st==="house")h=s*.48;
+    else{h=s*.34;w=s*.62}
+    const pk={k:d.k,i,base:col};put(bodies,bi,x,y,z,w,h,w*(st==="town"?1:.86),col);pick.push(pk);bi++;
+    if(st==="house"||st==="estate"){put(roofs,ri,x,y+h+s*.18*(st==="estate"?1.2:1),z,w*(st==="estate"?1.05:1),s*(st==="estate"?.7:.62),w*.9,d.col);pk.ri=ri;pk.rc=d.col;ri++}
+    else{const cc=["#7d756a","#8f8a80","#6e6a62","#a39d92"][Math.floor(r*40)%4];put(caps,ci,x,y+h,z,w*1.04,s*.12,w*1.04,cc);pk.ci=ci;pk.cc=cc;ci++}}
+  groups.lot.forEach(([d,i],j)=>{const[px,py]=d.pos[i];put(lots,j,X(px),d.lift+1.6,Z(py),d.cell*.8,.25,d.cell*.8,"#9b9b98");lotPick.push({k:d.k,i,base:"#9b9b98"})});
+  for(const m of [bodies,roofs,caps,lots]){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}
+  B={bodies,roofs,caps,lots,pick,lotPick,all:[bodies,roofs,caps,lots]};
+  if(HL)highlight(HL)}
+
+// ---- extras: trees, the plaza with big letters, the arena, cars, district signs ----
+const treeGeo=new THREE.SphereGeometry(1,7,6),trunkGeo=new THREE.CylinderGeometry(.18,.22,1,5);trunkGeo.translate(0,.5,0);
+const TREES=[];
+for(let x=20;x<1600;x+=13)TREES.push([x,893+rnd("t",x)*6,1.2]);            // lakeshore row
+for(let i=0;i<220;i++){const a=rnd("p",i),b=rnd("q",i);TREES.push([70+a*500,80+b*380,1.3])}   // big park (top-left)
+for(const d of D){const[x,y,w,h]=d.r;for(let t=0;t<(w+h)/18;t++){const side=t%4,u=rnd(d.k+"t",t);
+  const p=side===0?[x+u*w,y-6]:side===1?[x+u*w,y+h+6]:side===2?[x-6,y+u*h]:[x+w+6,y+u*h];TREES.push([p[0],p[1],d.lift>4?1.1:.8,d.lift])}}
+{const n=TREES.length,crowns=inst(treeGeo,n),trunks=inst(trunkGeo,n),o=new THREE.Object3D(),c=new THREE.Color();
+  TREES.forEach(([x,y,s,lift=0],i)=>{const k=4.5*s,yy=(lift||0)+1.6;o.position.set(X(x),yy,Z(y));o.scale.set(k,k*1.6,k);o.updateMatrix();trunks.setMatrixAt(i,o.matrix);trunks.setColorAt(i,c.set("#7a5a3a"));
+    o.position.set(X(x),yy+k*1.9,Z(y));o.scale.set(k*1.25,k*1.15,k*1.25);o.updateMatrix();crowns.setMatrixAt(i,o.matrix);crowns.setColorAt(i,c.set(["#5f9e4f","#6fb05a","#4f8c45"][i%3]))})}
+// park lawn + plaza
+box(520,1.2,400,"#9ccc80",X(320),0,Z(280),false);
+box(330,1.4,120,"#e6dccb",X(330),.2,Z(330),false);
+// arena: round, purple roof, with a "15" banner (original design)
+{const g=new THREE.Group();const base=new THREE.Mesh(new THREE.CylinderGeometry(70,74,26,40),lam("#d9d4cc"));base.position.y=13;
+ const ring=new THREE.Mesh(new THREE.CylinderGeometry(72,72,6,40),lam("#5b2fa0"));ring.position.y=24;
+ const roof=new THREE.Mesh(new THREE.CylinderGeometry(52,70,10,40),lam("#ece8f4"));roof.position.y=31;
+ for(const m of [base,ring,roof]){m.castShadow=m.receiveShadow=true;g.add(m)}
+ g.add(signMesh("15","#5b2fa0","#fff",44,30,0,52,0,true));
+ g.position.set(X(150),0,Z(690));scene.add(g)}
+// cars along the main roads
+const CARS=[];{const geo=new THREE.BoxGeometry(7,3.2,3.6);geo.translate(0,1.6,0);const n=70,m=inst(geo,n),cc=new THREE.Color();m.castShadow=false;
+  for(let i=0;i<n;i++){const r=ROADS[i%ROADS.length];CARS.push({r,t:rnd("c",i),v:(.018+rnd("v",i)*.03)*(i%2?1:-1),lane:i%2?4:-4});m.setColorAt(i,cc.set(["#d94b3b","#f2c94c","#3a7bd5","#f4f4f4","#2b2b2b","#5b2fa0"][i%6]))}
+  CARS.mesh=m}
+function moveCars(dt){const o=new THREE.Object3D();CARS.forEach((c,i)=>{const[x1,y1,x2,y2]=c.r,len=Math.hypot(x2-x1,y2-y1);c.t=(c.t+c.v*dt*60/len*8+1)%1;
+  const dx=(x2-x1)/len,dy=(y2-y1)/len,x=x1+(x2-x1)*c.t-dy*c.lane,y=y1+(y2-y1)*c.t+dx*c.lane;o.position.set(X(x),0,Z(y));o.rotation.y=-Math.atan2(dy,dx)+(c.v<0?Math.PI:0);o.updateMatrix();CARS.mesh.setMatrixAt(i,o.matrix)});
+  CARS.mesh.instanceMatrix.needsUpdate=true}
+
+// text on a canvas -> sign
+function signMesh(txt,bg,fg,w,h,x,y,z,billboard){const cvs=document.createElement("canvas"),k=8;cvs.width=w*k;cvs.height=h*k;const g=cvs.getContext("2d");
+  g.fillStyle=bg;g.beginPath();g.roundRect?g.roundRect(0,0,cvs.width,cvs.height,h*k*.18):g.rect(0,0,cvs.width,cvs.height);g.fill();
+  g.fillStyle=fg;g.font=`900 ${Math.round(h*k*.62)}px 'Barlow Condensed',Impact,sans-serif`;g.textAlign="center";g.textBaseline="middle";g.fillText(txt,cvs.width/2,cvs.height/2+h*k*.04,cvs.width*.92);
+  const tex=new THREE.CanvasTexture(cvs);tex.anisotropy=4;
+  if(billboard){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:true}));s.scale.set(w,h,1);s.position.set(x,y,z);return s}
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex}));m.position.set(x,y,z);return m}
+const SIGNS=[];
+function addSigns(){for(const d of D){const[x,y,w,h]=d.r,s=signMesh(d.name,"rgba(18,21,30,.88)",d.col==="#f4f4f4"?"#ffffff":d.col,Math.max(110,d.name.length*11.5),26,X(x+w/2),d.lift+(d.style==="tower"?110:d.style==="estate"?48:40),Z(y+h/2),true);s.userData.k=d.k;scene.add(s);SIGNS.push(s)}}
+
+// big 3D letters in the plaza
+function addLetters(){fetch(FONT_URL).then(r=>r.json()).then(j=>{const font=new THREE.Font(j);
+  const mk=(t,size,x,z,col)=>{const g=new THREE.TextGeometry(t,{font,size,height:size*.55,curveSegments:3,bevelEnabled:true,bevelThickness:1.2,bevelSize:.8,bevelSegments:1});g.computeBoundingBox();
+    const bb=g.boundingBox;g.translate(-(bb.max.x+bb.min.x)/2,0,0);g.rotateX(-Math.PI/2*0);const m=new THREE.Mesh(g,[lam(col),lam("#3b1d6e")]);m.position.set(x,1.6,z);m.castShadow=m.receiveShadow=true;scene.add(m)};
+  mk("VINCE CARTER",36,X(320),Z(345),"#6a3fc4")}).catch(()=>{scene.add(signMesh("VINCE CARTER","#6a3fc4","#fff",220,40,X(330),40,Z(340),true))})}
+
+// ---- sizing & render loop ----
+function size(){const w=wrap.clientWidth,h=wrap.clientHeight,asp=w/h,half=w<700?760:430;
+  cam.left=-half*asp;cam.right=half*asp;cam.top=half;cam.bottom=-half;cam.updateProjectionMatrix();renderer.setSize(w,h,false)}
+size();addEventListener("resize",size);
+let spin=false,last=performance.now(),fly=null;
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+  if(fly){const k=Math.min(1,(now-fly.t0)/700),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;ctl.target.lerpVectors(fly.a,fly.b,e);cam.position.lerpVectors(fly.pa,fly.pb,e);cam.zoom=fly.za+(fly.zb-fly.za)*e;cam.updateProjectionMatrix();if(k>=1)fly=null}
+  if(spin){const v=cam.position.clone().sub(ctl.target);v.applyAxisAngle(new THREE.Vector3(0,1,0),dt*.12);cam.position.copy(ctl.target).add(v)}
+  moveCars(dt);ctl.update();
+  for(const s of SIGNS)s.visible=cam.zoom<5;
+  renderer.render(scene,cam);requestAnimationFrame(loop)}
+function flyTo(x,y,z,zoom){const off=cam.position.clone().sub(ctl.target);fly={t0:performance.now(),a:ctl.target.clone(),b:new THREE.Vector3(x,y,z),pa:cam.position.clone(),pb:new THREE.Vector3(x,y,z).add(off),za:cam.zoom,zb:zoom}}
+$("zIn").onclick=()=>{cam.zoom=Math.min(40,cam.zoom*1.6);cam.updateProjectionMatrix()};
+$("zOut").onclick=()=>{cam.zoom=Math.max(.6,cam.zoom/1.6);cam.updateProjectionMatrix()};
+$("zReset").onclick=()=>{fly={t0:performance.now(),a:ctl.target.clone(),b:HOME.target.clone(),pa:cam.position.clone(),pb:HOME.pos.clone(),za:cam.zoom,zb:1};$("info").style.display="none";clearHL()};
+$("tilt").onclick=e=>{wrap.classList.toggle("flat");e.currentTarget.classList.toggle("on",!wrap.classList.contains("flat"))};
+$("spin").onclick=e=>{spin=!spin;e.currentTarget.classList.toggle("on",spin)};
+
+// ---- tap a building ----
+const ray=new THREE.Raycaster(),mv=new THREE.Vector2();let down=null;
+cv.addEventListener("pointerdown",e=>{down=[e.clientX,e.clientY];spin=false;$("spin").classList.remove("on")});
+cv.addEventListener("pointerup",e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>6||!B)return;
+  const b=cv.getBoundingClientRect();mv.set((e.clientX-b.left)/b.width*2-1,-(e.clientY-b.top)/b.height*2+1);ray.setFromCamera(mv,cam);
+  const hit=ray.intersectObjects([B.bodies,B.lots],false)[0];const box=$("info");
+  if(!hit){box.style.display="none";return}
+  const p=(hit.object===B.bodies?B.pick:B.lotPick)[hit.instanceId];if(!p)return;
+  const d=IDX[p.k],o=OWN&&OWN.sets[d.k],fl=o?(o.f[p.i]||0):0,oi=o?o.o[p.i]:-1;
   const who=fl&2?"Retired (empty lot)":fl&4?"Still in a sealed pack 📦":oi!=null&&oi>=0&&OWN.names[oi]?OWN.names[oi]:"—";
-  box.innerHTML=`<b>${d.name} · #${best.i+1}</b><small>${d.sub} · ${d.tier}</small><div style="margin-top:6px">${fl&2?"🪦":"🏠"} ${esc(who)}${fl&1&&!(fl&2)?" · 🔒 locked":""}</div>`;
-  box.style.display="block";if(Z<3)zoomAt(3.2,mx,my);else draw()}
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  box.innerHTML=`<b>${d.name} · #${p.i+1}</b><small>${d.sub} · ${d.tier}</small><div style="margin-top:6px">${fl&2?"🪦":"🏠"} ${esc(who)}${fl&1&&!(fl&2)?" · 🔒 locked":""}</div>`;
+  box.style.display="block";
+  if(cam.zoom<3){const[px,py]=d.pos[p.i];flyTo(X(px),d.lift,Z(py),4)}});
 
-size();stats();draw();
-addEventListener("resize",()=>{size();clampPan();draw()});
-fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/arena_owners.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{
-  if(!d||!d.sets)return;OWN={names:d.names||[],sets:{}};for(const[k,v]of Object.entries(d.sets))OWN.sets[k]={o:v.o||[],f:v.f||[]};stats();draw()}).catch(()=>{});
-if(document.fonts)document.fonts.ready.then(draw);
+// ---- find a collector: their buildings turn gold ----
+let HL=null;
+function paint(p,i,body,top){B.bodies.setColorAt(i,body);if(p.ri!=null)B.roofs.setColorAt(p.ri,top);if(p.ci!=null)B.caps.setColorAt(p.ci,top)}
+function dirtyCols(){for(const m of [B.bodies,B.roofs,B.caps])if(m.instanceColor)m.instanceColor.needsUpdate=true}
+function clearHL(){if(!B)return;HL=null;const c=new THREE.Color(),t=new THREE.Color();B.pick.forEach((p,i)=>paint(p,i,c.set(p.base),t.set(p.rc||p.cc||p.base)));dirtyCols();$("found").style.display="none"}
+function highlight(name){if(!OWN||!B)return;const n=name.toLowerCase(),oi=OWN.names.findIndex(x=>String(x).toLowerCase()===n);
+  clearHL();if(oi<0){$("found").textContent="No collector by that name";$("found").style.display="block";return}
+  HL=name;let cnt=0,sx=0,sz=0,sy=0;const gold=new THREE.Color("#ffc400"),goldTop=new THREE.Color("#ff8a00"),dim=new THREE.Color("#d4d2cc");
+  B.pick.forEach((p,i)=>{const o=OWN.sets[p.k];if(!(o&&o.o[p.i]===oi&&!((o.f[p.i]||0)&2))){paint(p,i,dim,dim);return}paint(p,i,gold,goldTop);cnt++;const d=IDX[p.k],[px,py]=d.pos[p.i];sx+=X(px);sz+=Z(py);sy+=d.lift});
+  dirtyCols();
+  $("found").textContent=cnt?`✨ ${OWN.names[oi]} owns ${fmt(cnt)} home${cnt>1?"s":""} (in gold) · tap ⟲ to clear`:`${OWN.names[oi]} has no homes right now`;$("found").style.display="block";
+  if(cnt)flyTo(sx/cnt,sy/cnt,sz/cnt,cnt===1?5:1.6)}
+$("q").addEventListener("change",e=>{const v=e.target.value.trim();v?highlight(v):clearHL()});
+$("q").addEventListener("keydown",e=>{if(e.key==="Enter"){const v=e.target.value.trim();v?highlight(v):clearHL()}});
+
+// ---- go ----
+build();addSigns();addLetters();$("load").style.display="none";requestAnimationFrame(loop);
+fetch(DATA_URL+"?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{
+  if(!d||!d.sets)return;OWN={names:d.names||[],sets:{}};for(const[k,v]of Object.entries(d.sets))OWN.sets[k]={o:v.o||[],f:v.f||[]};
+  $("names").innerHTML=OWN.names.slice(0,4000).map(n=>`<option value="${esc(n)}">`).join("");
+  const q=new URLSearchParams(location.search).get("owner");stats();build();if(q){$("q").value=q;highlight(q)}}).catch(()=>{});
 </script>
 </body>
 </html>
