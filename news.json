@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-05",
+ "updated": "2026-11-06",
  "items": [
   {
    "date": "2026-11-04",
@@ -191,6 +191,15 @@
    "promise": "A WNBA Finals drop (Playoffs, Semifinals and Finals sets) once a champion is crowned. Priority access details 'to come.'",
    "due": "2026-11-30",
    "source": "Top Shot blog (Sep 24, 2026)"
+  },
+  {
+   "date": "2026-05-07",
+   "title": "WNBA Signature Series 1-of-1 airdrops",
+   "status": "coming",
+   "due": "2026-11-01",
+   "promise": "The #1 collector of each of the 16 partnered WNBA rookies (snapshot Fri, Oct 30 at 12 PM ET) earns her autographed Signature Series 1-of-1, airdropped November 1.",
+   "note": "Not delivered yet as of Nov 6, based on community reports. We'll check it off when it lands.",
+   "source": "WNBA 2026 roadmap (May 7, 2026) + Top Shot email"
   }
  ],
  "feedback": [
