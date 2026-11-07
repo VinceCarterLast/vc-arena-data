@@ -388,6 +388,24 @@
    "detail": "30-minute auction: trade in Rookie Debut moments, top 10 bids each won a Cam Boozer Tip-Off Pack. Every moment counted at its edition's median sale price."
   },
   {
+   "date": "2026-11-07",
+   "kind": "ts",
+   "title": "Rookie Debut Case trade-in auction opens (3 PM ET)",
+   "detail": "Trade in NBA Rookie Debut moments from any season. Top bid wins a $2,500 Rookie Debut Case (delivered Nov 11). Closes Mon, Nov 9 at 3 PM ET."
+  },
+  {
+   "date": "2026-11-07",
+   "kind": "ts",
+   "title": "Acuff Jr., Flagg & Thompson trade-in auction opens (3 PM ET)",
+   "detail": "Trade in any NBA Rookie Debut, or Cooper Flagg / Amen Thompson moments with the Top Shot Debut badge or Rare and up. Top 25 bids each win 2 Acuff, Flagg & Thompson Tip-Off Packs (could hold the Acuff Galactic /5). Closes Mon, Nov 9 at 3 PM ET."
+  },
+  {
+   "date": "2026-11-07",
+   "kind": "ts",
+   "title": "Caleb Wilson trade-in auction opens (3 PM ET)",
+   "detail": "Trade in NBA Rookie Debut moments. Top 25 bids each win 2 Caleb Wilson Tip-Off Packs (50 packs, one may hold the signed Wilson /5). Closes Mon, Nov 9 at 3 PM ET."
+  },
+  {
    "date": "2026-11-09",
    "kind": "ts",
    "title": "Luka trade-in ends (3 PM ET)",
@@ -408,10 +426,34 @@
    "detail": "Last chance to pre-order the Caleb Wilson Tip-Off Pack."
   },
   {
+   "date": "2026-11-09",
+   "kind": "ts",
+   "title": "Rookie Debut Case trade-in auction closes (3 PM ET)",
+   "detail": "Last chance to bid Rookie Debut moments for the $2,500 Case."
+  },
+  {
+   "date": "2026-11-09",
+   "kind": "ts",
+   "title": "Acuff Jr., Flagg & Thompson trade-in auction closes (3 PM ET)",
+   "detail": "Last chance to bid for 2 Acuff, Flagg & Thompson Tip-Off Packs."
+  },
+  {
+   "date": "2026-11-09",
+   "kind": "ts",
+   "title": "Caleb Wilson trade-in auction closes (3 PM ET)",
+   "detail": "Last chance to bid for 2 Caleb Wilson Tip-Off Packs."
+  },
+  {
+   "date": "2026-11-09",
+   "kind": "ts",
+   "title": "The Wheel: final slot closes (3 PM ET)",
+   "detail": "Lock a moment of the weekend's assists + rebounds leader to finish the week and earn Tatum + Wembanyama."
+  },
+  {
    "date": "2026-11-10",
    "kind": "ts",
    "title": "Public pre-orders open (3 PM ET)",
-   "detail": "Anyone can order: Case $2,500 · Box $250 · Collector Pack $39.",
+   "detail": "Anyone can order: Case $2,500 · Box $250 · Collector Pack $39. Public draw: Round 1 = half the public packs, one entry per collector. Round 2 = the other half, every order still in (more orders, more chances). Limits: 10 Cases, 25 Boxes, 50 Collector Packs, guaranteed orders included.",
    "repeat": false
   },
   {
