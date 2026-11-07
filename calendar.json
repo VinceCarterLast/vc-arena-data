@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-05",
+ "updated": "2026-11-07",
  "events": [
   {
    "date": "1977-01-26",
@@ -376,6 +376,18 @@
    "detail": "Last chance to pre-order the Acuff Jr., Flagg and Thompson Tip-Off Pack."
   },
   {
+   "date": "2026-11-06",
+   "kind": "ts",
+   "title": "Caleb Wilson Tip-Off Pack pre-order opens",
+   "detail": "1,500 packs · max 25 per order · closes Mon, Nov 9 at 3 PM ET. One of only five Caleb Wilson Rookie Debut Galactic /5s, signed, is hidden in these packs."
+  },
+  {
+   "date": "2026-11-06",
+   "kind": "ts",
+   "title": "Stress test trade-in auction (10:30–11 PM ET)",
+   "detail": "30-minute auction: trade in Rookie Debut moments, top 10 bids each won a Cam Boozer Tip-Off Pack. Every moment counted at its edition's median sale price."
+  },
+  {
    "date": "2026-11-09",
    "kind": "ts",
    "title": "Luka trade-in ends (3 PM ET)",
@@ -388,6 +400,12 @@
    "title": "Bills at Vikings",
    "detail": "8:15 PM ET · Monday Night Football · score predictor giveaway on X",
    "repeat": false
+  },
+  {
+   "date": "2026-11-09",
+   "kind": "ts",
+   "title": "Caleb Wilson Tip-Off Pack pre-order closes (3 PM ET)",
+   "detail": "Last chance to pre-order the Caleb Wilson Tip-Off Pack."
   },
   {
    "date": "2026-11-10",
