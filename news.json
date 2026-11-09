@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-06",
+ "updated": "2026-11-09",
  "items": [
   {
    "date": "2026-11-04",
@@ -170,11 +170,12 @@
    "source": "Top Shot blog (Nov 2, 2026)"
   },
   {
-   "date": "2026-11-02",
-   "title": "Exclusive packs for completed Rookie Debut and Base sets",
+   "date": "2026-11-06",
+   "title": "Set rewards: exclusive packs + challenge reward moments",
    "status": "coming",
-   "promise": "Completing Rookie Debut and Base Set earns an exclusive pack once the sets close. Fresh Threads closes after the trade deadline with its own reward.",
-   "source": "Top Shot blog (Nov 2, 2026)"
+   "promise": "Every set earns a reward this season. Finish a flagship set (Base Set, Metallic Gold LE, Holo Icon) or rookie set (Rookie Debut, Origins, Freshman Gems, Rookie Revelation) for an exclusive pack. Finish any other set for a challenge reward moment, minted to exactly the number of collectors who complete it.",
+   "source": "Top Shot blog (Nov 6, 2026)",
+   "note": "Challenge reward moments are back. First one: Season Tip-Off (Brunson banner). Fresh Threads closes after the trade deadline with its own reward."
   },
   {
    "date": "2026-10-14",
@@ -204,28 +205,1085 @@
  ],
  "feedback": [
   {
+   "title": "Team checklists return",
+   "topic": "Rewards & points",
+   "status": "ack",
    "date": "2026-10-30",
-   "title": "Make the referral link easy to find",
-   "request": "Add a \"Refer & Earn\" link in the menu or profile, with a copy-link button and a page showing referrals and earnings.",
-   "status": "heard",
-   "note": "Sent through Top Shot's feedback channel.",
-   "response": ""
+   "first": "2026-07-18",
+   "count": 11,
+   "votes": 59,
+   "request": "Team checklists and their bonuses were removed on Jul 18 without warning; collectors asked for an explanation, a timeline for their return, and recognition for those who kept sets locked for years.",
+   "response": "(Jul 18, 2026) team checklists will return with benefits and rewards; details to come."
   },
   {
-   "date": "2026-10-30",
-   "title": "Show new users they're joining with an invite",
-   "request": "When someone opens a referral link, show a banner like \"You're joining with [username]'s invite\" through sign-up, so both sides know it counted.",
+   "title": "Expire very old listings",
+   "topic": "Marketplace",
    "status": "heard",
-   "note": "Sent through Top Shot's feedback channel.",
-   "response": ""
+   "date": "2026-11-05",
+   "first": "2026-07-07",
+   "count": 4,
+   "votes": 21,
+   "request": "Give listings an end point (6 months to 2 years) so years-old prices stop cluttering older moments and price discovery improves."
   },
   {
+   "title": "Show remaining (unburned) supply",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-08-17",
+   "first": "2026-08-06",
+   "count": 3,
+   "votes": 15,
+   "request": "Show 'after burns' supply next to the original mint count on moment pages, analytics and the marketplace."
+  },
+  {
+   "title": "Reward real collectors in drops",
+   "topic": "Auctions & drops",
+   "status": "partial",
+   "date": "2026-09-23",
+   "first": "2026-09-23",
+   "count": 2,
+   "votes": 16,
+   "request": "Spread drops across more collectors instead of rewarding the biggest credit limits, e.g. priority access for collectors who hold or lock that league's moments.",
+   "note": "Tip-Off Packs (Oct 20) added a one-pack-per-collector first draw, and Rookie Debut quests gave guaranteed orders and priority access for locked sets."
+  },
+  {
+   "title": "Follow up on leadership check-ins",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2023-02-05",
+   "first": "2023-02-05",
+   "count": 1,
+   "votes": 19,
+   "request": "In Feb 2023, Dapper leadership told the VIP channel they'd be back after All-Star Weekend; collectors are still waiting almost four years later. Regular check-ins (even short ones) would help rebuild trust.",
+   "note": "Ties to 'Hand over open promises when staff leave' and 'Transparency about the platform's future'."
+  },
+  {
+   "title": "Pack odds on every pack",
+   "topic": "Auctions & drops",
+   "status": "partial",
+   "date": "2026-10-22",
+   "first": "2026-08-18",
+   "count": 3,
+   "votes": 11,
+   "request": "Show clear pack odds on all packs, and avoid pre-selling packs before their contents are minted; waiting a day is fine.",
+   "note": "Rookie Debut guide (Nov 2) published pull odds and a 'Remaining in Packs' view showing where every unopened copy sits."
+  },
+  {
+   "title": "No partial 'sell-outs' then restocks",
+   "topic": "Auctions & drops",
+   "status": "heard",
+   "date": "2026-08-18",
+   "first": "2026-08-18",
+   "count": 2,
+   "votes": 14,
+   "request": "Don't list half a drop, show it as sold out, then restock the rest."
+  },
+  {
+   "title": "Edit a listing's price",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-07-14",
+   "first": "2026-07-14",
+   "count": 1,
+   "votes": 17,
+   "request": "Change a listing price without having to delist and relist."
+  },
+  {
+   "title": "Serial number on the moment itself",
+   "topic": "Content",
+   "status": "heard",
+   "date": "2026-07-21",
+   "first": "2026-07-21",
+   "count": 1,
+   "votes": 16,
+   "request": "Show the serial on the moment, with special badges for #1, jersey-match and perfect serials."
+  },
+  {
+   "title": "Top Shot Debut badge first in filters",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-08-19",
+   "first": "2026-08-19",
+   "count": 1,
+   "votes": 14,
+   "request": "Reorder the badge filter so Top Shot Debut and rookie badges appear at the top."
+  },
+  {
+   "title": "Lower reservation limits",
+   "topic": "Auctions & drops",
+   "status": "partial",
+   "date": "2026-08-28",
+   "first": "2026-08-25",
+   "count": 2,
+   "votes": 10,
+   "request": "Standard reservation limits instead of very large ones that put big holds on credit cards, and show how many accounts reserved.",
+   "note": "Rookie Debut drop capped orders at 10 Cases, 25 Boxes and 50 Collector Packs per collector."
+  },
+  {
+   "title": "Heads-up before roadmap posts",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2026-10-11",
+   "first": "2026-10-11",
+   "count": 1,
+   "votes": 12,
+   "request": "Give a few days' notice before big roadmap posts (like last year's 5-day heads-up) so collectors with work commitments aren't at a disadvantage."
+  },
+  {
+   "title": "Draw instead of first-come races for quests",
+   "topic": "Auctions & drops",
+   "status": "partial",
+   "date": "2026-11-05",
+   "first": "2026-11-05",
+   "count": 1,
+   "votes": 11,
+   "request": "Replace race-to-click guaranteed spots with a time window (e.g. one hour to claim) followed by a random draw, so collectors don't have to be online at an exact second and the site isn't overloaded.",
+   "note": "Rookie Debut early access and public orders use draws, but guaranteed spots are still first-come."
+  },
+  {
+   "title": "Share season details before the season starts",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2026-10-23",
+   "first": "2026-10-23",
+   "count": 3,
+   "votes": 5,
+   "request": "Publish the full plan (leaderboards, set rewards, the Store, team checklists, historic set rewards) before the season starts to build anticipation, so collectors can plan whether to collect for this season or across seasons."
+  },
+  {
+   "title": "More Trade Ticket packs and burn challenges",
+   "topic": "Auctions & drops",
+   "status": "heard",
+   "date": "2026-07-26",
+   "first": "2026-07-26",
+   "count": 1,
+   "votes": 11,
+   "request": "Regular Trade Ticket packs or burn challenges."
+  },
+  {
+   "title": "Unique owners count per edition",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-09-07",
+   "first": "2026-09-07",
+   "count": 2,
+   "votes": 7,
+   "request": "Show how many unique collectors own each edition in its stats."
+  },
+  {
+   "title": "Share how long the licenses run",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2026-08-10",
+   "first": "2026-07-06",
+   "count": 2,
+   "votes": 7,
+   "request": "Clearly state how long the league and players association licenses last, so collectors can plan."
+  },
+  {
+   "title": "All-time leaderboard rewards",
+   "topic": "Rewards & points",
+   "status": "heard",
+   "date": "2026-10-22",
+   "first": "2026-10-22",
+   "count": 4,
+   "votes": 0,
+   "request": "Clarify whether all-time team and player leaderboards will earn rewards this season."
+  },
+  {
+   "title": "Confirm whether Top Shot is out of beta",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2026-10-09",
+   "first": "2026-10-09",
+   "count": 2,
+   "votes": 6,
+   "request": "A formal answer (and date) on whether Top Shot has officially exited beta, and consistency that matches it."
+  },
+  {
+   "title": "Bring back commentary clips",
+   "topic": "Content",
+   "status": "heard",
+   "date": "2026-09-29",
+   "first": "2026-08-12",
+   "count": 3,
+   "votes": 3,
+   "request": "Restore extra video and commentary clips that used to be attached to some moments."
+  },
+  {
+   "title": "Accurate 'selling fast' labels",
+   "topic": "Auctions & drops",
+   "status": "heard",
+   "date": "2026-08-27",
+   "first": "2026-08-27",
+   "count": 1,
+   "votes": 9,
+   "request": "Only show 'selling fast' when items really are, e.g. not after 3 sales in 24 hours."
+  },
+  {
+   "title": "Launch Historic Fast Break with legends drops",
+   "topic": "Fast Break",
+   "status": "done",
+   "date": "2026-08-26",
+   "first": "2026-08-26",
+   "count": 1,
+   "votes": 9,
+   "request": "Have Historic Fast Break ready when legend (Run It Back) drops release.",
+   "note": "Historic Fast Break returned with the new season (Oct 20, 2026).",
+   "delivered": "2026-10-20"
+  },
+  {
+   "title": "Bring back offer notifications",
+   "topic": "Notifications",
+   "status": "ack",
+   "date": "2026-11-07",
+   "first": "2026-11-07",
+   "count": 2,
+   "votes": 5,
+   "request": "Email or push alerts when someone makes an offer on your moments.",
+   "response": "(Nov 7) notifications will be back."
+  },
+  {
+   "title": "More variety in Pro rookie-night stats",
+   "topic": "Fast Break",
+   "status": "heard",
+   "date": "2026-10-03",
+   "first": "2026-10-03",
+   "count": 1,
+   "votes": 8,
+   "request": "Pro runs had every rookie-required night use assists (or assists + steals), using up the same players; vary the stats."
+  },
+  {
+   "title": "Transparency about the platform's future",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2026-10-03",
+   "first": "2026-10-03",
+   "count": 2,
+   "votes": 4,
+   "request": "More openness from Dapper Labs about long-term plans, so collectors can buy with confidence that features will still exist next year."
+  },
+  {
+   "title": "Whole-dollar pack prices",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-09-16",
+   "first": "2026-09-16",
+   "count": 1,
+   "votes": 7,
+   "request": "Use whole-dollar prices for pack listings so sellers aren't undercut a cent at a time."
+  },
+  {
+   "title": "All versions on one page",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-08-26",
+   "first": "2026-08-26",
+   "count": 1,
+   "votes": 7,
+   "request": "See listings, offers and activity for all parallels of a moment on one page instead of clicking through each."
+  },
+  {
+   "title": "Leaderboards for active collectors",
+   "topic": "Rewards & points",
+   "status": "heard",
+   "date": "2026-07-18",
+   "first": "2026-07-18",
+   "count": 1,
+   "votes": 7,
+   "request": "Consider whether long-inactive accounts should keep topping leaderboards and earning rewards."
+  },
+  {
+   "title": "Explain how leaderboard scores work",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2026-10-21",
+   "first": "2026-09-17",
+   "count": 3,
+   "votes": 0,
+   "request": "Post clearly whether moments must be locked to count, whether score is based on average sale price or price paid, and whether it's fixed at lock or changes over time."
+  },
+  {
+   "title": "Historic set-locking rewards",
+   "topic": "Rewards & points",
+   "status": "heard",
+   "date": "2026-10-15",
+   "first": "2026-10-15",
+   "count": 2,
+   "votes": 3,
+   "request": "A plan for set-locking rewards on older (historic) sets."
+  },
+  {
+   "title": "Fairer Fast Break prize structure",
+   "topic": "Fast Break",
+   "status": "heard",
+   "date": "2026-09-28",
+   "first": "2026-09-28",
+   "count": 1,
+   "votes": 6,
+   "request": "Rework WNBA Fast Break prizes so wins feel worth it."
+  },
+  {
+   "title": "Support for NFL ALL DAY collectors",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2026-09-06",
+   "first": "2026-09-06",
+   "count": 2,
+   "votes": 3,
+   "request": "Keep looking after NFL ALL DAY collectors and their Discord after the license change, which also affects Top Shot collectors' confidence."
+  },
+  {
+   "title": "Leave value in packs",
+   "topic": "Auctions & drops",
+   "status": "heard",
+   "date": "2026-08-26",
+   "first": "2026-08-26",
+   "count": 1,
+   "votes": 6,
+   "request": "Price and build drops so collectors come away with some value ('meat on the bone'), building long-term goodwill."
+  },
+  {
+   "title": "Require owning the moments you play for prizes",
+   "topic": "Fast Break",
+   "status": "heard",
+   "date": "2026-08-23",
+   "first": "2026-08-23",
+   "count": 1,
+   "votes": 6,
+   "request": "For prize runs, require ownership (e.g. a temporary lock) of moments used, or a holding period on gifted moments, so moments aren't passed between accounts."
+  },
+  {
+   "title": "Bulk offers",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-07-19",
+   "first": "2026-07-19",
+   "count": 1,
+   "votes": 6,
+   "request": "Place many offers on the same moment at once (e.g. 100 offers of $2)."
+  },
+  {
+   "title": "Focus on long-term collector value",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2026-07-06",
+   "first": "2026-07-06",
+   "count": 2,
+   "votes": 3,
+   "request": "Show care for whether moments hold value over time, and consider long-time collectors when changing rules."
+  },
+  {
+   "title": "Keep Fast Break results visible after a run ends",
+   "topic": "Fast Break",
+   "status": "heard",
+   "date": "2026-11-02",
+   "first": "2026-11-02",
+   "count": 1,
+   "votes": 5,
+   "request": "Don't hide Fast Break at the end of a run, so collectors can check final results."
+  },
+  {
+   "title": "Bring back gift links",
+   "topic": "Social",
+   "status": "heard",
+   "date": "2026-09-09",
+   "first": "2026-08-10",
+   "count": 2,
+   "votes": 1,
+   "request": "Gift links that let someone claim a moment and sign up in one step, which helps bring in new collectors."
+  },
+  {
+   "title": "Rethink parallels",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-08-27",
+   "first": "2026-08-27",
+   "count": 1,
+   "votes": 4,
+   "request": "Some collectors prefer serial numbers alone to set value rather than many parallels."
+  },
+  {
+   "title": "Show price paid when picking trade-in moments",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-08-20",
+   "first": "2026-07-23",
+   "count": 2,
+   "votes": 1,
+   "request": "Show what you paid for each moment when choosing what to trade in, since player and team leaderboards count price paid."
+  },
+  {
+   "title": "Process actions in the background",
+   "topic": "App",
+   "status": "heard",
+   "date": "2026-08-17",
+   "first": "2026-08-17",
+   "count": 1,
+   "votes": 4,
+   "request": "Let listing, delisting and buying finish in the background instead of waiting on a processing screen."
+  },
+  {
+   "title": "Hand over open promises when staff leave",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2026-11-06",
+   "first": "2026-11-06",
+   "count": 2,
+   "votes": 1,
+   "request": "Track public commitments (like the Points Store update) and hand them over when someone leaves, so follow-ups don't get lost."
+  },
+  {
+   "title": "Notify when a pack is delivered",
+   "topic": "Notifications",
+   "status": "heard",
+   "date": "2026-11-07",
+   "first": "2026-11-07",
+   "count": 1,
+   "votes": 3,
+   "request": "Alert collectors when a pack (including reward packs) lands in their account, so it isn't found days later."
+  },
+  {
+   "title": "Better Fast Break reminders",
+   "topic": "Notifications",
+   "status": "heard",
+   "date": "2026-10-29",
+   "first": "2026-10-29",
+   "count": 1,
+   "votes": 3,
+   "request": "Better notifications so collectors don't miss setting a lineup."
+  },
+  {
+   "title": "A dedicated Drops page",
+   "topic": "Auctions & drops",
+   "status": "heard",
+   "date": "2026-11-06",
+   "first": "2026-10-20",
+   "count": 2,
+   "votes": 0,
+   "request": "A page listing every pack still for sale directly from Top Shot (pre-orders, Cases, Boxes, leftover packs), separate from the home page and the pack marketplace, so nothing is only reachable by a direct link."
+  },
+  {
+   "title": "Pause Fast Break when the site is down",
+   "topic": "Fast Break",
+   "status": "heard",
+   "date": "2026-10-29",
+   "first": "2026-10-29",
+   "count": 1,
+   "votes": 3,
+   "request": "Don't run Fast Break nights when the site has an outage and collectors can't set lineups."
+  },
+  {
+   "title": "One place for all announcements",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2026-11-01",
+   "first": "2026-11-01",
+   "count": 1,
+   "votes": 3,
+   "request": "Put all announcements in one place, ideally on nbatopshot.com, instead of splitting them between Discord and X."
+  },
+  {
+   "title": "Faster replies to support tickets and questions",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2026-10-24",
+   "first": "2026-10-02",
+   "count": 2,
+   "votes": 0,
+   "request": "Quicker answers to support tickets and repeated basic questions."
+  },
+  {
+   "title": "Allow screenshots in team channels",
+   "topic": "Community",
+   "status": "heard",
+   "date": "2026-09-28",
+   "first": "2026-09-10",
+   "count": 2,
+   "votes": 0,
+   "request": "Let collectors post pictures of their team grails in Discord team channels."
+  },
+  {
+   "title": "Store merch delivery times",
+   "topic": "Rewards & points",
+   "status": "heard",
+   "date": "2026-09-01",
+   "first": "2026-09-01",
+   "count": 2,
+   "votes": 0,
+   "request": "Share expected shipping times for merch redeemed in the Store; some July orders hadn't shipped by September."
+  },
+  {
+   "title": "Partner with hobby creators",
+   "topic": "Community",
+   "status": "heard",
+   "date": "2026-07-12",
+   "first": "2026-07-12",
+   "count": 1,
+   "votes": 3,
+   "request": "Invite popular hobby creators to events like Summer League to promote Top Shot."
+  },
+  {
+   "title": "Message collectors from their profile",
+   "topic": "Social",
+   "status": "heard",
+   "date": "2026-10-03",
+   "first": "2026-10-03",
+   "count": 1,
+   "votes": 2,
+   "request": "Tapping a collector's name anywhere should open their profile with a button to message them."
+  },
+  {
+   "title": "Spend points on Dapper Balance",
+   "topic": "Rewards & points",
+   "status": "heard",
+   "date": "2026-08-22",
+   "first": "2026-08-22",
+   "count": 1,
+   "votes": 2,
+   "request": "Let collectors redeem points for Dapper Balance."
+  },
+  {
+   "title": "Working links in drop announcements",
+   "topic": "Auctions & drops",
+   "status": "heard",
+   "date": "2026-08-12",
+   "first": "2026-08-12",
+   "count": 1,
+   "votes": 2,
+   "request": "Make sure pack links in drop tweets work, so new customers can reach the packs; consider 1 pack per collector for wider reach."
+  },
+  {
+   "title": "Bundle sales",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-07-09",
+   "first": "2026-07-09",
+   "count": 1,
+   "votes": 2,
+   "request": "Sell a selected group of moments as one bundle (e.g. 100 commons for $10, a full set at a discount)."
+  },
+  {
+   "title": "Burn events for older sets",
+   "topic": "Auctions & drops",
+   "status": "heard",
+   "date": "2026-05-16",
+   "first": "2026-05-16",
+   "count": 1,
+   "votes": 2,
+   "request": "Run burn events for older sets, with separate boards for score and average sale price."
+  },
+  {
+   "title": "Edit moments in a submitted trade-in bid",
+   "topic": "Auctions & drops",
+   "status": "heard",
+   "date": "2026-11-02",
+   "first": "2026-11-02",
+   "count": 1,
+   "votes": 2,
+   "request": "Let collectors swap moments in a submitted trade-in bid instead of being stuck with their first choice."
+  },
+  {
+   "title": "Make the seller clickable in Live Sales",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-10-19",
+   "first": "2026-10-19",
+   "count": 1,
+   "votes": 1,
+   "request": "Let collectors tap the seller's name in the Live Sales feed."
+  },
+  {
+   "title": "Show sets completed on profiles",
+   "topic": "Profile",
+   "status": "heard",
+   "date": "2026-09-13",
+   "first": "2026-09-13",
+   "count": 1,
+   "votes": 1,
+   "request": "Show the number of completed sets on the profile page, like the old profile, instead of offers."
+  },
+  {
+   "title": "Trade-ins for unsold packs",
+   "topic": "Auctions & drops",
+   "status": "heard",
+   "date": "2026-08-27",
+   "first": "2026-08-27",
+   "count": 1,
+   "votes": 1,
+   "request": "Let collectors trade in (burn) moments for slow-selling packs instead of leaving them on sale for 30 days."
+  },
+  {
+   "title": "Stacked view of parallel prices",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-08-27",
+   "first": "2026-08-27",
+   "count": 1,
+   "votes": 1,
+   "request": "An optional marketplace view showing all parallel prices of a moment together."
+  },
+  {
+   "title": "Add NBA All-Star Classics to Legendary trade-ins",
+   "topic": "Auctions & drops",
+   "status": "heard",
+   "date": "2026-08-26",
+   "first": "2026-08-26",
+   "count": 1,
+   "votes": 1,
+   "request": "Make NBA All-Star Classics moments eligible in Legendary trade-in events, especially when new moments of the same players are released."
+  },
+  {
+   "title": "Collection menu hard to reach",
+   "topic": "App",
+   "status": "ack",
+   "date": "2026-08-03",
+   "first": "2026-08-03",
+   "count": 1,
+   "votes": 1,
+   "request": "Lower items in the collection side menu can't be reached because the page keeps loading more moments.",
+   "response": "(Aug 3) workaround via Overview; they'll look at fixing it."
+  },
+  {
+   "title": "Choose push vs email per notification",
+   "topic": "Notifications",
+   "status": "heard",
+   "date": "2026-11-05",
+   "first": "2026-11-05",
+   "count": 1,
+   "votes": 0,
+   "request": "Let collectors pick the channel (push, email or both) for each notification type, and offer the settings on the browser version too."
+  },
+  {
+   "title": "Stagger trade-in auction end times",
+   "topic": "Auctions & drops",
+   "status": "heard",
+   "date": "2026-11-08",
+   "first": "2026-11-08",
+   "count": 1,
+   "votes": 0,
+   "request": "When several competitive trade-in auctions close the same day, space their end times about 10 minutes apart."
+  },
+  {
+   "title": "Show the lowest listing's serial in the List for Sale pop-up",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-11-06",
+   "first": "2026-11-06",
+   "count": 1,
+   "votes": 0,
+   "request": "Show the serial number of the lowest ask next to its price when listing, to decide whether to match or undercut."
+  },
+  {
+   "title": "Filter by league",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-11-07",
+   "first": "2026-11-07",
+   "count": 1,
+   "votes": 0,
+   "request": "An option to show only NBA or only WNBA content when browsing, to make the site easier to navigate."
+  },
+  {
+   "title": "Points Store refresh",
+   "topic": "Rewards & points",
+   "status": "heard",
+   "date": "2026-11-04",
+   "first": "2026-11-04",
+   "count": 1,
+   "votes": 0,
+   "request": "Refresh or give an update on the Points Store so collectors can use unredeemed points."
+  },
+  {
+   "title": "Referral link confirmation banner",
+   "topic": "Sign-up",
+   "status": "heard",
+   "date": "2026-10-30",
+   "first": "2026-10-30",
+   "count": 1,
+   "votes": 0,
+   "request": "Show new users a banner like 'You're joining with [name]'s invite' so both sides know the referral worked."
+  },
+  {
+   "title": "Points for correct picks",
+   "topic": "Predictions",
+   "status": "heard",
+   "date": "2026-10-23",
+   "first": "2026-10-23",
+   "count": 1,
+   "votes": 0,
+   "request": "Picks no longer offer wagering points or award points for correct answers; clarify or restore."
+  },
+  {
+   "title": "Clearer Fast Break results and layout",
+   "topic": "Fast Break",
+   "status": "heard",
+   "date": "2026-10-23",
+   "first": "2026-10-23",
+   "count": 1,
+   "votes": 0,
+   "request": "A simpler Fast Break screen that makes it obvious whether you won the night."
+  },
+  {
+   "title": "Show each player's makes and misses",
+   "topic": "Fast Break",
+   "status": "heard",
+   "date": "2026-10-21",
+   "first": "2026-10-21",
+   "count": 1,
+   "votes": 0,
+   "request": "Show per-player made and attempted stats in the live Fast Break view, not just totals."
+  },
+  {
+   "title": "Explain Fast Break scoring in the blog",
+   "topic": "Fast Break",
+   "status": "heard",
+   "date": "2026-10-20",
+   "first": "2026-10-20",
+   "count": 1,
+   "votes": 0,
+   "request": "Include the Fast Break Points breakdown (points, assists, steals and so on) in announcements for new players, not only inside the game."
+  },
+  {
+   "title": "Clear button on mobile player search",
+   "topic": "Fast Break",
+   "status": "heard",
+   "date": "2026-10-21",
+   "first": "2026-10-21",
+   "count": 1,
+   "votes": 0,
+   "request": "Add an X button to clear the player search box in Fast Break on mobile."
+  },
+  {
+   "title": "Win/Loss leaderboard not updating",
+   "topic": "Fast Break",
+   "status": "heard",
+   "date": "2026-10-22",
+   "first": "2026-10-22",
+   "count": 1,
+   "votes": 0,
+   "request": "The Win/Loss leaderboard appeared not to update for several weeks."
+  },
+  {
+   "title": "Link pack listings back to the original pack page",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-10-20",
+   "first": "2026-10-20",
+   "count": 1,
+   "votes": 0,
+   "request": "Bring back the link from a pack-marketplace listing to the original pack details."
+  },
+  {
+   "title": "Show the player's team on moment pages",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-10-17",
+   "first": "2026-10-17",
+   "count": 1,
+   "votes": 0,
+   "request": "Make the player's team easy to see when opening a moment."
+  },
+  {
+   "title": "Accent-insensitive search",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-10-17",
+   "first": "2026-10-17",
+   "count": 1,
+   "votes": 0,
+   "request": "Let search match names without accents (typing Juste finds Justé)."
+  },
+  {
+   "title": "Don't pause other audio",
+   "topic": "App",
+   "status": "heard",
+   "date": "2026-10-16",
+   "first": "2026-10-16",
+   "count": 1,
+   "votes": 0,
+   "request": "The iOS app stops music or podcasts playing in the background; let them keep playing."
+  },
+  {
+   "title": "Follow button not working",
+   "topic": "Social",
+   "status": "heard",
+   "date": "2026-10-21",
+   "first": "2026-10-21",
+   "count": 1,
+   "votes": 0,
+   "request": "Following other collectors on the website didn't respond."
+  },
+  {
+   "title": "Fix a pack pull that never arrived",
+   "topic": "Packs",
+   "status": "heard",
+   "date": "2026-10-13",
+   "first": "2026-10-13",
+   "count": 1,
+   "votes": 0,
+   "request": "A Legendary rookie moment shown in a live pack rip never reached the collector's account; collectors asked for a fix or credit and direct follow-up."
+  },
+  {
+   "title": "Platform anniversary celebration",
+   "topic": "Communication",
+   "status": "heard",
+   "date": "2026-10-02",
+   "first": "2026-10-02",
+   "count": 1,
+   "votes": 0,
+   "request": "Bring back an October anniversary celebration like last year's (birthday packs, merch, Trade Ticket pack)."
+  },
+  {
+   "title": "Explain unexplained balance deposits",
+   "topic": "Account",
+   "status": "heard",
+   "date": "2026-10-02",
+   "first": "2026-10-02",
+   "count": 1,
+   "votes": 0,
+   "request": "Show where small Dapper Balance deposits come from in the transaction history, with an email explaining them."
+  },
+  {
+   "title": "Clear-all button on the wishlist",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-10-09",
+   "first": "2026-10-09",
+   "count": 1,
+   "votes": 0,
+   "request": "A one-click option to clear the whole wishlist."
+  },
+  {
+   "title": "Allow offers under $1",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-10-08",
+   "first": "2026-10-08",
+   "count": 1,
+   "votes": 0,
+   "request": "Allow sub-$1 offers on moments listed under $1, maybe with a small minimum to prevent spam."
+  },
+  {
+   "title": "Show how long a moment has been listed",
+   "topic": "Marketplace",
+   "status": "heard",
    "date": "2026-10-01",
-   "title": "Reduce supply of older moments",
-   "request": "Collectors want ways to retire older moments, such as trade-in and crafting events, so the moments they hold get scarcer.",
+   "first": "2026-10-01",
+   "count": 1,
+   "votes": 0,
+   "request": "Add a 'listed since' column to the Listings tab, like the Offers and Activity tabs."
+  },
+  {
+   "title": "Offers on the Standard version only",
+   "topic": "Marketplace",
    "status": "heard",
-   "note": "Related: Top Shot This trade-in events, starting with Luka (Nov 2 to 8).",
-   "response": ""
+   "date": "2026-10-01",
+   "first": "2026-10-01",
+   "count": 1,
+   "votes": 0,
+   "request": "A way to make an offer just for the Standard version of a moment, the way you can for each parallel."
+  },
+  {
+   "title": "Bulk listing tool",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-09-29",
+   "first": "2026-09-29",
+   "count": 1,
+   "votes": 0,
+   "request": "Select many moments (e.g. duplicates) and list them at once, with the low ask and top offer shown."
+  },
+  {
+   "title": "Smart collection assistant",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-09-29",
+   "first": "2026-09-29",
+   "count": 1,
+   "votes": 0,
+   "request": "A search assistant that answers questions like 'which duplicates do I have' or 'which offers are worth accepting'."
+  },
+  {
+   "title": "Remember the 'collected' filter",
+   "topic": "Fast Break",
+   "status": "heard",
+   "date": "2026-09-28",
+   "first": "2026-09-28",
+   "count": 1,
+   "votes": 0,
+   "request": "Keep the 'collected' filter on when switching lineup dates."
+  },
+  {
+   "title": "Reward helpful feedback",
+   "topic": "Community",
+   "status": "heard",
+   "date": "2026-09-28",
+   "first": "2026-09-28",
+   "count": 1,
+   "votes": 0,
+   "request": "Thank collectors whose design feedback gets used with a small moment or credit."
+  },
+  {
+   "title": "Choose your collection icon",
+   "topic": "App",
+   "status": "heard",
+   "date": "2026-09-19",
+   "first": "2026-09-19",
+   "count": 1,
+   "votes": 0,
+   "request": "Explain or let collectors pick which moment shows as their 'All Moments' icon."
+  },
+  {
+   "title": "New website harder to use",
+   "topic": "App",
+   "status": "heard",
+   "date": "2026-09-15",
+   "first": "2026-09-15",
+   "count": 1,
+   "votes": 0,
+   "request": "A collector said the redesigned website made them use Top Shot less."
+  },
+  {
+   "title": "Fix notification emails",
+   "topic": "Notifications",
+   "status": "heard",
+   "date": "2026-09-15",
+   "first": "2026-09-15",
+   "count": 1,
+   "votes": 0,
+   "request": "Moment thumbnails don't load in emails, and special characters (like apostrophes) show as code in subject lines."
+  },
+  {
+   "title": "Drag to reorder featured moments",
+   "topic": "Profile",
+   "status": "heard",
+   "date": "2026-09-13",
+   "first": "2026-09-13",
+   "count": 1,
+   "votes": 0,
+   "request": "Drag-and-drop ordering for the Featured showcase with individual serials."
+  },
+  {
+   "title": "Filter activity history by account",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-09-07",
+   "first": "2026-09-07",
+   "count": 1,
+   "votes": 0,
+   "request": "Search a moment's activity history for your own (or another collector's) buys and sales, not just one serial."
+  },
+  {
+   "title": "Bring back 'Unsorted moments'",
+   "topic": "App",
+   "status": "heard",
+   "date": "2026-09-03",
+   "first": "2026-09-03",
+   "count": 1,
+   "votes": 0,
+   "request": "Restore a collection group for moments not sorted into any group."
+  },
+  {
+   "title": "Show play type on moment pages",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-08-10",
+   "first": "2026-08-10",
+   "count": 1,
+   "votes": 0,
+   "request": "Bring back the play type on moment pages."
+  },
+  {
+   "title": "Swap out inactive players",
+   "topic": "Fast Break",
+   "status": "heard",
+   "date": "2026-08-09",
+   "first": "2026-08-09",
+   "count": 1,
+   "votes": 0,
+   "request": "Drop or flag a lineup player who isn't playing that night so they can be replaced."
+  },
+  {
+   "title": "Default profile pictures for accounts without one",
+   "topic": "Profile",
+   "status": "heard",
+   "date": "2026-07-16",
+   "first": "2026-07-16",
+   "count": 1,
+   "votes": 0,
+   "request": "Give accounts without a profile picture something recognizable."
+  },
+  {
+   "title": "Top Shot at more events",
+   "topic": "Community",
+   "status": "heard",
+   "date": "2026-07-08",
+   "first": "2026-07-08",
+   "count": 1,
+   "votes": 0,
+   "request": "Share whether Top Shot will be at events like WNBA All-Star and Fanatics Fest, not just Summer League."
+  },
+  {
+   "title": "Remove owned moments from the wishlist",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-07-07",
+   "first": "2026-07-07",
+   "count": 1,
+   "votes": 0,
+   "request": "Moments you've collected can't be removed from the wishlist."
+  },
+  {
+   "title": "See other listings when listing",
+   "topic": "Marketplace",
+   "status": "heard",
+   "date": "2026-07-07",
+   "first": "2026-07-07",
+   "count": 1,
+   "votes": 0,
+   "request": "Show the other listings (not just the low ask) when listing a moment."
+  },
+  {
+   "title": "Shop a whole set from the set page",
+   "topic": "Marketplace",
+   "status": "ack",
+   "date": "2026-11-07",
+   "first": "2026-11-07",
+   "count": 1,
+   "votes": 0,
+   "request": "Add marketplace filters and prices to the set page's Moments tab, so you can see and buy the whole set without opening each moment.",
+   "response": "(Nov 8) 'I'll spruce this up.'"
+  },
+  {
+   "title": "Rookie Debut trade-ins and the Luka burn",
+   "topic": "Praise",
+   "status": "praise",
+   "date": "2026-11-03",
+   "first": "2026-11-03",
+   "count": 1,
+   "votes": 9,
+   "request": "Trade-in auctions and the Luka Top Shot This burn were called a big positive that encourages spending."
+  },
+  {
+   "title": "The Wheel and Metallic Silver",
+   "topic": "Praise",
+   "status": "praise",
+   "date": "2026-10-30",
+   "first": "2026-10-30",
+   "count": 2,
+   "votes": 3,
+   "request": "The Wheel rewards deep collections, counts already-locked moments and raises the floor on eligible moments."
+  },
+  {
+   "title": "Historic Fast Break",
+   "topic": "Praise",
+   "status": "praise",
+   "date": "2026-10-26",
+   "first": "2026-10-26",
+   "count": 1,
+   "votes": 0,
+   "request": "The Roster Points model was praised, with no injury risk."
   }
  ]
 }

@@ -73,7 +73,7 @@ footer{text-align:center;color:var(--muted);font:800 13px 'Barlow Condensed',san
 <header><h1>TOP SHOT <b>NEWS</b></h1></header>
 <p class="sub">What NBA Top Shot has announced, checked off as it happens. Here to help the community keep up, and help the team keep track.</p>
 <main>
-  <div class="sect" id="sect"><button data-s="cal" class="on">📅 Calendar</button><button data-s="news">📰 Announcements</button><button data-s="fb">💬 Feedback 🚧</button></div>
+  <div class="sect" id="sect"><button data-s="cal" class="on">📅 Calendar</button><button data-s="news">📰 Announcements</button><button data-s="fb">💬 Community feedback</button></div>
   <div class="sum" id="sum"></div>
   <div class="tabs" id="tabs"></div>
   <div id="list"></div>
@@ -84,7 +84,7 @@ footer{text-align:center;color:var(--muted);font:800 13px 'Barlow Condensed',san
 <script>
 "use strict";
 const ST={done:["✅ Delivered","var(--green)"],partial:["<i class=\"half\"></i>Partly delivered","#ff922b"],progress:["🟡 In progress","var(--gold)"],coming:["🔵 Coming up","var(--blue)"]};
-const FB={done:["✅ Done","var(--green)"],partial:["<i class=\"half\"></i>Partly done","#ff922b"],heard:["🆕 Requested","var(--blue)"]};
+const FB={heard:["🆕 Requested","var(--blue)"],ack:["👀 Acknowledged","var(--gold)"],partial:["<i class=\"half\"></i>Partly done","#ff922b"],done:["✅ Done","var(--green)"],praise:["👍 Working well","#20c997"]};
 let SEC="cal";
 const PRI={urgent:"🚨 Urgent",important:"⚠️ Important",canwait:"🕒 Can wait"};
 const yrs=(a,b)=>{const d=(Date.parse(b)-Date.parse(a))/864e5;if(!(d>=0))return "";return d<45?Math.max(1,Math.round(d))+" days":d<540?Math.round(d/30.4)+" months":(d/365.25).toFixed(d<3650?1:0).replace(/\.0$/,"")+" years"};
@@ -110,19 +110,19 @@ function render(){
       <div class="meta">Announced ${fmt(x.date)}${x.due?` · Due ${fmt(x.due)}`:""}${x.delivered?` · Delivered ${fmt(x.delivered)}`:""}${x.source?` · Source: ${x.link?`<a href="${esc(x.link)}" target="_blank" rel="noopener">🔗 ${esc(x.source)}</a>`:esc(x.source)}`:""}</div>
       <button class="savebtn" data-save="n:${it.indexOf(x)}">📸 Save image for X</button></div></div>`}).join("")||`<p style="color:var(--muted)">Nothing here yet.</p>`;
   document.getElementById("upd").textContent=DATA.updated?`Last updated ${fmt(DATA.updated)}.`:""}
-const FB_BUILDING=true; // set to false when the feedback tracker is ready
+const FB_BUILDING=false; // set to false when the feedback tracker is ready
 function renderFb(){if(FB_BUILDING){document.getElementById("sum").innerHTML="";document.getElementById("tabs").innerHTML="";
   document.getElementById("list").innerHTML=`<div class="item" style="--c:var(--gold);text-align:center;padding:28px 18px"><div style="font-size:42px">🚧</div><h2 style="margin:8px 0">Under construction</h2><p style="color:var(--muted);margin:0">There's a lot of community feedback to work through. We're sorting it now and will post it here soon.</p></div>`;return}
 const it=DATA.feedback||[],cnt=k=>it.filter(x=>x.status===k).length;
   document.getElementById("sum").innerHTML=Object.entries(FB).map(([k,[l]])=>`<div><b>${cnt(k)}</b><span>${l}</span></div>`).join("");
   document.getElementById("tabs").innerHTML=[["all","All"],...Object.entries(FB).map(([k,[l]])=>[k,l])].map(([k,l])=>`<button data-k="${k}" class="${k===tab?"on":""}">${l}</button>`).join("");
   document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{tab=b.dataset.k;render()});
-  const order={heard:0,working:0,notplanned:0,partial:2,done:3},po={urgent:0,important:1,canwait:2};
-  const show=it.filter(x=>tab==="all"||x.status===tab).sort((a,b)=>((po[a.priority]??3)-(po[b.priority]??3))||(order[a.status]-order[b.status])||String(b.date).localeCompare(a.date));
+  const order={ack:0,heard:0,partial:1,done:2,praise:3},po={urgent:0,important:1,canwait:2};
+  const show=it.filter(x=>tab==="all"||x.status===tab).sort((a,b)=>((po[a.priority]??3)-(po[b.priority]??3))||(order[a.status]-order[b.status])||(((b.votes||0)+(b.count||1)*3)-((a.votes||0)+(a.count||1)*3))||String(b.date).localeCompare(a.date));
   document.getElementById("list").innerHTML=show.map(x=>{const[l,c]=FB[x.status]||["•","var(--muted)"];
     return `<div class="item" style="--c:${c}"><div class="top"><h2>${esc(x.title)}${x.priority&&PRI[x.priority]?`<span class="pri ${x.priority}">${PRI[x.priority]}</span>`:""}</h2><span class="badge">${l}</span></div>
-      ${x.response?`<p class="resp">${esc(x.response)}</p>`:""}<div class="tap">Tap for details ▾</div><div class="more"><p>${esc(x.request)}</p>${x.note?`<p class="note">${esc(x.note)}</p>`:""}
-      <div class="meta">Shared ${fmt(x.date)}${x.link?` · <a href="${esc(x.link)}" target="_blank" rel="noopener">🔗 Source</a>`:""}${x.priority?" · Priority is VC15 Tracker's own estimate":""}</div>
+      <div class="took">${x.topic?esc(x.topic)+" · ":""}Asked ${x.count||1}× ${x.votes?"· 👍 "+x.votes:""}</div>${x.response?`<p class="resp">${esc(x.response)}</p>`:""}<div class="tap">Tap for details ▾</div><div class="more"><p>${esc(x.request)}</p>${x.note?`<p class="note">${esc(x.note)}</p>`:""}
+      <div class="meta">${x.first&&x.first!==x.date?"First asked "+fmt(x.first)+" · last "+fmt(x.date):"Shared "+fmt(x.date)}${x.link?` · <a href="${esc(x.link)}" target="_blank" rel="noopener">🔗 Source</a>`:""}${x.priority?" · Priority is VC15 Tracker's own estimate":""}</div>
       <button class="savebtn" data-save="f:${it.indexOf(x)}">📸 Save image for X</button></div></div>`}).join("")||`<p style="color:var(--muted)">No feedback tracked yet.</p>`}
 function saveImg(x,lab,col,kind){const W=1200,H=675,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
   g.fillStyle="#0b0d14";g.fillRect(0,0,W,H);g.fillStyle=col.startsWith("var")?{"var(--green)":"#3ee07f","var(--gold)":"#f2c94c","var(--blue)":"#4dabf7","var(--purple)":"#b197fc","var(--muted)":"#9aa0b4"}[col]||"#f2c94c":col;g.fillRect(0,0,16,H);
