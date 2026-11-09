@@ -52,6 +52,8 @@ footer{text-align:center;color:var(--muted);font:800 13px 'Barlow Condensed',san
 .day.out{opacity:.25;cursor:default}.day.today{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}.day.sel{background:#232a40}
 .day .n{font:700 13px Barlow,sans-serif;color:var(--muted)}.day.today .n{color:var(--gold)}
 .day .ic{font-size:14px;line-height:1.15;word-break:break-all}
+.day .bar{height:13px;margin:2px -6px 0;font:700 9px/13px Barlow,sans-serif;color:#10131c;white-space:nowrap;overflow:hidden;padding-left:4px;opacity:.9}.day .bar.s{margin-left:0;border-radius:6px 0 0 6px}.day .bar.e{margin-right:0;border-radius:0 6px 6px 0}.day .bar.s.e{border-radius:6px}
+@media (max-width:600px){.day .bar{height:7px;font-size:0;margin:2px -4px 0}.day .bar.s{margin-left:0}.day .bar.e{margin-right:0}}
 @media (max-width:600px){.day{min-height:50px;padding:3px}.day .ic{font-size:12px}}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin:10px 2px 0}
 .ev{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;padding:11px 14px;margin-bottom:8px}
@@ -138,7 +140,7 @@ if(location.hash==="#calendar")SEC="cal";
 // ---------------- 📅 Calendar ----------------
 // kinds: vc = Vince Carter anniversary (repeats yearly), moment = the play behind a VC Top Shot moment (yearly),
 // ts = Top Shot event, give = our giveaways (Bills game days), goal = supply goals. More can be added in news.json -> "calendar".
-const CK={vc:["🏀","VC anniversary","#f2c94c"],moment:["🎞️","VC moment day","#ff8fc4"],ts:["🎟️","Top Shot","#4dabf7"],give:["🏈","Giveaway day","#3ee07f"],goal:["🎯","Supply goal","#b197fc"],hist:["📜","1 year ago","#ffa94d"]};
+const CK={vc:["🏀","VC anniversary","#f2c94c"],moment:["🎞️","VC moment day","#ff8fc4"],ts:["🎟️","Top Shot","#4dabf7"],give:["🏈","Giveaway day","#3ee07f"],goal:["🎯","Supply goal","#b197fc"],hist:["📜","1 year ago","#ffa94d"],show:["🃏","Card show","#20c997"],nba:["🏆","NBA event","#f59f00"]};
 const CAL=[
 {d:"2025-10-14",k:"hist",t:"Referral program launched",x:"Elite Referrers at 15% commission; public referral links promised for November."},
 {d:"2025-10-21",k:"hist",t:"2025-26 roadmap: 'The New Era'",x:"Lower mints, the first autographs, Boxes and Cases, and moment permanence on IPFS."},
@@ -218,6 +220,15 @@ const CAL=[
 {d:"2027-03-30",k:"ts",t:"Fast Break Finals begin",x:"Invite only, Mar 30 to Apr 11. Classic Final top 10 win a seat in an NBA Finals suite.",once:1},
 {d:"2027-01-04",k:"ts",t:"Season Tip-Off challenge ends (11 PM ET)",x:"Last day to lock every Season Tip-Off player for the Jalen Brunson reward. First 5 finishers get the Jukebox /10, next 10 the Hexwave /25.",once:1},
  {d:"2026-11-09",k:"ts",t:"Luka trade-in ends (3 PM ET)",x:"Top Shot This: Luka Dončić. Every $10 of Luka moments traded in earns a pack.",once:1},
+ {d:"2026-11-13",k:"show",t:"Dallas Card Show Chicago",x:"Schaumburg, IL · 250+ tables. Opens Fri 5 PM ET; check dallascardshow.com for the weekend schedule.",once:1},
+ {d:"2026-11-20",e:"2026-11-22",k:"show",t:"Chicago Sports Spectacular (Fall)",x:"Rosemont, IL · 400+ tables. Vintage and autograph focus.",once:1},
+ {d:"2027-01-14",e:"2027-01-17",k:"show",t:"Dallas Card Show (January)",x:"Marriott Dallas Allen Hotel & Convention Center, Allen, TX. The biggest card show series in the US.",once:1},
+ {d:"2026-12-04",e:"2026-12-05",k:"nba",t:"NBA Cup quarterfinals",x:"Played at home arenas.",once:1},
+ {d:"2026-12-08",e:"2026-12-09",k:"nba",t:"NBA Cup semifinals",x:"Played at the higher seeds' home arenas.",once:1},
+ {d:"2026-12-11",k:"nba",t:"NBA Cup Championship",x:"Hinkle Fieldhouse, Indianapolis (moved from Las Vegas this year).",once:1},
+ {d:"2027-02-19",e:"2027-02-21",k:"nba",t:"NBA All-Star Weekend",x:"Phoenix. Rising Stars Fri, 3-Point and Slam Dunk contests Sat, All-Star Game Sun, Feb 21.",once:1},
+ {d:"2027-06-24",e:"2027-06-27",k:"show",t:"Fanatics Fest NYC 2027",x:"Jun 24–27 · Javits Center, New York. Sports festival + card show. Ticket sales Nov 13 and Nov 20.",once:1},
+ {d:"2027-07-28",e:"2027-08-01",k:"show",t:"The National (NSCC) 2027",x:"Jul 28 – Aug 1 · Donald E. Stephens Convention Center, Rosemont, IL. The biggest card show in the hobby.",once:1},
  {d:"2026-12-31",k:"goal",t:"2026 supply goal deadline",x:"Retire more VC moments than were minted in 2026.",once:1},
  ...[["2026-11-09","Bills at Vikings","8:15 PM ET · Monday Night Football"],["2026-11-15","Bills at Jets","1:00 PM ET"],["2026-11-22","Dolphins at Bills","1:00 PM ET"],
      ["2026-11-26","Chiefs at Bills","8:20 PM ET · Thanksgiving"],["2026-12-06","Bills at Patriots","4:25 PM ET"],["2026-12-13","Bills at Packers","8:20 PM ET · Sunday Night Football"],
@@ -225,12 +236,12 @@ const CAL=[
    .map(([d,t,x])=>({d,k:"give",t,x:x+" · score predictor giveaway on X",once:1}))];
 let CM=null,CSEL=null;
 const pad=n=>String(n).padStart(2,"0"),ymd=t=>`${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())}`;
-function calEvents(){return CAL.concat((DATA.calendar||[]).map(e=>({d:e.date||e.d,k:e.kind||e.k||"ts",t:e.title||e.t,x:e.detail||e.x||"",once:e.repeat?0:1})))}
+function calEvents(){return CAL.concat((DATA.calendar||[]).map(e=>({d:e.date||e.d,k:e.kind||e.k||"ts",t:e.title||e.t,x:e.detail||e.x||"",e:e.end||e.e||"",once:e.repeat?0:1})))}
 function onDay(y,m,d){const md=`${pad(m+1)}-${pad(d)}`,full=`${y}-${md}`;
-  return calEvents().filter(e=>e.once?e.d===full:(e.d.slice(5)===md&&(e.k==="hist"?+e.d.slice(0,4)<y:+e.d.slice(0,4)<=y))).map(e=>({...e,yrs:e.once?0:y-+e.d.slice(0,4)}))}
+  return calEvents().filter(e=>e.once?(e.e?(e.d<=full&&full<=e.e):e.d===full):(e.d.slice(5)===md&&(e.k==="hist"?+e.d.slice(0,4)<y:+e.d.slice(0,4)<=y))).map(e=>({...e,yrs:e.once?0:y-+e.d.slice(0,4)}))}
 function evHTML(e,y,m,d,showDate){const[ic,lab,c]=CK[e.k]||CK.ts;const when=new Date(y,m,d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});
   const yr=e.k==="hist"?`<span class="yrs">${e.yrs} year${e.yrs>1?"s":""} ago</span>`:(e.k==="vc"||e.k==="moment")&&e.yrs>0?`<span class="yrs">${e.t.includes("birthday")?"turns "+e.yrs:e.yrs+" years"}</span>`:"";
-  return `<div class="ev" style="--c:${c}"><div class="d">${ic} ${lab}${showDate?" · "+when:""}${(e.k==="vc"||e.k==="moment"||e.k==="hist")?" · "+e.d.slice(0,4):""}</div><h3>${esc(e.t)}${yr}</h3><p>${esc(e.x)}</p></div>`}
+  return `<div class="ev" style="--c:${c}"><div class="d">${ic} ${lab}${showDate?" · "+when:""}${(e.k==="vc"||e.k==="moment"||e.k==="hist")?" · "+e.d.slice(0,4):""}</div><h3>${esc(e.t)}${yr}${e.e?`<span class="yrs">${(()=>{const a=new Date(e.d+"T12:00"),b=new Date(e.e+"T12:00"),c=new Date(y,m,d,12),n=Math.round((b-a)/864e5)+1,i=Math.round((c-a)/864e5)+1;return i>=1&&i<=n?"day "+i+" of "+n:n+" days"})()}</span>`:""}</h3><p>${esc(e.x)}</p></div>`}
 function renderCal(){const now=new Date();if(!CM)CM=new Date(now.getFullYear(),now.getMonth(),1);
   const y=CM.getFullYear(),m=CM.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
   document.getElementById("sum").innerHTML="";document.getElementById("tabs").innerHTML="";
@@ -240,7 +251,7 @@ function renderCal(){const now=new Date();if(!CM)CM=new Date(now.getFullYear(),n
   h+=["SUN","MON","TUE","WED","THU","FRI","SAT"].map(x=>`<div class="dow">${x}</div>`).join("");
   for(let i=0;i<first;i++)h+=`<div class="day out"></div>`;
   for(let d=1;d<=days;d++){const ev=onDay(y,m,d),isT=ymd(now)===`${y}-${pad(m+1)}-${pad(d)}`,sel=CSEL===`${y}-${pad(m+1)}-${pad(d)}`;
-    h+=`<div class="day${isT?" today":""}${sel?" sel":""}" data-day="${d}"><div class="n">${d}</div><div class="ic">${ev.map(e=>(CK[e.k]||CK.ts)[0]).join("")}</div></div>`}
+    h+=`<div class="day${isT?" today":""}${sel?" sel":""}" data-day="${d}"><div class="n">${d}</div><div class="ic">${ev.filter(e=>!e.e||e.d===`${y}-${pad(m+1)}-${pad(d)}`).map(e=>(CK[e.k]||CK.ts)[0]).join("")}</div>${ev.filter(e=>e.e).map(e=>{const f=`${y}-${pad(m+1)}-${pad(d)}`,st=e.d===f,en=e.e===f;return `<div class="bar${st?" s":""}${en?" e":""}" style="background:${(CK[e.k]||CK.ts)[2]}" title="${esc(e.t)}">${st?esc(e.t):""}</div>`}).join("")}</div>`}
   h+=`</div><div class="legend">${Object.values(CK).map(([i,l])=>`<span>${i} ${l}</span>`).join("")}</div></div>`;
   if(CSEL){const[sy,sm,sd]=CSEL.split("-").map(Number),ev=onDay(sy,sm-1,sd);
     h+=`<div class="listh">${new Date(sy,sm-1,sd).toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</div>`+(ev.map(e=>evHTML(e,sy,sm-1,sd,false)).join("")||`<p style="color:var(--muted)">Nothing on this day.</p>`)}
