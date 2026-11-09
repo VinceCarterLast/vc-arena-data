@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VC Arena 3D · VC15 Tracker</title>
+<meta name="description" content="Every Vince Carter Top Shot moment is a seat in a 3D arena. Sit courtside, fly around, and find your seats.">
+<meta property="og:title" content="The VC Arena in 3D">
+<meta property="og:description" content="Every Vince Carter moment on NBA Top Shot is a seat. Sit courtside, fly around, find yours.">
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d14;--fg:#f2f0ea;--muted:#8a8f9a;--gold:#f2c94c;--line:#2a2d35;--card:#12151e}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:500 16px Barlow,system-ui,sans-serif}
+main{max-width:1200px;margin:0 auto;padding:calc(var(--navh,52px) + 14px) 16px 40px}
+h1{font:900 clamp(30px,5.5vw,56px)/1 'Barlow Condensed',sans-serif;margin:0;text-transform:uppercase}
+h1 b{color:var(--gold)}
+.lede{color:var(--muted);margin:8px 0 12px;font-size:clamp(14px,1.8vw,18px)}
+.wrap{position:relative;background:#06070b;border:1px solid var(--line);border-radius:16px;overflow:hidden;height:min(74vh,740px);min-height:440px}
+#c{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.views{position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 20px)}
+.views button,.tools button{height:36px;padding:0 11px;border-radius:10px;border:1px solid var(--line);background:rgba(18,21,30,.9);color:var(--fg);font:700 14px Barlow,sans-serif;cursor:pointer}
+.views button.on,.tools button.on,.views button:hover,.tools button:hover{border-color:var(--gold)}
+.tools{position:absolute;right:10px;bottom:10px;display:flex;gap:6px}
+.find{position:absolute;left:10px;bottom:10px}
+.find input{height:36px;width:min(220px,44vw);border-radius:10px;border:1px solid var(--line);background:rgba(18,21,30,.92);color:var(--fg);padding:0 10px;font:600 15px Barlow,sans-serif}
+.find input:focus{outline:none;border-color:var(--gold)}
+#found{position:absolute;left:10px;bottom:52px;font:700 13px Barlow,sans-serif;color:#1b1d24;background:rgba(242,201,76,.95);padding:4px 9px;border-radius:8px;display:none}
+#info{position:absolute;right:10px;top:54px;width:min(280px,calc(100% - 20px));background:rgba(12,15,22,.95);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px;display:none}
+#info b{font:800 20px 'Barlow Condensed',sans-serif;display:block}
+#info small{color:var(--muted);display:block;margin-top:2px}
+#info a{color:var(--gold)}
+#load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font:800 20px 'Barlow Condensed',sans-serif;letter-spacing:.04em}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;color:var(--muted);font-size:13px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.note{color:var(--muted);font-size:13px;margin-top:12px;line-height:1.5}
+.note a{color:var(--gold)}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<main>
+  <h1>The <b>VC Arena</b> in 3D</h1>
+  <p class="lede">Every Vince Carter moment on Top Shot is a seat. Sit courtside, take a fly-around, or find your own seats. Get-in price: <b id="getin" style="color:var(--gold)">…</b></p>
+  <div class="wrap" id="wrap">
+    <canvas id="c"></canvas>
+    <div id="load">Opening the doors…</div>
+    <div class="views">
+      <button data-v="over" class="on">🏟️ Overview</button>
+      <button data-v="court">🪑 Courtside</button>
+      <button data-v="upper">🔭 Upper deck</button>
+      <button id="fly">🎥 Fly around</button>
+    </div>
+    <div id="info"></div>
+    <div id="found"></div>
+    <div class="find"><input id="q" placeholder="🔎 Find your seats" autocomplete="off" list="names"><datalist id="names"></datalist></div>
+    <div class="tools"><button id="mode" title="Colour seats by set or by what's for sale">🎟️ For sale</button><button id="reset" aria-label="Reset view">⟲</button></div>
+  </div>
+  <div class="legend" id="legend"></div>
+  <p class="note">Drag to look around, pinch or scroll to zoom, two fingers (or right-drag) to move. Tap any seat to see who owns it. Dark seats are retired (burned) moments. Prefer the flat map? <a href="arena.html">Open the classic arena</a>. Fan-made, not affiliated with NBA Top Shot or Dapper Labs.</p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const $=id=>document.getElementById(id),fmt=n=>n.toLocaleString("en-US");
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const RAW="https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/";
+// same sets and levels as the classic arena
+const SETS=[
+ {key:"omega",  name:"Dallas Omega",       tier:"court",minted:1,    color:"#ff2fa8"},
+ {key:"galac",  name:"Dallas Galactic",    tier:"court",minted:5,    color:"#ffffff"},
+ {key:"dallas", name:"Dallas Standard",    tier:"court",minted:44,   color:"#3d9be9"},
+ {key:"cosmic", name:"TSD Cosmic",         tier:"court",minted:49,   color:"#7b3fe4"},
+ {key:"asg",    name:"ASG Legendary",      tier:"court",minted:50,   color:"#1fb2a6"},
+ {key:"origin", name:"RIB Origin Rare",    tier:"100",  minted:269,  color:"#8a4fe0"},
+ {key:"tsd",    name:"TSD Common · Debut Club",tier:"100",minted:3336,color:"#2f9a5c"},
+ {key:"fandom", name:"Vintage Vibes Fandom",tier:"200", minted:951,  color:"#f7a8cf"},
+ {key:"rib",    name:"RIB '05-06 Rare",    tier:"200",  minted:990,  color:"#2a4fd6"},
+ {key:"archive",name:"Archive Set",        tier:"300",  minted:10000,color:"#59627a"}];
+const SK=Object.fromEntries(SETS.map(s=>[s.key,s]));
+const TIERNAME={court:"Courtside","100":"100 Level","200":"200 Level","300":"300 Level"};
+const ST={sale:"#3d6bff",held:"#9c8fd8",pack:"#e0b341",gone:"#2a2526"};
+let OWN=null,LIST={},MODE="set";
+
+$("legend").innerHTML=SETS.map(s=>`<span><i style="background:${s.color}"></i>${s.name}</span>`).join("");
+
+if(!window.THREE){$("load").innerHTML='Couldn\'t load 3D here. <a href="arena.html" style="color:#f2c94c;margin-left:6px">Open the classic arena →</a>';throw new Error("no three")}
+
+// ---- scene (units: feet; court is 94 x 50) ----
+const cv=$("c"),wrap=$("wrap");
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));
+const scene=new THREE.Scene();scene.background=new THREE.Color("#06070b");scene.fog=new THREE.Fog("#06070b",420,900);
+const cam=new THREE.PerspectiveCamera(50,1,1,3000);
+const ctl=new THREE.OrbitControls(cam,cv);ctl.enableDamping=true;ctl.dampingFactor=.1;ctl.maxPolarAngle=1.52;ctl.minDistance=8;ctl.maxDistance=620;ctl.autoRotateSpeed=.8;
+scene.add(new THREE.HemisphereLight(0xcfd6ff,0x221a14,.55));
+const key=new THREE.DirectionalLight(0xffffff,.55);key.position.set(80,260,120);scene.add(key);
+for(const[x,z]of[[-30,-15],[30,-15],[-30,15],[30,15]]){const s=new THREE.SpotLight(0xfff1d6,.55,0,.6,.6);s.position.set(x,120,z);s.target.position.set(x*.4,0,z*.4);scene.add(s,s.target)}
+const lam=c=>new THREE.MeshLambertMaterial({color:c});
+const add=(g,m,x=0,y=0,z=0)=>{const o=new THREE.Mesh(g,m);o.position.set(x,y,z);scene.add(o);return o};
+
+// floor + court
+add(new THREE.BoxGeometry(150,1,100),lam("#15171d"),0,-.5,0);
+function courtTex(){const W=1880,H=1000,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+  for(let i=0;i<60;i++){g.fillStyle=i%2?"#c98f55":"#d29a5f";g.fillRect(0,i*H/60,W,H/60+1)}
+  g.fillStyle="rgba(90,40,140,.85)";g.fillRect(0,350,190,300);g.fillRect(W-190,350,190,300);
+  g.strokeStyle="#fff";g.lineWidth=6;g.strokeRect(6,6,W-12,H-12);g.beginPath();g.moveTo(W/2,6);g.lineTo(W/2,H-6);g.stroke();
+  g.beginPath();g.arc(W/2,H/2,120,0,7);g.stroke();
+  for(const s of[1,-1]){const x=s>0?6:W-6;g.beginPath();g.arc(x+s*105,H/2,475,-Math.PI/2+.35,Math.PI/2-.35,s<0);g.stroke();g.strokeRect(s>0?6:W-196,350,190,300)}
+  g.fillStyle="#b3202a";g.beginPath();g.arc(W/2,H/2,100,0,7);g.fill();
+  g.fillStyle="#fff";g.font="900 120px 'Barlow Condensed',Impact,sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText("15",W/2,H/2+6);
+  g.save();g.font="900 70px 'Barlow Condensed',Impact,sans-serif";g.translate(95,H/2);g.rotate(-Math.PI/2);g.fillText("VINSANITY",0,0);g.restore();
+  g.save();g.translate(W-95,H/2);g.rotate(Math.PI/2);g.font="900 70px 'Barlow Condensed',Impact,sans-serif";g.fillText("VC ARENA",0,0);g.restore();
+  const t=new THREE.CanvasTexture(c);t.anisotropy=8;return t}
+const court=add(new THREE.PlaneGeometry(94,50),new THREE.MeshLambertMaterial({map:courtTex(),color:"#a8a8a8"}),0,.02,0);court.rotation.x=-Math.PI/2;
+// hoops
+for(const s of[1,-1]){const g=new THREE.Group();
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,13,8),lam("#333"));pole.position.set(0,6.5,0);
+  const arm=new THREE.Mesh(new THREE.BoxGeometry(5,.6,.6),lam("#333"));arm.position.set(-2.4,12.6,0);
+  const board=new THREE.Mesh(new THREE.BoxGeometry(.3,3.5,6),new THREE.MeshLambertMaterial({color:"#dfe8ff",transparent:true,opacity:.6}));board.position.set(-4.8,12.8,0);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(.75,.08,6,20),lam("#ff6a1f"));rim.rotation.x=Math.PI/2;rim.position.set(-5.8,10,0);
+  g.add(pole,arm,board,rim);g.position.set(s*49,0,0);if(s<0)g.rotation.y=Math.PI;scene.add(g)}
+
+// ---- bowl: rounded-rectangle rings of seats, one ring per row ----
+const N=4;   // superellipse squareness
+function loop(A,B,n=720){const p=[];for(let i=0;i<n;i++){const t=i/n*Math.PI*2,c=Math.cos(t),s=Math.sin(t);p.push([A*Math.sign(c)*Math.pow(Math.abs(c),2/N),B*Math.sign(s)*Math.pow(Math.abs(s),2/N)])}return p}
+function ringSeats(A,B,gap){const pts=loop(A,B,1600),seg=[];let L=0;for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],d=Math.hypot(b[0]-a[0],b[1]-a[1]);seg.push([a,b,L,d]);L+=d}
+  const n=Math.floor(L/gap),out=[];let j=0;
+  for(let k=0;k<n;k++){const want=k*L/n;while(j<seg.length-1&&seg[j][2]+seg[j][3]<want)j++;const[a,b,l0,d]=seg[j],u=(want-l0)/d;
+    const x=a[0]+(b[0]-a[0])*u,z=a[1]+(b[1]-a[1])*u;
+    // aisles: skip seats near 16 evenly spaced section breaks
+    const sec=(k/n*16)%1;if(sec<.035||sec>.965)continue;out.push([x,z])}return out}
+const LEVELS=[{tier:"court",A:55,B:31,rows:2,depth:3.4,rise:0,y:.4,gap:2.6},
+              {tier:"100",A:62,B:38,rows:0,depth:3,rise:1.25,y:3,gap:1.95},
+              {tier:"200",A:0,B:0,rows:0,depth:3,rise:1.45,y:0,gap:1.95},
+              {tier:"300",A:0,B:0,rows:0,depth:3,rise:1.7,y:0,gap:1.95}];
+const SEATS=[];   // {k,i,x,y,z}
+{let A,B,y;for(const L of LEVELS){
+  if(L.tier==="200"){A+=10;B+=10;y+=10}else if(L.tier==="300"){A+=14;B+=14;y+=16}else{A=L.A;B=L.B;y=L.y}
+  const queue=[];for(const S of SETS)if(S.tier===L.tier)for(let i=0;i<S.minted;i++)queue.push([S.key,i]);
+  // courtside: spread seats evenly along both sidelines and baselines
+  let q=0,first={A,B,y};
+  while(q<queue.length){const ring=ringSeats(A,B,L.gap);
+    if(L.tier==="court"){const left=queue.length-q,step=Math.max(1,ring.length/left);for(let r=0;r<ring.length&&q<queue.length;r+=step){const[x,z]=ring[Math.floor(r)];SEATS.push({k:queue[q][0],i:queue[q][1],x,y,z,tier:L.tier});q++}}
+    else for(const[x,z]of ring){if(q>=queue.length)break;SEATS.push({k:queue[q][0],i:queue[q][1],x,y,z,tier:L.tier});q++}
+    A+=L.depth;B+=L.depth;y+=L.rise}
+  L.inner=first;L.outer={A,B,y}}}
+// concrete stands under each level (a lofted band from the first row to the last)
+function band(inA,inB,inY,outA,outB,outY,col){const a=loop(inA,inB,240),b=loop(outA,outB,240),pos=[];
+  for(let i=0;i<a.length;i++){const j=(i+1)%a.length;const p=[[a[i][0],inY,a[i][1]],[b[i][0],outY,b[i][1]],[a[j][0],inY,a[j][1]],[b[j][0],outY,b[j][1]]];
+    pos.push(...p[0],...p[1],...p[2],...p[2],...p[1],...p[3])}
+  const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();
+  scene.add(new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:col,side:THREE.DoubleSide})))}
+for(const L of LEVELS){const i=L.inner,o=L.outer;band(i.A-2,i.B-2,i.y-.6,o.A,o.B,o.y-.6,L.tier==="court"?"#1d2029":"#22252e");
+  band(o.A,o.B,o.y-.6,o.A+.01,o.B+.01,o.y+3,"#5b2fa0")}   // purple fascia at the top of each level
+
+// seats: cushion + backrest, instanced (one draw call each)
+const cush=new THREE.BoxGeometry(1.5,.5,1.4);cush.translate(0,.25,0);
+const back=new THREE.BoxGeometry(1.5,1.4,.3);back.translate(0,.9,.6);
+const mk=g=>{const m=new THREE.InstancedMesh(g,new THREE.MeshLambertMaterial({color:0xffffff}),SEATS.length);scene.add(m);return m};
+const M1=mk(cush),M2=mk(back);
+{const o=new THREE.Object3D();SEATS.forEach((s,i)=>{o.position.set(s.x,s.y,s.z);o.rotation.set(0,Math.atan2(s.x,s.z),0);const sc=s.tier==="court"?1.25:1;o.scale.set(sc,sc,sc);o.updateMatrix();M1.setMatrixAt(i,o.matrix);M2.setMatrixAt(i,o.matrix)})}
+
+// jumbotron (centre-hung)
+function screenTex(lines){const c=document.createElement("canvas");c.width=1024;c.height=512;const g=c.getContext("2d");
+  g.fillStyle="#0a0b10";g.fillRect(0,0,1024,512);g.strokeStyle="#5b2fa0";g.lineWidth=18;g.strokeRect(9,9,1006,494);
+  g.textAlign="center";g.fillStyle="#f2c94c";g.font="900 64px 'Barlow Condensed',Impact,sans-serif";g.fillText(lines[0],512,110);
+  g.fillStyle="#fff";g.font="900 190px 'Barlow Condensed',Impact,sans-serif";g.fillText(lines[1],512,300);
+  g.fillStyle="#cfd2da";g.font="700 54px 'Barlow Condensed',Impact,sans-serif";g.fillText(lines[2],512,400);g.fillText(lines[3]||"",512,465);
+  const t=new THREE.CanvasTexture(c);t.anisotropy=4;return t}
+const JB=new THREE.Group(),jbMats=[];
+for(let f=0;f<4;f++){const w=f%2?14:24,m=new THREE.MeshBasicMaterial({map:screenTex(["VC ARENA","15,318","VC moments left",""])});jbMats.push(m);
+  const p=new THREE.Mesh(new THREE.PlaneGeometry(w,12),m);const r=f*Math.PI/2;p.rotation.y=r;p.position.set(Math.sin(r)*(f%2?12:7),0,Math.cos(r)*(f%2?12:7));JB.add(p)}
+JB.add(new THREE.Mesh(new THREE.BoxGeometry(24,1.2,14),lam("#111")));JB.children.at(-1).position.y=6.6;
+JB.position.set(0,58,0);scene.add(JB);
+function setScreen(a,b,c,d){for(const m of jbMats){m.map.dispose();m.map=screenTex([a,b,c,d])}}
+
+// rafters banners (VC honours, text only)
+const BAN=[["RAPTORS","#15","RETIRED 2024","#b3202a"],["NETS","#15","RETIRED","#222"],["HALL OF FAME","2024","CLASS OF 2024","#b08a2e"],["OLYMPIC GOLD","2000","SYDNEY","#c9a227"],["DUNK CONTEST","2000","CHAMPION","#7a2a2a"],["ROOKIE OF","1999","THE YEAR","#1f6b4f"],["ALL-STAR","8×","SELECTIONS","#24408f"]];
+BAN.forEach(([t1,t2,t3,col],i)=>{const c=document.createElement("canvas");c.width=256;c.height=420;const g=c.getContext("2d");
+  g.fillStyle=col;g.beginPath();g.moveTo(0,0);g.lineTo(256,0);g.lineTo(256,360);g.lineTo(128,420);g.lineTo(0,360);g.fill();
+  g.fillStyle="#fff";g.textAlign="center";g.font="800 34px 'Barlow Condensed',Impact,sans-serif";g.fillText(t1,128,70);
+  g.font="900 110px 'Barlow Condensed',Impact,sans-serif";g.fillText(t2,128,210);g.font="700 30px 'Barlow Condensed',Impact,sans-serif";g.fillText(t3,128,280);
+  const mat=new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true});
+  for(const r of[0,Math.PI]){const m=new THREE.Mesh(new THREE.PlaneGeometry(9,14.8),mat);m.rotation.y=r;m.position.set((i-3)*11*(r?1:1),72,-58+(r?-.05:0));scene.add(m)}});
+
+// ---- colours ----
+function flags(s){const o=OWN&&OWN.sets[s.k];return o?(o.f[s.i]||0):0}
+function owner(s){const o=OWN&&OWN.sets[s.k];const ix=o?o.o[s.i]:-1;return ix!=null&&ix>=0&&OWN.names[ix]?OWN.names[ix]:null}
+function status(s){const f=flags(s);if(f&2)return"gone";if(f&4)return"pack";if(LIST[s.k+":"+(s.i+1)])return"sale";return"held"}
+let HL=-1;
+function paint(){const c=new THREE.Color(),d=new THREE.Color();
+  SEATS.forEach((s,i)=>{const st=status(s);
+    if(HL>=0){const mine=OWN&&OWN.sets[s.k]&&OWN.sets[s.k].o[s.i]===HL&&st!=="gone";c.set(mine?"#ffc400":"#2b2e38");d.copy(c)}
+    else if(st==="gone"){c.set(ST.gone);d.set("#1a1718")}
+    else if(MODE==="sale"){c.set(ST[st]);d.copy(c).multiplyScalar(.75)}
+    else{c.set(SK[s.k].color);d.copy(c).multiplyScalar(.7)}
+    M1.setColorAt(i,c);M2.setColorAt(i,d)});
+  M1.instanceColor.needsUpdate=M2.instanceColor.needsUpdate=true}
+paint();
+
+// ---- cameras ----
+const VIEWS={over:{p:[150,190,240],t:[0,10,0]},court:{p:[14,5.5,30],t:[0,6,-10]},upper:{p:[-60,92,-150],t:[0,8,10]}};
+let fly=null;
+function go(v){const V=VIEWS[v];fly={t0:performance.now(),pa:cam.position.clone(),pb:new THREE.Vector3(...V.p),ta:ctl.target.clone(),tb:new THREE.Vector3(...V.t)};
+  document.querySelectorAll(".views [data-v]").forEach(b=>b.classList.toggle("on",b.dataset.v===v))}
+function goTo(x,y,z,dist){const dir=new THREE.Vector3(x,0,z).normalize();fly={t0:performance.now(),pa:cam.position.clone(),pb:new THREE.Vector3(x,y,z).add(dir.multiplyScalar(-dist)).add(new THREE.Vector3(0,dist*.55,0)),ta:ctl.target.clone(),tb:new THREE.Vector3(x,y,z)}}
+cam.position.set(...VIEWS.over.p);ctl.target.set(...VIEWS.over.t);
+document.querySelectorAll(".views [data-v]").forEach(b=>b.onclick=()=>{stopSpin();go(b.dataset.v)});
+function stopSpin(){ctl.autoRotate=false;$("fly").classList.remove("on")}
+$("fly").onclick=()=>{ctl.autoRotate=!ctl.autoRotate;$("fly").classList.toggle("on",ctl.autoRotate);if(ctl.autoRotate&&cam.position.y<20)go("over")};
+$("reset").onclick=()=>{stopSpin();HL=-1;$("found").style.display="none";$("info").style.display="none";$("q").value="";paint();go("over")};
+$("mode").onclick=()=>{MODE=MODE==="set"?"sale":"set";$("mode").classList.toggle("on",MODE==="sale");
+  $("legend").innerHTML=MODE==="sale"?[["sale","For sale"],["held","Held"],["pack","In a sealed pack"],["gone","Retired"]].map(([k,l])=>`<span><i style="background:${ST[k]}"></i>${l}</span>`).join(""):SETS.map(s=>`<span><i style="background:${s.color}"></i>${s.name}</span>`).join("");paint()};
+
+function size(){const w=wrap.clientWidth,h=wrap.clientHeight;cam.aspect=w/h;cam.fov=w<700?62:50;cam.updateProjectionMatrix();R.setSize(w,h,false)}
+size();addEventListener("resize",size);
+function frame(now){if(fly){const k=Math.min(1,(now-fly.t0)/900),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;cam.position.lerpVectors(fly.pa,fly.pb,e);ctl.target.lerpVectors(fly.ta,fly.tb,e);if(k>=1)fly=null}
+  JB.rotation.y+=.002;ctl.update();R.render(scene,cam);requestAnimationFrame(frame)}
+$("load").style.display="none";requestAnimationFrame(frame);
+
+// ---- tap a seat ----
+const ray=new THREE.Raycaster(),mv=new THREE.Vector2();let down=null;
+cv.addEventListener("pointerdown",e=>{down=[e.clientX,e.clientY];stopSpin()});
+cv.addEventListener("pointerup",e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>6)return;const b=cv.getBoundingClientRect();
+  mv.set((e.clientX-b.left)/b.width*2-1,-(e.clientY-b.top)/b.height*2+1);ray.setFromCamera(mv,cam);
+  const h=ray.intersectObjects([M1,M2],false)[0];const box=$("info");if(!h){box.style.display="none";return}
+  const s=SEATS[h.instanceId],S=SK[s.k],st=status(s),who=owner(s),L=LIST[s.k+":"+(s.i+1)];
+  box.innerHTML=`<b>${esc(S.name)} #${s.i+1}</b><small>${TIERNAME[s.tier]} · seat ${s.i+1} of ${fmt(S.minted)}</small>
+    <div style="margin-top:6px">${st==="gone"?"🪦 Retired for good":st==="pack"?"📦 Still in a sealed pack":"🏠 "+esc(who||"—")}${flags(s)&1&&st!=="gone"?" · 🔒 locked":""}</div>
+    ${L?`<div style="margin-top:4px">🎟️ For sale: <b style="display:inline;font-size:16px">$${(+L.price).toLocaleString("en-US",{maximumFractionDigits:2})}</b></div>`:""}
+    <div style="margin-top:6px"><a href="arena.html?seat=${s.k}:${s.i+1}">Open in the classic arena →</a></div>`;
+  box.style.display="block";if(cam.position.distanceTo(new THREE.Vector3(s.x,s.y,s.z))>90)goTo(s.x,s.y,s.z,40)});
+
+// ---- find your seats ----
+function find(name){if(!OWN)return;const ix=OWN.names.findIndex(n=>String(n).toLowerCase()===name.toLowerCase());
+  if(ix<0){$("found").textContent="No collector by that name";$("found").style.display="block";return}
+  HL=ix;paint();let n=0,x=0,y=0,z=0;SEATS.forEach(s=>{if(OWN.sets[s.k]&&OWN.sets[s.k].o[s.i]===ix&&status(s)!=="gone"){n++;x+=s.x;y+=s.y;z+=s.z}});
+  $("found").textContent=n?`✨ ${OWN.names[ix]} has ${fmt(n)} seat${n>1?"s":""} (in gold) · ⟲ to clear`:`${OWN.names[ix]} has no seats right now`;$("found").style.display="block";
+  if(n){stopSpin();n===1?goTo(x,y,z,30):go("over")}}
+$("q").addEventListener("change",e=>{const v=e.target.value.trim();if(v)find(v)});
+$("q").addEventListener("keydown",e=>{if(e.key==="Enter"){const v=e.target.value.trim();if(v)find(v)}});
+
+// ---- live data ----
+const get=f=>fetch(RAW+f+"?t="+Math.floor(Date.now()/60000),{cache:"no-store"}).then(r=>r.ok?r.json():null).catch(()=>null);
+Promise.all([get("arena_owners.json"),get("listings.json")]).then(([o,l])=>{
+  if(o&&o.sets){OWN={names:o.names||[],sets:{}};for(const[k,v]of Object.entries(o.sets))OWN.sets[k]={o:v.o||[],f:v.f||[]};
+    $("names").innerHTML=OWN.names.slice(0,4000).map(n=>`<option value="${esc(n)}">`).join("")}
+  if(l&&l.listings)for(const x of Object.values(l.listings))if(+x.price>0)LIST[x.set+":"+x.serial]=x;
+  const prices=Object.values(LIST).map(x=>+x.price).sort((a,b)=>a-b),getin=prices.length?"$"+prices[0].toFixed(2):"—";
+  let left=0;SEATS.forEach(s=>{if(status(s)!=="gone")left++});
+  $("getin").textContent=getin;setScreen("VC ARENA",fmt(left),"VC moments left",prices.length?`get in for ${getin} · ${fmt(prices.length)} for sale`:"");
+  paint();const q=new URLSearchParams(location.search).get("owner");if(q){$("q").value=q;find(q)}});
+</script>
+</body>
+</html>
