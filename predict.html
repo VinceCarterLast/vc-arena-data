@@ -226,6 +226,22 @@ loadBoard();setInterval(loadBoard,60000);
 if(/[?&]host\b/.test(location.search))document.body.classList.add("hosting");
 if(document.body.classList.contains("hosting"))$("viewNote").hidden=true;
 render();pollScore();setInterval(pollScore,30000);
+// ---- never get stuck: refresh when the phone/tab comes back, show freshness, self-heal ----
+let lastOK=Date.now();
+const _f=window.fetch.bind(window);
+window.fetch=(u,o={})=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),12000);   // a hung request can't freeze the board
+  return _f(u,{...o,signal:c.signal}).then(r=>{if(r.ok&&String(u).includes("raw.githubusercontent"))lastOK=Date.now();return r}).finally(()=>clearTimeout(t))};
+function refreshNow(){pollScore();loadBoard()}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshNow()});
+addEventListener("focus",refreshNow);addEventListener("online",refreshNow);
+addEventListener("pageshow",e=>{if(e.persisted)refreshNow()});
+{const fr=document.createElement("div");fr.id="fresh";fr.style.cssText="text-align:center;font:600 12px Barlow,sans-serif;color:var(--muted,#8a8f9a);margin-top:6px";
+ $("live").after(fr);
+ const tick=()=>{const s=Math.round((Date.now()-lastOK)/1000);
+   fr.innerHTML=`Updated ${s<60?s+"s":Math.round(s/60)+" min"} ago · <a href="#" id="refr" style="color:var(--gold,#f2c94c)">🔄 Refresh</a>`;
+   $("refr").onclick=e=>{e.preventDefault();refreshNow()};
+   if(!document.hidden&&Date.now()-lastOK>180000&&!/[?&]host\b/.test(location.search))location.reload()};   // stale 3+ min: reload by itself
+ tick();setInterval(tick,5000)}
 </script>
 </body>
 </html>
