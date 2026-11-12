@@ -473,22 +473,22 @@
   {
    "date": "2026-11-12",
    "kind": "ts",
-   "title": "Collector Pack trade-in auction (3 PM ET)",
-   "detail": "Bid with Rookie Debut moments from previous seasons. Top 50 bids (by number of moments) each win a Collector Pack. Closes Fri, Nov 13 at 2:30 PM ET.",
-   "repeat": false
-  },
-  {
-   "date": "2026-11-12",
-   "kind": "ts",
    "title": "Rookie Debut Overtime Packs (3 PM ET)",
    "detail": "$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
-   "date": "2026-11-13",
+   "date": "2026-11-12",
    "kind": "ts",
    "title": "Collector Pack trade-in auction closes (2:30 PM ET)",
-   "detail": "Last chance to bid older Rookie Debut moments.",
+   "detail": "Bid with Rookie Debut moments. Top 50 bids each win a $39 Rookie Debut Collector Pack.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-12",
+   "kind": "ts",
+   "title": "AJ Dybantsa trade-in auction opens (11 AM ET)",
+   "detail": "Trade in eligible moments. Top 50 bids each win 2 AJ Dybantsa Rookie Debut Overtime Packs.",
    "repeat": false
   },
   {
@@ -537,6 +537,13 @@
    "kind": "ts",
    "title": "Fast Break Run 3 starts",
    "detail": "Pro theme: Origins, Equinox, Mojo, Deck the Hoops. Runs to Nov 29."
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "ts",
+   "title": "Steph Curry Top Shot This trade-in ends (3 PM ET)",
+   "detail": "Trade in Stephen Curry moments for Stephen Curry Top Shot This packs. Top 25,000 collectors win.",
+   "repeat": false
   },
   {
    "date": "2026-11-17",
