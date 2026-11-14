@@ -228,12 +228,14 @@
   {
    "title": "Show remaining (unburned) supply",
    "topic": "Marketplace",
-   "status": "heard",
+   "status": "done",
    "date": "2026-08-17",
    "first": "2026-08-06",
    "count": 3,
    "votes": 15,
-   "request": "Show 'after burns' supply next to the original mint count on moment pages, analytics and the marketplace."
+   "request": "Show 'after burns' supply next to the original mint count on moment pages, analytics and the marketplace.",
+   "done": "2026-11-14",
+   "note": "Delivered: the marketplace now shows supply after burns (e.g. VC Archive #/9671)."
   },
   {
    "title": "Reward real collectors in drops",
