@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-09",
+ "updated": "2026-11-16",
  "items": [
   {
    "date": "2026-11-04",
@@ -54,7 +54,7 @@
    "promise": "Anyone can earn 10% on referred sales (Elite partners 15%), with tracking tools for referrers.",
    "status": "progress",
    "due": "",
-   "note": "We couldn't find the referral link in the app yet. Feedback sent to the team.",
+   "note": "(Nov 16) Top Shot confirmed the referral program isn't live at the moment and expects it back this quarter. We'll follow up in December.",
    "source": "blog.nbatopshot.com"
   },
   {
@@ -899,12 +899,13 @@
   {
    "title": "Referral link confirmation banner",
    "topic": "Sign-up",
-   "status": "heard",
-   "date": "2026-10-30",
+   "status": "ack",
+   "date": "2026-11-16",
    "first": "2026-10-30",
    "count": 1,
    "votes": 0,
-   "request": "Show new users a banner like 'You're joining with [name]'s invite' so both sides know the referral worked."
+   "request": "Show new users a banner like 'You're joining with [name]'s invite' so both sides know the referral worked.",
+   "response": "(Nov 16) the referral program isn't live right now but should be back this quarter."
   },
   {
    "title": "Points for correct picks",
