@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-08",
+ "updated": "2026-11-16",
  "events": [
   {
    "date": "1977-01-26",
@@ -550,8 +550,8 @@
   {
    "date": "2026-11-16",
    "kind": "ts",
-   "title": "Rookie Debut Overtime Packs go on sale (3 PM ET)",
-   "detail": "New packs on sale at 3 PM ET · $10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "title": "Cameron Boozer Rookie Debut Overtime Pack drops (3 PM ET)",
+   "detail": "1,000 packs · 3 Moments each · up to 5 per collector in the live drop. One holds the autographed Boozer Rookie Debut /5. 135 hits, including 23 more Boozer Rookie Debuts and a signed Allen Graves /5.",
    "repeat": false
   },
   {
@@ -565,6 +565,27 @@
    "kind": "ts",
    "title": "Steph Curry Top Shot This trade-in ends (3 PM ET)",
    "detail": "Trade in Stephen Curry moments for Stephen Curry Top Shot This packs. Top 25,000 collectors win.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "ts",
+   "title": "The Wheel: week of Nov 9 closes (3 PM ET)",
+   "detail": "Last chance to fill all 6 slots and earn Jalen Brunson + Luka Dončić.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "ts",
+   "title": "Boozer pack pre-order (4 to 7 PM ET)",
+   "detail": "Unsold live drop packs plus 449 more, up to 10 per collector. Delivered after it closes at 7 PM ET.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "ts",
+   "title": "Boozer Rookie Debut Trade-In Auction closes (6 PM ET)",
+   "detail": "Trade in NBA Rookie Debut Moments, or Base Set Moments with both Rookie Mint and Top Shot Debut badges. Top 25 bids each win 2 Boozer packs.",
    "repeat": false
   },
   {
@@ -741,7 +762,7 @@
    "date": "2027-01-04",
    "kind": "ts",
    "title": "Season Tip-Off challenge ends (11 PM ET)",
-   "detail": "Last day to lock every Season Tip-Off player for the Jalen Brunson reward. First 5 finishers get the Jukebox /10, next 10 the Hexwave /25.",
+   "detail": "Last day to lock every Season Tip-Off player for the Jalen Brunson reward. The Jukebox /10 and Hexwave /25 are all claimed, so finishers now get a Standard or leftover parallel.",
    "repeat": false
   },
   {
