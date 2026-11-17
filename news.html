@@ -140,7 +140,7 @@ if(location.hash==="#calendar")SEC="cal";
 // ---------------- 📅 Calendar ----------------
 // kinds: vc = Vince Carter anniversary (repeats yearly), moment = the play behind a VC Top Shot moment (yearly),
 // ts = Top Shot event, give = our giveaways (Bills game days), goal = supply goals. More can be added in news.json -> "calendar".
-const CK={vc:["🏀","VC anniversary","#f2c94c"],moment:["🎞️","VC moment day","#ff8fc4"],ts:["🎟️","Top Shot","#4dabf7"],give:["🏈","Giveaway day","#3ee07f"],goal:["🎯","Supply goal","#b197fc"],hist:["📜","1 year ago","#ffa94d"],show:["🃏","Card show","#20c997"],nba:["🏆","NBA event","#f59f00"]};
+const CK={vc:["🏀","VC anniversary","#f2c94c"],moment:["🎞️","VC moment day","#ff8fc4"],ts:["🎟️","Top Shot","#4dabf7"],give:["🏈","Giveaway day","#3ee07f"],goal:["🎯","Supply goal","#b197fc"],hist:["📜","1 year ago","#ffa94d"],show:["🃏","Card show","#20c997"],new:["🆕","New VC collector","#e599f7"],nba:["🏆","NBA event","#f59f00"]};
 const CAL=[
 {d:"2025-10-14",k:"hist",t:"Referral program launched",x:"Elite Referrers at 15% commission; public referral links promised for November."},
 {d:"2025-10-21",k:"hist",t:"2025-26 roadmap: 'The New Era'",x:"Lower mints, the first autographs, Boxes and Cases, and moment permanence on IPFS."},
@@ -212,6 +212,7 @@ const CAL=[
   {d:"2026-11-12",k:"ts",t:"Collector Pack trade-in auction closes (2:30 PM ET)",x:"Bid with Rookie Debut moments. Top 50 bids each win a $39 Rookie Debut Collector Pack.",once:1},
 {d:"2026-11-12",k:"ts",t:"AJ Dybantsa trade-in auction opens (11 AM ET)",x:"Trade in eligible moments. Top 50 bids each win 2 AJ Dybantsa Rookie Debut Overtime Packs.",once:1},
 {d:"2026-11-13",k:"ts",t:"Darryn Peterson trade-in auction opens (11 AM ET)",x:"Trade in eligible moments. Top 25 bids each win 2 Darryn Peterson Rookie Debut Overtime Packs.",once:1},
+{d:"2026-11-14",k:"new",t:"New VC collector welcomed 🎁",x:"A 2020 Top Shot OG received his first Vince Carter Moment. Welcome to the VC family!",once:1},
 {d:"2026-11-14",e:"2026-11-15",k:"ts",t:"Weekend Flash Challenge: Assists + Rebounds",x:"Lock a Top Shot Debut, Rare, Legendary or Ultimate Moment of the weekend's assists + rebounds leader.",once:1},
 {d:"2026-11-16",k:"ts",t:"Steph Curry Top Shot This trade-in ends (3 PM ET)",x:"Trade in Stephen Curry moments for Stephen Curry Top Shot This packs. Top 25,000 collectors win.",once:1},
  ...Array.from({length:14},(_,i)=>({d:`2026-11-${String(12+i).padStart(2,"0")}`,k:"ts",t:"Rookie Debut Overtime Packs go on sale (3 PM ET)",x:"$10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",once:1})),
@@ -239,7 +240,9 @@ const CAL=[
    .map(([d,t,x])=>({d,k:"give",t,x:x+" · score predictor giveaway on X",once:1}))];
 let CM=null,CSEL=null;
 const pad=n=>String(n).padStart(2,"0"),ymd=t=>`${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())}`;
-function calEvents(){return CAL.concat((DATA.calendar||[]).map(e=>({d:e.date||e.d,k:e.kind||e.k||"ts",t:e.title||e.t,x:e.detail||e.x||"",e:e.end||e.e||"",once:e.repeat?0:1})))}
+let CALJ=null; // calendar.json from GitHub (same file the Discord calendar bot uses); CAL below is the backup
+const mapCal=e=>({d:e.date||e.d,k:e.kind||e.k||"ts",t:e.title||e.t,x:e.detail||e.x||"",e:e.end||e.e||"",once:e.repeat?0:1});
+function calEvents(){return (CALJ||CAL).concat((DATA.calendar||[]).map(mapCal))}
 function onDay(y,m,d){const md=`${pad(m+1)}-${pad(d)}`,full=`${y}-${md}`;
   return calEvents().filter(e=>e.once?(e.e?(e.d<=full&&full<=e.e):e.d===full):(e.d.slice(5)===md&&(e.k==="hist"?+e.d.slice(0,4)<y:+e.d.slice(0,4)<=y))).map(e=>({...e,yrs:e.once?0:y-+e.d.slice(0,4)}))}
 function evHTML(e,y,m,d,showDate){const[ic,lab,c]=CK[e.k]||CK.ts;const when=new Date(y,m,d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});
@@ -268,6 +271,9 @@ function renderCal(){const now=new Date();if(!CM)CM=new Date(now.getFullYear(),n
 document.getElementById("list").addEventListener("click",e=>{const it=e.target.closest(".item");if(it)it.classList.toggle("open")});
 fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/news.json?t="+Date.now(),{cache:"no-store"})
   .then(r=>r.ok?r.json():Promise.reject()).catch(()=>fetch("news.json").then(r=>r.json())).then(d=>{if(d&&d.items)DATA=d;render()}).catch(render);
+fetch("https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/calendar.json?t="+Date.now(),{cache:"no-store"})
+  .then(r=>r.ok?r.json():Promise.reject()).catch(()=>fetch("calendar.json").then(r=>r.json()))
+  .then(d=>{if(d&&d.events){CALJ=d.events.map(mapCal);render()}}).catch(()=>{});
 render();
 </script>
 </body>
