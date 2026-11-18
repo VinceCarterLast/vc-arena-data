@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-17",
+ "updated": "2026-11-18",
  "events": [
   {
    "date": "1977-01-26",
@@ -613,14 +613,14 @@
    "date": "2026-11-17",
    "kind": "wheel",
    "title": "The Wheel: Assists",
-   "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of tonight's leader. Week reward: Wembanyama + Giannis.",
+   "detail": "Led by Ausar Thompson. Week reward: Wembanyama + Giannis.",
    "repeat": false
   },
   {
    "date": "2026-11-18",
    "kind": "ts",
-   "title": "Overtime Pack? Check Top Shot at 3 PM ET",
-   "detail": "Overtime Packs bring back drop hits one release at a time. Not every day is confirmed, so check Top Shot at 3 PM ET.",
+   "title": "Keaton Wagler Overtime Pack? Check Top Shot at 3 PM ET",
+   "detail": "A Keaton Wagler Rookie Debut Overtime Pack is coming. Check Top Shot at 3 PM ET for the release.",
    "repeat": false
   },
   {
@@ -635,6 +635,13 @@
    "kind": "wheel",
    "title": "The Wheel: Steals",
    "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of tonight's leader. Week reward: Wembanyama + Giannis.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-18",
+   "kind": "ts",
+   "title": "Keaton Wagler trade-in auction opens (11 AM ET)",
+   "detail": "Trade in eligible Moments. Top 25 collectors each win 2 Keaton Wagler Rookie Debut Overtime Packs.",
    "repeat": false
   },
   {
@@ -712,7 +719,7 @@
    "date": "2026-11-23",
    "kind": "ts",
    "title": "LeBron James Top Shot This trade-in ends (3 PM ET)",
-   "detail": "Trade in LeBron Moments for his Top Shot This Moment. Top 25,000 collectors win.",
+   "detail": "Trade in LeBron Moments for his Top Shot This. Every bid of $10 or more wins.",
    "repeat": false
   },
   {
