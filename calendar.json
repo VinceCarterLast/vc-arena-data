@@ -445,7 +445,7 @@
   },
   {
    "date": "2026-11-09",
-   "kind": "ts",
+   "kind": "wheel",
    "title": "The Wheel: final slot closes (3 PM ET)",
    "detail": "Lock a moment of the weekend's assists + rebounds leader to finish the week and earn Tatum + Wembanyama."
   },
@@ -521,7 +521,7 @@
   {
    "date": "2026-11-14",
    "end": "2026-11-15",
-   "kind": "ts",
+   "kind": "wheel",
    "title": "Weekend Flash Challenge: Assists + Rebounds",
    "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate Moment of the weekend's assists + rebounds leader. Track it live in #wheel-watcher.",
    "repeat": false
@@ -569,7 +569,7 @@
   },
   {
    "date": "2026-11-16",
-   "kind": "ts",
+   "kind": "wheel",
    "title": "The Wheel: week of Nov 9 closes (3 PM ET)",
    "detail": "Last chance to fill all 6 slots and earn Jalen Brunson + Luka Dončić.",
    "repeat": false
@@ -590,7 +590,7 @@
   },
   {
    "date": "2026-11-16",
-   "kind": "ts",
+   "kind": "wheel",
    "title": "The Wheel: Points + Rebounds + Assists",
    "detail": "Won by Nikola Jokić with 50. Week reward: Wembanyama + Giannis.",
    "repeat": false
@@ -611,7 +611,7 @@
   },
   {
    "date": "2026-11-17",
-   "kind": "ts",
+   "kind": "wheel",
    "title": "The Wheel: Assists",
    "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of tonight's leader. Week reward: Wembanyama + Giannis.",
    "repeat": false
@@ -632,7 +632,7 @@
   },
   {
    "date": "2026-11-18",
-   "kind": "ts",
+   "kind": "wheel",
    "title": "The Wheel: Steals",
    "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of tonight's leader. Week reward: Wembanyama + Giannis.",
    "repeat": false
@@ -646,7 +646,7 @@
   },
   {
    "date": "2026-11-19",
-   "kind": "ts",
+   "kind": "wheel",
    "title": "The Wheel: Points",
    "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of tonight's leader. Week reward: Wembanyama + Giannis.",
    "repeat": false
@@ -667,7 +667,7 @@
   },
   {
    "date": "2026-11-20",
-   "kind": "ts",
+   "kind": "wheel",
    "title": "The Wheel: Free Throws Made",
    "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of tonight's leader. Week reward: Wembanyama + Giannis.",
    "repeat": false
@@ -682,7 +682,7 @@
   {
    "date": "2026-11-21",
    "end": "2026-11-22",
-   "kind": "ts",
+   "kind": "wheel",
    "title": "The Wheel: Field Goals Made (weekend)",
    "detail": "Sat + Sun combined. Lock a Top Shot Debut, Rare, Legendary or Ultimate of the leader. Week reward: Wembanyama + Giannis.",
    "repeat": false
