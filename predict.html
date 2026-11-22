@@ -19,7 +19,7 @@ header h1{margin:0;font:900 30px var(--head)}header h1 b{color:var(--gold)}
 header .tag{font:800 11px var(--body);letter-spacing:.12em;background:var(--gold);color:#1b1608;border-radius:5px;padding:3px 7px}
 header a{margin-left:auto;text-decoration:none;font:700 13px var(--body);background:#22273a;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
 .sub{padding:0 16px 12px;margin:0;color:var(--muted)}
-main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;padding:0 16px 20px;align-items:start}
+main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:14px;padding:0 16px 20px;align-items:start}
 @media (max-width:900px){main{grid-template-columns:minmax(0,1fr)}}
 main>*{min-width:0}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
@@ -59,7 +59,7 @@ body.hosting .host{display:flex}
 .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;color:var(--muted);font-size:13px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 /* leaderboard */
-#lb{list-style:none;margin:0;padding:0}
+#lb{list-style:none;margin:0;padding:0;max-height:70vh;overflow:auto}
 #lb li{display:flex;align-items:center;gap:8px;padding:7px 4px;border-bottom:1px solid #1f2436}
 #lb li .r{width:24px;font:900 16px var(--head);color:var(--muted)}
 #lb li:nth-child(-n+3) .r{color:var(--gold)}
@@ -103,11 +103,10 @@ textarea{min-height:150px;resize:vertical}
       <div class="grp"><button id="reset">↺ Reset score</button></div>
     </div>
   </div>
-  <div id="gridWrap"><table id="grid"></table></div>
-  <div class="legend"><span><i style="background:#2b63d9"></i>Someone picked it</span><span><i style="background:#7b3fe4"></i>2+ people</span><span><i style="background:#f2c94c"></i>Closest right now</span><span><i style="outline:2px solid #ffd84a;background:transparent"></i>Current score</span></div>
+  
 </section>
 <aside>
-  <div class="card"><h2>🏆 Closest right now</h2><p class="note" id="viewNote" style="margin:0 0 8px">👀 View only. Picks are entered by the host, and official results are posted by @VC15Tracker on X.</p><ul id="lb"></ul><p class="note" id="lbNote"></p></div>
+  <div class="card"><h2>🏆 Everyone's picks · closest first</h2><p class="note" id="viewNote" style="margin:0 0 8px">👀 View only. Picks are entered by the host, and official results are posted by @VC15Tracker on X.</p><ul id="lb"></ul><p class="note" id="lbNote"></p></div>
   <div class="card hostOnly" style="margin-top:14px">
     <h2>Host setup</h2>
     <p class="note" style="margin-top:0">Paste the replies from your post. Each line: a name and a score, with <b id="firstT">Bills</b> score first, like <code>GabeCollects 27-20</code>.</p>
@@ -168,26 +167,12 @@ function render(){teamColors();const[ab,nm]=split(S.tA),[bb,nmb]=split(S.tB);
   const{list,bad}=parse();
   $("parseNote").innerHTML=`<b>${list.length}</b> pick${list.length===1?"":"s"}`+(bad.length?` · <span class="bad">couldn't read: ${bad.slice(0,4).map(esc).join(" | ")}${bad.length>4?"…":""}</span>`:"");
   const ranked=rankPicks(list);
-  $("lb").innerHTML=ranked.slice(0,10).map((p,k)=>`<li><span class="r">${k+1}</span><span class="n">${esc(p.name)}</span><span class="p">${p.a}-${p.b}</span><span class="d">${p.d===0?"EXACT!":(S.q>0&&!p.ok?"wrong winner":"off by "+p.d)}</span></li>`).join("")||`<li><span class="n" style="color:var(--muted)">No picks yet</span></li>`;
+  $("lb").innerHTML=ranked.map((p,k)=>`<li><span class="r">${k+1}</span><span class="n">${esc(p.name)}</span><span class="p">${p.a}-${p.b}</span><span class="d">${p.d===0?"EXACT!":(S.q>0&&!p.ok?"wrong winner":"off by "+p.d)}</span></li>`).join("")||`<li><span class="n" style="color:var(--muted)">No picks yet</span></li>`;
   $("lbNote").textContent=list.length?`${list.length} players · ${ab} score first`:"";
   const top=ranked[0];
   $("lead").textContent=top&&!S.final?(S.q===0?`${list.length} picks are in. Kickoff soon!`:`Leading now: ${top.name} (${top.a}-${top.b})${ranked[1]&&ranked[1].d===top.d&&ranked[1].ok===top.ok?" · tied, earlier reply leads":""}`):"";
   const w=$("winner");if(S.final&&top){w.style.display="block";w.textContent=`🏆 WINNER: ${top.name} · picked ${top.a}-${top.b}${top.d===0?" · EXACT SCORE!":` · off by ${top.d}`}`}else w.style.display="none";
-  // squares: rows = team 1 score, columns = team 2 score
-  const maxA=Math.max(45,S.a+3,...list.map(p=>p.a)),maxB=Math.max(42,S.b+3,...list.map(p=>p.b)),at=new Map();
-  for(const p of list){const k=p.a+":"+p.b;if(!at.has(k))at.set(k,[]);at.get(k).push(p)}
-  const best=top?new Set(ranked.filter(p=>p.d===top.d).slice(0,1).map(p=>p.a+":"+p.b)):new Set();
-  let h=`<thead><tr><th class="corner">${ab}↓<br>${bb}→</th>`;for(let b=0;b<=maxB;b++)h+=`<th>${b}</th>`;h+="</tr></thead><tbody>";
-  for(let a=0;a<=maxA;a++){h+=`<tr><th>${a}</th>`;for(let b=0;b<=maxB;b++){const k=a+":"+b,ps=at.get(k),cls=[];if(ps)cls.push("pick",ps.length>1?"multi":"");if(best.has(k)&&S.q>0)cls.push("best");if(a===S.a&&b===S.b&&S.q>0)cls.push("now");else if(S.q>0&&(a===S.a||b===S.b))cls.push("cross");
-      h+=`<td class="${cls.join(" ")}" data-k="${k}">${ps?(ps.length>1?ps.length:esc(ps[0].name.slice(0,2).toUpperCase())):""}</td>`}h+="</tr>"}
-  $("grid").innerHTML=h+"</tbody>";
-  // keep the current score in view
-  const now=document.querySelector("#grid td.now")||document.querySelector("#grid td.best");if(now&&S.q>0){const gw=$("gridWrap");gw.scrollTop=Math.max(0,now.offsetTop-gw.clientHeight/2);gw.scrollLeft=Math.max(0,now.offsetLeft-gw.clientWidth/2)}
-  window.__at=at;save()}
-$("grid").addEventListener("mousemove",e=>{const td=e.target.closest("td");const t=$("tip");if(!td||!window.__at.get(td.dataset.k)){t.hidden=true;return}const[a,b]=td.dataset.k.split(":");
-  t.hidden=false;t.innerHTML=`<b>${a}-${b}</b><br>${window.__at.get(td.dataset.k).map(p=>esc(p.name)).join("<br>")}`;t.style.left=Math.min(innerWidth-270,e.clientX+12)+"px";t.style.top=(e.clientY+12)+"px"});
-$("grid").addEventListener("mouseleave",()=>$("tip").hidden=true);
-$("grid").addEventListener("click",e=>{const td=e.target.closest("td");if(!td||!window.__at.get(td.dataset.k))return;const[a,b]=td.dataset.k.split(":");alert(`${a}-${b}: `+window.__at.get(td.dataset.k).map(p=>p.name).join(", "))});
+  save()}
 for(const id of["tA","tB","when","prize","prizeImg","picks"])$(id).oninput=()=>{S[id]=$(id).value;render()};
 document.querySelectorAll(".host button[data-t]").forEach(b=>b.onclick=()=>{const k=b.dataset.t==="A"?"a":"b";S[k]=Math.max(0,S[k]+Number(b.dataset.v));if(S.q===0)S.q=1;S.final=false;S.clock="";render()});
 $("qNext").onclick=()=>{S.q=Math.min(QS.length-2,S.q+1);S.final=false;render()};$("qPrev").onclick=()=>{S.q=Math.max(0,S.q-1);S.final=false;render()};
