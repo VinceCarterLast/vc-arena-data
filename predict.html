@@ -191,7 +191,16 @@ $("share").onclick=e=>{const u=location.origin+location.pathname+"#b="+btoa(unes
 // ---- automatic live score: the bot on the Mac mini pushes score.json (from ESPN) every minute during the game ----
 const SCORE_URL="https://raw.githubusercontent.com/VinceCarterLast/vc-arena-data/main/score.json";
 let lastUpd="",liveOK=true;
-async function pollScore(){try{const r=await fetch(SCORE_URL+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const g=await r.json();
+// ESPN directly (instant, no GitHub delay); falls back to score.json from the bot
+async function espnScore(){const[ab]=split(S.tA),[bb]=split(S.tB);
+  const r=await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?t="+Date.now(),{cache:"no-store"});if(!r.ok)return null;const d=await r.json();
+  for(const ev of d.events||[]){const c=(ev.competitions||[])[0]||{},cs=c.competitors||[],T={};for(const x of cs)T[(x.team||{}).abbreviation]=+x.score||0;
+    if(ab in T&&bb in T){const st=(ev.status||{}).type||{},per=(ev.status||{}).period||0;
+      return{teams:T,state:st.state,final:st.completed,detail:st.shortDetail,clock:(ev.status||{}).displayClock,period:per,half:/half/i.test(st.shortDetail||""),start:ev.date,updated:new Date().toISOString()}}}
+  return null}
+async function pollScore(){try{let g=null;try{g=await espnScore()}catch(e){}
+  if(g)lastOK=Date.now();
+  if(!g){const r=await fetch(SCORE_URL+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;g=await r.json()}
   const[ab]=split(S.tA),[bb]=split(S.tB),T=g.teams||{},el=$("live");
   if(!(ab in T)||!(bb in T)){el.className="live";el.textContent="⚪ Live score not available for this game. The host updates it.";return}
   const now=Date.now(),st=Date.parse(g.start||0),up=Date.parse(g.updated||0);
@@ -215,7 +224,7 @@ function loadBoard(){if(/[?&]host\b/.test(location.search)||/#b=/.test(location.
 loadBoard();setInterval(loadBoard,60000);
 if(/[?&]host\b/.test(location.search))document.body.classList.add("hosting");
 if(document.body.classList.contains("hosting"))$("viewNote").hidden=true;
-render();pollScore();setInterval(pollScore,30000);
+render();pollScore();setInterval(pollScore,20000);
 // ---- never get stuck: refresh when the phone/tab comes back, show freshness, self-heal ----
 let lastOK=Date.now();
 const _f=window.fetch.bind(window);
