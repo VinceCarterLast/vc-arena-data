@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-18",
+ "updated": "2026-11-22",
  "events": [
   {
    "date": "1977-01-26",
@@ -473,13 +473,6 @@
   {
    "date": "2026-11-12",
    "kind": "ts",
-   "title": "Rookie Debut Overtime Packs go on sale (3 PM ET)",
-   "detail": "New packs on sale at 3 PM ET · $10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
-   "repeat": false
-  },
-  {
-   "date": "2026-11-12",
-   "kind": "ts",
    "title": "Collector Pack trade-in auction closes (2:30 PM ET)",
    "detail": "Bid with Rookie Debut moments. Top 50 bids each win a $39 Rookie Debut Collector Pack.",
    "repeat": false
@@ -492,10 +485,10 @@
    "repeat": false
   },
   {
-   "date": "2026-11-13",
+   "date": "2026-11-12",
    "kind": "ts",
-   "title": "Rookie Debut Overtime Packs go on sale (3 PM ET)",
-   "detail": "New packs on sale at 3 PM ET · $10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "title": "AJ Dybantsa Overtime Pack",
+   "detail": "Rookie Debut Overtime Pack · 3 Moments.",
    "repeat": false
   },
   {
@@ -512,10 +505,10 @@
    "repeat": false
   },
   {
-   "date": "2026-11-14",
+   "date": "2026-11-13",
    "kind": "ts",
-   "title": "Rookie Debut Overtime Packs go on sale (3 PM ET)",
-   "detail": "New packs on sale at 3 PM ET · $10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
+   "title": "Darryn Peterson Overtime Pack",
+   "detail": "Rookie Debut Overtime Pack · 3 Moments.",
    "repeat": false
   },
   {
@@ -531,13 +524,6 @@
    "kind": "new",
    "title": "New VC collector welcomed 🎁",
    "detail": "A 2020 Top Shot OG received his first Vince Carter Moment. Welcome to the VC family!",
-   "repeat": false
-  },
-  {
-   "date": "2026-11-15",
-   "kind": "ts",
-   "title": "Rookie Debut Overtime Packs go on sale (3 PM ET)",
-   "detail": "New packs on sale at 3 PM ET · $10 · 3 moments · each day themed to one rookie, including his Galactic /5. About 13% of packs hit a Rookie Debut or a Rare.",
    "repeat": false
   },
   {
@@ -596,17 +582,10 @@
    "repeat": false
   },
   {
-   "date": "2026-11-17",
+   "date": "2026-11-16",
    "kind": "ts",
-   "title": "Overtime Pack? Check Top Shot at 3 PM ET",
-   "detail": "Overtime Packs bring back drop hits one release at a time. Not every day is confirmed, so check Top Shot at 3 PM ET.",
-   "repeat": false
-  },
-  {
-   "date": "2026-11-17",
-   "kind": "ts",
-   "title": "WNBA Finals Case + Box trade-in auctions end (3 PM ET)",
-   "detail": "Trade in WNBA Moments to bid for a WNBA Finals Case or Box.",
+   "title": "WNBA Finals quests + early access open (3 PM ET)",
+   "detail": "Case and Box trade-in auctions also begin.",
    "repeat": false
   },
   {
@@ -617,24 +596,24 @@
    "repeat": false
   },
   {
-   "date": "2026-11-18",
+   "date": "2026-11-17",
    "kind": "ts",
-   "title": "Keaton Wagler Overtime Pack? Check Top Shot at 3 PM ET",
-   "detail": "A Keaton Wagler Rookie Debut Overtime Pack is coming. Check Top Shot at 3 PM ET for the release.",
+   "title": "Caleb Wilson Overtime Pack",
+   "detail": "Rookie Debut Overtime Pack · 3 Moments.",
    "repeat": false
   },
   {
-   "date": "2026-11-18",
+   "date": "2026-11-17",
    "kind": "ts",
-   "title": "WNBA Finals Collector Pack trade-in auction opens (10 AM ET)",
-   "detail": "Trade in WNBA Moments. Top 10 collectors win.",
+   "title": "WNBA Finals Case + Box trade-in auctions end (3 PM ET)",
+   "detail": "Public pre-orders open at 3 PM ET.",
    "repeat": false
   },
   {
    "date": "2026-11-18",
    "kind": "wheel",
    "title": "The Wheel: Steals",
-   "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of tonight's leader. Week reward: Wembanyama + Giannis.",
+   "detail": "Slot filled. Week reward: Wembanyama + Giannis.",
    "repeat": false
   },
   {
@@ -645,24 +624,38 @@
    "repeat": false
   },
   {
-   "date": "2026-11-19",
+   "date": "2026-11-18",
    "kind": "ts",
-   "title": "Overtime Pack? Check Top Shot at 3 PM ET",
-   "detail": "Overtime Packs bring back drop hits one release at a time. Not every day is confirmed, so check Top Shot at 3 PM ET.",
+   "title": "Keaton Wagler Overtime Pack",
+   "detail": "Rookie Debut Overtime Pack · 3 Moments.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-18",
+   "kind": "ts",
+   "title": "WNBA Finals drop: ordering closes",
+   "detail": "Case 3 PM · Box 4 PM · Collector Pack 5 PM ET. Collector Pack trade-in auction 10 AM to 6 PM ET (top 10 win 2 packs).",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-18",
+   "kind": "ts",
+   "title": "WNBA Finals set challenges + Trade Ticket Pack (3:30 PM ET)",
+   "detail": "4 set challenges open. Trade Ticket Pack on sale until Dec 31 or sold out.",
    "repeat": false
   },
   {
    "date": "2026-11-19",
    "kind": "wheel",
    "title": "The Wheel: Points",
-   "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of tonight's leader. Week reward: Wembanyama + Giannis.",
+   "detail": "Slot filled. Week reward: Wembanyama + Giannis.",
    "repeat": false
   },
   {
-   "date": "2026-11-20",
+   "date": "2026-11-19",
    "kind": "ts",
-   "title": "Overtime Pack? Check Top Shot at 3 PM ET",
-   "detail": "Overtime Packs bring back drop hits one release at a time. Not every day is confirmed, so check Top Shot at 3 PM ET.",
+   "title": "Mikel Brown Jr. Overtime Pack",
+   "detail": "Rookie Debut Overtime Pack · 3 Moments.",
    "repeat": false
   },
   {
@@ -676,14 +669,14 @@
    "date": "2026-11-20",
    "kind": "wheel",
    "title": "The Wheel: Free Throws Made",
-   "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of tonight's leader. Week reward: Wembanyama + Giannis.",
+   "detail": "Slot filled. Week reward: Wembanyama + Giannis.",
    "repeat": false
   },
   {
-   "date": "2026-11-21",
+   "date": "2026-11-20",
    "kind": "ts",
-   "title": "Overtime Pack? Check Top Shot at 3 PM ET",
-   "detail": "Overtime Packs bring back drop hits one release at a time. Not every day is confirmed, so check Top Shot at 3 PM ET.",
+   "title": "Acuff Jr. · Philon Jr. · Smith (Trio) Overtime Pack",
+   "detail": "Rookie Debut Overtime Pack · 3 Moments.",
    "repeat": false
   },
   {
@@ -696,23 +689,9 @@
   },
   {
    "date": "2026-11-22",
-   "kind": "ts",
-   "title": "Overtime Pack? Check Top Shot at 3 PM ET",
-   "detail": "Overtime Packs bring back drop hits one release at a time. Not every day is confirmed, so check Top Shot at 3 PM ET.",
-   "repeat": false
-  },
-  {
-   "date": "2026-11-22",
    "kind": "give",
    "title": "Dolphins at Bills",
    "detail": "1:00 PM ET · score predictor giveaway on X",
-   "repeat": false
-  },
-  {
-   "date": "2026-11-23",
-   "kind": "ts",
-   "title": "Overtime Pack? Check Top Shot at 3 PM ET",
-   "detail": "Overtime Packs bring back drop hits one release at a time. Not every day is confirmed, so check Top Shot at 3 PM ET.",
    "repeat": false
   },
   {
@@ -723,17 +702,31 @@
    "repeat": false
   },
   {
+   "date": "2026-11-23",
+   "kind": "ts",
+   "title": "Overtime Pack? Check Top Shot at 3 PM ET",
+   "detail": "Overtime Packs have dropped on weekdays. Check Top Shot for the next one.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-23",
+   "kind": "wheel",
+   "title": "The Wheel: week of Nov 16 closes (3 PM ET)",
+   "detail": "Last chance to fill all 6 slots for Wembanyama + Giannis.",
+   "repeat": false
+  },
+  {
    "date": "2026-11-24",
    "kind": "ts",
    "title": "Overtime Pack? Check Top Shot at 3 PM ET",
-   "detail": "Overtime Packs bring back drop hits one release at a time. Not every day is confirmed, so check Top Shot at 3 PM ET.",
+   "detail": "Overtime Packs have dropped on weekdays. Check Top Shot for the next one.",
    "repeat": false
   },
   {
    "date": "2026-11-25",
    "kind": "ts",
    "title": "Overtime Pack? Check Top Shot at 3 PM ET",
-   "detail": "Overtime Packs bring back drop hits one release at a time. Not every day is confirmed, so check Top Shot at 3 PM ET.",
+   "detail": "Overtime Packs have dropped on weekdays. Check Top Shot for the next one.",
    "repeat": false
   },
   {
@@ -748,6 +741,13 @@
    "kind": "ts",
    "title": "Fast Break Run 4 starts",
    "detail": "Runs to Dec 16."
+  },
+  {
+   "date": "2026-11-30",
+   "kind": "ts",
+   "title": "WNBA Finals set challenges close (11:59 PM ET)",
+   "detail": "Lock every play in Finals, Playoffs, Base Set or Top Shot This for its reward.",
+   "repeat": false
   },
   {
    "date": "2026-12-04",
@@ -820,6 +820,13 @@
    "kind": "goal",
    "title": "2026 supply goal deadline",
    "detail": "Retire more VC moments than were minted in 2026.",
+   "repeat": false
+  },
+  {
+   "date": "2026-12-31",
+   "kind": "ts",
+   "title": "WNBA Finals Trade Ticket Pack ends",
+   "detail": "Last day, unless sold out sooner.",
    "repeat": false
   },
   {
