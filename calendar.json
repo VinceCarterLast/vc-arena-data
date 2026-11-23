@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-22",
+ "updated": "2026-11-23",
  "events": [
   {
    "date": "1977-01-26",
@@ -684,7 +684,7 @@
    "end": "2026-11-22",
    "kind": "wheel",
    "title": "The Wheel: Field Goals Made (weekend)",
-   "detail": "Sat + Sun combined. Lock a Top Shot Debut, Rare, Legendary or Ultimate of the leader. Week reward: Wembanyama + Giannis.",
+   "detail": "Led by Victor Wembanyama with 20 (Sat + Sun).",
    "repeat": false
   },
   {
@@ -703,23 +703,30 @@
   },
   {
    "date": "2026-11-23",
-   "kind": "ts",
-   "title": "Overtime Pack? Check Top Shot at 3 PM ET",
-   "detail": "Overtime Packs have dropped on weekdays. Check Top Shot for the next one.",
+   "kind": "wheel",
+   "title": "The Wheel: week of Nov 16 closes (3 PM ET)",
+   "detail": "Last chance to fill all 6 slots for the Players of the Week Pack (Wembanyama + Giannis).",
    "repeat": false
   },
   {
    "date": "2026-11-23",
-   "kind": "wheel",
-   "title": "The Wheel: week of Nov 16 closes (3 PM ET)",
-   "detail": "Last chance to fill all 6 slots for Wembanyama + Giannis.",
+   "kind": "ts",
+   "title": "Lendeborg · Reed Jr. · Hopkins Overtime Trio Pack (3 PM ET)",
+   "detail": "$10 · 949 packs, up to 25 each. Pre-order 3 PM, drawn 7 PM, then a live drop until Tue 3 PM ET. Hides Tarris Reed Jr. and Yaxel Lendeborg Rookie Debut #5/5s.",
+   "repeat": false
+  },
+  {
+   "date": "2026-11-23",
+   "kind": "ts",
+   "title": "Trio Pack trade-in auction (11 AM to 6 PM ET)",
+   "detail": "Trade in Rookie Debuts. Top 25 bids each win 2 packs.",
    "repeat": false
   },
   {
    "date": "2026-11-24",
    "kind": "ts",
-   "title": "Overtime Pack? Check Top Shot at 3 PM ET",
-   "detail": "Overtime Packs have dropped on weekdays. Check Top Shot for the next one.",
+   "title": "Aday Mara Overtime Pack pre-order (3 PM ET)",
+   "detail": "Rookie Debut Overtime Pack.",
    "repeat": false
   },
   {
