@@ -723,11 +723,25 @@
    "repeat": false
   },
   {
+   "date": "2026-11-23",
+   "kind": "wheel",
+   "title": "The Wheel: Assists + Rebounds",
+   "repeat": false,
+   "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of the leader."
+  },
+  {
    "date": "2026-11-24",
    "kind": "ts",
    "title": "Aday Mara Overtime Pack pre-order (3 PM ET)",
    "detail": "Rookie Debut Overtime Pack.",
    "repeat": false
+  },
+  {
+   "date": "2026-11-24",
+   "kind": "wheel",
+   "title": "The Wheel: Free Throws Made",
+   "repeat": false,
+   "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of the leader."
   },
   {
    "date": "2026-11-25",
@@ -737,11 +751,33 @@
    "repeat": false
   },
   {
+   "date": "2026-11-25",
+   "kind": "wheel",
+   "title": "The Wheel: Steals + Blocks",
+   "repeat": false,
+   "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of the leader."
+  },
+  {
    "date": "2026-11-26",
    "kind": "give",
    "title": "Chiefs at Bills",
    "detail": "8:20 PM ET · Thanksgiving · score predictor giveaway on X",
    "repeat": false
+  },
+  {
+   "date": "2026-11-27",
+   "kind": "wheel",
+   "title": "The Wheel: Blocks",
+   "repeat": false,
+   "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of the leader."
+  },
+  {
+   "date": "2026-11-28",
+   "kind": "wheel",
+   "title": "The Wheel: Points + Rebounds + Assists (weekend)",
+   "repeat": false,
+   "detail": "Lock a Top Shot Debut, Rare, Legendary or Ultimate of the leader. Sat + Sun combined.",
+   "end": "2026-11-29"
   },
   {
    "date": "2026-11-30",
