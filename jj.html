@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Jolly Joker Wall</title>
+<meta name="description" content="All 5,000 Jolly Jokers on one wall. Find your Joker, zoom in and share it.">
+<meta property="og:title" content="Jolly Joker Wall 🃏">
+<meta property="og:description" content="All 5,000 Jolly Jokers on one wall. Find your Joker, zoom in and share it.">
+<meta property="og:image" content="https://vc15tracker.com/jj_og.jpg">
+<meta property="og:url" content="https://vc15tracker.com/jj.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Jolly Joker Wall 🃏">
+<meta name="twitter:description" content="All 5,000 Jolly Jokers on one wall. Find your Joker, zoom in and share it.">
+<meta name="twitter:image" content="https://vc15tracker.com/jj_og.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Barlow:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -28,6 +37,14 @@ button:hover{border-color:var(--purple)}
 .box img{width:100%;border-radius:12px;background:#000;aspect-ratio:1}
 .box h2{margin:10px 0 4px;font:400 30px Bangers,sans-serif;letter-spacing:1px}
 .box a{color:var(--gold);font-weight:800}
+#panel{position:fixed;top:70px;right:14px;z-index:7;width:min(320px,92vw);max-height:70vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:none}
+#panel.on{display:block}
+#panel label{display:block;font:800 12px Barlow;color:var(--muted);margin:8px 0 3px;text-transform:uppercase;letter-spacing:.5px}
+#panel select{width:100%;padding:8px;border-radius:9px;border:1px solid var(--line);background:#0e1019;color:#fff;font:700 14px Barlow}
+#match{font:800 14px Barlow;color:var(--gold);margin-top:10px}
+.traits{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px}
+.traits span{background:#0e1019;border:1px solid var(--line);border-radius:8px;padding:3px 7px;font-size:12px}
+.traits b{color:var(--muted);font-weight:700}
 footer{position:fixed;bottom:0;left:0;right:0;z-index:5;text-align:center;padding:8px;font-size:12px;color:var(--muted);
   background:linear-gradient(transparent,#0b0c12 40%)}
 </style>
@@ -40,32 +57,59 @@ footer{position:fixed;bottom:0;left:0;right:0;z-index:5;text-align:center;paddin
   <div class="tools">
     <input id="q" type="number" inputmode="numeric" placeholder="Joker #">
     <button id="go">Find</button>
+    <button id="rnd" title="Random Joker">🎲</button>
+    <button id="filt" hidden>🎛️ Filter</button>
     <button id="fit" title="See the whole wall">⤢</button>
   </div>
 </header>
 <div id="tip" hidden></div>
+<div id="panel"><div id="sels"></div><div id="match"></div><button id="clear" style="margin-top:8px;width:100%">Clear filters</button></div>
 <div id="modal"><div class="box">
   <img id="mImg" alt="">
   <h2 id="mTitle"></h2>
-  <div><a id="mLink" target="_blank" rel="noopener">View on Flowty ↗</a></div>
-  <p class="sub" style="margin:10px 0 0">Tap anywhere to close</p>
+  <div class="traits" id="mTraits"></div>
+  <div class="sub" id="mOwner" style="margin-top:8px"></div>
+  <div id="mX" style="margin-top:8px"></div>
+  <button id="copy" style="margin-top:10px">🔗 Copy link to this Joker</button>
+  <p class="sub" style="margin:8px 0 0">Tap outside to close</p>
 </div></div>
-<footer>Built for the Jolly Joker Sports Society community by @VC15Tracker · We'll never DM you first or ask for your wallet.</footer>
+<footer>Built for the Jolly Joker Sports Society community by @VC15Tracker · ⭐ = holders who shared their X · We'll never DM you first or ask for your wallet.</footer>
 <script>
 "use strict";
 const $=id=>document.getElementById(id), cv=$("c"), ctx=cv.getContext("2d");
-const FLOWTY="https://www.flowty.io/asset/0x699bf284101a76f1/JollyJokers/NFT/";
-let D=null, IMG=new Image(), pos={}, W=0, H=0, s=1, ox=0, oy=0, hi=null, dpr=1;
+let M=null, CUR=null, T=null, F={}, MATCH=null, D=null, IMG=new Image(), pos={}, W=0, H=0, s=1, ox=0, oy=0, hi=null, dpr=1;
 
 function size(){dpr=window.devicePixelRatio||1;cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;cv.style.width=innerWidth+"px";cv.style.height=innerHeight+"px";draw()}
 function fit(){s=Math.min(innerWidth/W,(innerHeight-120)/H);ox=(innerWidth-W*s)/2;oy=(innerHeight-H*s)/2+20;draw()}
 function draw(){if(!D)return;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle="#0b0c12";ctx.fillRect(0,0,innerWidth,innerHeight);
   ctx.imageSmoothingEnabled=s<1;ctx.drawImage(IMG,ox,oy,W*s,H*s);
+  // sharp images when zoomed in: load each visible Joker's full picture
+  const t=D.tile*s;
+  if(t>72){const c0=Math.max(0,Math.floor(-ox/t)),c1=Math.min(D.cols-1,Math.floor((innerWidth-ox)/t)),
+      r0=Math.max(0,Math.floor(-oy/t)),r1=Math.floor((innerHeight-oy)/t);
+    for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++){const id=D.ids[r*D.cols+c];if(id==null)continue;
+      const im=hiRes(id);if(im&&im.complete&&im.naturalWidth){ctx.imageSmoothingEnabled=true;ctx.drawImage(im,ox+c*t,oy+r*t,t,t)}}}
+  if(M){ctx.lineWidth=Math.max(1.5,t*.05);ctx.strokeStyle="#f2c94c";for(const id of Object.keys(M)){const p=pos[id];if(p)ctx.strokeRect(ox+p[0]*s,oy+p[1]*s,t,t)}}
+  if(MATCH){ctx.fillStyle="rgba(8,9,14,.82)";const t=D.tile*s;for(const id of D.ids)if(!MATCH.has(id)){const[x,y]=pos[id];ctx.fillRect(ox+x*s,oy+y*s,t+.5,t+.5)}}
   if(hi!=null&&pos[hi]){const[x,y]=pos[hi],t=D.tile*s;ctx.lineWidth=Math.max(2,t*.06);ctx.strokeStyle="#f2c94c";ctx.strokeRect(ox+x*s,oy+y*s,t,t)}}
 function at(cx,cy){const x=(cx-ox)/s,y=(cy-oy)/s;if(x<0||y<0||x>=W||y>=H)return null;const n=Math.floor(y/D.tile)*D.cols+Math.floor(x/D.tile);return D.ids[n]??null}
 function zoomAt(cx,cy,f){const ns=Math.min(Math.max(s*f,Math.min(innerWidth/W,innerHeight/H)*.5),4);ox=cx-(cx-ox)*ns/s;oy=cy-(cy-oy)*ns/s;s=ns;draw()}
 function full(id){return (D.custom&&D.custom[id])||D.base+id+".png"}
-function open(id){$("mImg").src=full(id);$("mTitle").textContent="Jolly Joker #"+id;$("mLink").href=FLOWTY+id;$("modal").classList.add("on")}
+const HI=new Map();let loading=0;const QUEUE=[];
+function hiRes(id){let im=HI.get(id);if(im)return im;
+  if(HI.size>400){const k=HI.keys().next().value;HI.delete(k)}   // keep memory small
+  im=new Image();HI.set(id,im);QUEUE.push([im,id]);pump();return im}
+function pump(){while(loading<12&&QUEUE.length){const[im,id]=QUEUE.shift();if(!HI.has(id))continue;loading++;
+  im.onload=im.onerror=()=>{loading--;pump();clearTimeout(pump.t);pump.t=setTimeout(draw,60)};im.src=full(id)}}
+function short(a){return a.slice(0,6)+"…"+a.slice(-4)}
+function open(id){const tr=T&&T.traits[id],ow=T&&T.owners[id];
+  $("mTraits").innerHTML=tr?Object.entries(tr).map(([k,v])=>`<span><b>${k}:</b> ${v}</span>`).join(""):"";
+  $("mOwner").innerHTML=ow?`Held by <a href="https://www.flowscan.io/account/${ow}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${short(ow)}</a>`:"";
+  CUR=id;const m=M&&M[id];
+  $("mX").innerHTML=m&&m.x?`⭐ <a href="https://x.com/${m.x}" target="_blank" rel="noopener" onclick="event.stopPropagation()">@${m.x}</a> on X`
+    :`<span class="sub">Own this Joker? DM <a href="https://x.com/VC15Tracker" target="_blank" rel="noopener" onclick="event.stopPropagation()">@VC15Tracker</a> on X to add your X handle here.</span>`;
+  $("copy").textContent="🔗 Copy link to this Joker";
+  $("mImg").src=full(id);$("mTitle").textContent="Jolly Joker #"+id;history.replaceState(null,"","#"+id);$("modal").classList.add("on")}
 function find(id){if(!(id in pos)){$("q").style.borderColor="#e5484d";return}$("q").style.borderColor="";hi=id;
   const[x,y]=pos[id];s=Math.max(2,s);ox=innerWidth/2-(x+D.tile/2)*s;oy=innerHeight/2-(y+D.tile/2)*s;draw();setTimeout(()=>open(id),350)}
 
@@ -83,11 +127,23 @@ cv.addEventListener("pointerup",e=>{pts.delete(e.pointerId);if(pts.size<2)pinch=
   if(drag&&moved<6){const id=at(e.clientX,e.clientY);if(id!=null){hi=id;draw();open(id)}}drag=null});
 cv.addEventListener("pointerleave",()=>$("tip").hidden=true);
 cv.addEventListener("wheel",e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,Math.exp(-e.deltaY*.0015))},{passive:false});
-$("modal").onclick=()=>$("modal").classList.remove("on");
+$("modal").onclick=e=>{if(e.target.id==="modal"){$("modal").classList.remove("on");history.replaceState(null,"",location.pathname)}};
+$("copy").onclick=e=>{e.stopPropagation();const u=location.origin+location.pathname+"#"+CUR;
+  (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>$("copy").textContent="✅ Link copied").catch(()=>prompt("Copy this link:",u))};
+$("rnd").onclick=()=>find(D.ids[Math.floor(Math.random()*D.ids.length)]);
 $("go").onclick=()=>find(Number($("q").value));
 $("q").addEventListener("keydown",e=>{if(e.key==="Enter")find(Number($("q").value))});
 $("fit").onclick=()=>{hi=null;fit()};
 addEventListener("resize",size);
+function buildFilters(){const types={};for(const tr of Object.values(T.traits))for(const[k,v]of Object.entries(tr)){(types[k]??={})[v]=(types[k][v]||0)+1}
+  $("sels").innerHTML=Object.keys(types).sort().map(k=>`<label>${k}</label><select data-k="${k}"><option value="">Any</option>`+
+    Object.entries(types[k]).sort((a,b)=>a[0].localeCompare(b[0])).map(([v,n])=>`<option value="${v.replace(/"/g,"&quot;")}">${v} (${n})</option>`).join("")+`</select>`).join("");
+  document.querySelectorAll("#sels select").forEach(sel=>sel.onchange=()=>{F[sel.dataset.k]=sel.value;applyF()});$("filt").hidden=false}
+function applyF(){const act=Object.entries(F).filter(([k,v])=>v);if(!act.length){MATCH=null;$("match").textContent="";draw();return}
+  MATCH=new Set(D.ids.filter(id=>{const tr=T.traits[id];return tr&&act.every(([k,v])=>tr[k]===v)}));
+  $("match").textContent=`${MATCH.size.toLocaleString()} Jokers match`;draw()}
+$("filt").onclick=e=>{e.stopPropagation();$("panel").classList.toggle("on")};
+$("clear").onclick=()=>{F={};document.querySelectorAll("#sels select").forEach(x=>x.value="");applyF()};
 
 fetch("jj.json?t="+Date.now()).then(r=>r.json()).then(d=>{D=d;
   d.ids.forEach((id,n)=>pos[id]=[(n%d.cols)*d.tile,Math.floor(n/d.cols)*d.tile]);
@@ -95,6 +151,8 @@ fetch("jj.json?t="+Date.now()).then(r=>r.json()).then(d=>{D=d;
   $("count").textContent=`All ${d.ids.length.toLocaleString()} Jolly Jokers on one wall. Drag to move, scroll or pinch to zoom, tap a Joker to see it.`;
   IMG.onload=()=>{$("load").remove();size();fit();const h=Number(location.hash.slice(1));if(h)find(h)};
   IMG.src="jj_wall.jpg?v="+d.built;
+  fetch("jj_members.json?t="+Date.now()).then(r=>r.ok?r.json():null).then(m=>{if(m){M=m;draw()}}).catch(()=>{});
+  fetch("jj_traits.json?t="+Date.now()).then(r=>r.ok?r.json():null).then(t=>{if(t&&t.traits){T=t;buildFilters()}}).catch(()=>{});
 }).catch(()=>{$("load").textContent="Couldn't load the wall. Try refreshing."});
 </script>
 </body>
