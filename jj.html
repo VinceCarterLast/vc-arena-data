@@ -37,10 +37,15 @@ button:hover{border-color:var(--purple)}
 .box img{width:100%;border-radius:12px;background:#000;aspect-ratio:1}
 .box h2{margin:10px 0 4px;font:400 30px Bangers,sans-serif;letter-spacing:1px}
 .box a{color:var(--gold);font-weight:800}
-#panel{position:fixed;top:70px;right:14px;z-index:7;width:min(320px,92vw);max-height:70vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:none}
+#panel{position:fixed;top:118px;right:14px;z-index:7;width:min(320px,92vw);max-height:70vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:none}
 #panel.on{display:block}
 #panel label{display:block;font:800 12px Barlow;color:var(--muted);margin:8px 0 3px;text-transform:uppercase;letter-spacing:.5px}
 #panel select{width:100%;padding:8px;border-radius:9px;border:1px solid var(--line);background:#0e1019;color:#fff;font:700 14px Barlow}
+#jotd{position:fixed;left:14px;bottom:34px;z-index:6;display:flex;align-items:center;gap:10px;background:var(--card);border:2px solid var(--gold);
+  border-radius:14px;padding:6px 12px 6px 6px;cursor:pointer;box-shadow:0 6px 20px #0008}
+#jotd img{width:46px;height:46px;border-radius:9px}
+#jotd b{display:block;font:400 18px Bangers,sans-serif;letter-spacing:.5px;color:var(--gold)}
+#jotd span{font-size:12px;color:var(--muted)}
 #match{font:800 14px Barlow;color:var(--gold);margin-top:10px}
 .traits{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px}
 .traits span{background:#0e1019;border:1px solid var(--line);border-radius:8px;padding:3px 7px;font-size:12px}
@@ -65,6 +70,7 @@ footer{position:fixed;bottom:0;left:0;right:0;z-index:5;text-align:center;paddin
   </div>
 </header>
 <div id="tip" hidden></div>
+<div id="jotd" hidden><img id="jImg" alt=""><div><b>JOKER OF THE DAY</b><span id="jTxt"></span></div></div>
 <div id="panel"><div id="sels"></div><div id="match"></div><button id="clear" style="margin-top:8px;width:100%">Clear filters</button></div>
 <div id="modal"><div class="box">
   <img id="mImg" alt="">
@@ -112,6 +118,12 @@ function open(id){const tr=T&&T.traits[id],ow=T&&T.owners[id];
     :`<span class="sub">Own this Joker? DM <a href="https://x.com/VC15Tracker" target="_blank" rel="noopener" onclick="event.stopPropagation()">@VC15Tracker</a> on X to add your X handle here.</span>`;
   $("copy").textContent="🔗 Copy link to this Joker";
   $("mImg").src=full(id);$("mTitle").textContent="Jolly Joker #"+id;history.replaceState(null,"","#"+id);$("modal").classList.add("on")}
+function intro(J){   // start close on the Joker of the Day, then pull back to the whole wall
+  fit();const end={s,ox,oy},[x,y]=pos[J],s0=3,st={s:s0,ox:innerWidth/2-(x+D.tile/2)*s0,oy:innerHeight/2-(y+D.tile/2)*s0},t0=performance.now(),dur=2200;
+  hi=J;const ease=t=>1-Math.pow(1-t,3);
+  (function step(now){const k=Math.min(1,(now-t0-300)/dur),e=ease(Math.max(0,k));const ls=Math.log(st.s)+(Math.log(end.s)-Math.log(st.s))*e;s=Math.exp(ls);
+    const cx=innerWidth/2,cy=innerHeight/2,wx=(cx-st.ox)/st.s+((cx-end.ox)/end.s-(cx-st.ox)/st.s)*e,wy=(cy-st.oy)/st.s+((cy-end.oy)/end.s-(cy-st.oy)/st.s)*e;
+    ox=cx-wx*s;oy=cy-wy*s;draw();if(k<1)requestAnimationFrame(step);else{hi=null;fit()}})(t0)}
 function find(id){if(!(id in pos)){$("q").style.borderColor="#e5484d";return}$("q").style.borderColor="";hi=id;
   const[x,y]=pos[id];s=Math.max(2,s);ox=innerWidth/2-(x+D.tile/2)*s;oy=innerHeight/2-(y+D.tile/2)*s;draw();setTimeout(()=>open(id),350)}
 
@@ -153,7 +165,11 @@ fetch("jj.json?t="+Date.now()).then(r=>r.json()).then(d=>{D=d;
   d.ids.forEach((id,n)=>pos[id]=[(n%d.cols)*d.tile,Math.floor(n/d.cols)*d.tile]);
   W=d.cols*d.tile;H=Math.ceil(d.ids.length/d.cols)*d.tile;
   $("count").textContent=`All ${d.ids.length.toLocaleString()} Jolly Jokers on one wall. Drag to move, scroll or pinch to zoom, tap a Joker to see it.`;
-  IMG.onload=()=>{$("load").remove();size();fit();const h=Number(location.hash.slice(1));if(h)find(h)};
+  IMG.onload=()=>{$("load").remove();size();
+    const day=Math.floor(Date.now()/864e5),J=d.ids[(day*2654435761>>>0)%d.ids.length];
+    $("jImg").src=full(J);$("jTxt").textContent="#"+J+" · tap to visit";$("jotd").hidden=false;$("jotd").onclick=()=>{toWall();find(J)};
+    const h=Number(location.hash.slice(1));if(h){fit();find(h);return}
+    intro(J)};
   IMG.src="jj_wall.jpg?v="+d.built;
   fetch("jj_members.json?t="+Date.now()).then(r=>r.ok?r.json():null).then(m=>{if(m){M=m;draw()}}).catch(()=>{});
   fetch("jj_traits.json?t="+Date.now()).then(r=>r.ok?r.json():null).then(t=>{if(t&&t.traits){T=t;buildFilters()}}).catch(()=>{});
