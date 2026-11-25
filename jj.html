@@ -51,12 +51,14 @@ footer{position:fixed;bottom:0;left:0;right:0;z-index:5;text-align:center;paddin
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="cube3d" style="position:fixed;inset:0;display:none;touch-action:none;cursor:grab"></div>
 <div id="load">🃏 Shuffling 5,000 Jokers…</div>
 <header>
   <div><h1><span>JOLLY</span> <i>JOKER</i> WALL</h1><div class="sub" id="count">Every Jolly Joker on one wall. Drag to move, scroll or pinch to zoom.</div></div>
   <div class="tools">
     <input id="q" type="number" inputmode="numeric" placeholder="Joker #">
     <button id="go">Find</button>
+    <button id="cubeBtn" title="Cube view">🧊 Cube</button>
     <button id="rnd" title="Random Joker">🎲</button>
     <button id="filt" hidden>🎛️ Filter</button>
     <button id="fit" title="See the whole wall">⤢</button>
@@ -130,11 +132,13 @@ cv.addEventListener("wheel",e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,Ma
 $("modal").onclick=e=>{if(e.target.id==="modal"){$("modal").classList.remove("on");history.replaceState(null,"",location.pathname)}};
 $("copy").onclick=e=>{e.stopPropagation();const u=location.origin+location.pathname+"#"+CUR;
   (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>$("copy").textContent="✅ Link copied").catch(()=>prompt("Copy this link:",u))};
-$("rnd").onclick=()=>find(D.ids[Math.floor(Math.random()*D.ids.length)]);
-$("go").onclick=()=>find(Number($("q").value));
-$("q").addEventListener("keydown",e=>{if(e.key==="Enter")find(Number($("q").value))});
+$("rnd").onclick=()=>toWall()||find(D.ids[Math.floor(Math.random()*D.ids.length)]);
+function toWall(){if(document.getElementById("cube3d").style.display==="block")$("cubeBtn").click()}
+$("go").onclick=()=>{toWall();find(Number($("q").value))};
+$("q").addEventListener("keydown",e=>{if(e.key==="Enter"){toWall();find(Number($("q").value))}});
 $("fit").onclick=()=>{hi=null;fit()};
 addEventListener("resize",size);
+window.JJ={get D(){return D},get IMG(){return IMG},open:id=>{hi=id;open(id)},ready:()=>!!(D&&IMG.complete)};
 function buildFilters(){const types={};for(const tr of Object.values(T.traits))for(const[k,v]of Object.entries(tr)){(types[k]??={})[v]=(types[k][v]||0)+1}
   $("sels").innerHTML=Object.keys(types).sort().map(k=>`<label>${k}</label><select data-k="${k}"><option value="">Any</option>`+
     Object.entries(types[k]).sort((a,b)=>a[0].localeCompare(b[0])).map(([v,n])=>`<option value="${v.replace(/"/g,"&quot;")}">${v} (${n})</option>`).join("")+`</select>`).join("");
@@ -154,6 +158,42 @@ fetch("jj.json?t="+Date.now()).then(r=>r.json()).then(d=>{D=d;
   fetch("jj_members.json?t="+Date.now()).then(r=>r.ok?r.json():null).then(m=>{if(m){M=m;draw()}}).catch(()=>{});
   fetch("jj_traits.json?t="+Date.now()).then(r=>r.ok?r.json():null).then(t=>{if(t&&t.traits){T=t;buildFilters()}}).catch(()=>{});
 }).catch(()=>{$("load").textContent="Couldn't load the wall. Try refreshing."});
+</script>
+<script type="module">
+import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+const box=document.getElementById("cube3d"),btn=document.getElementById("cubeBtn"),wall=document.getElementById("c");
+let on=false,ready=false,renderer,scene,cam,cube,N=29,drag=null,moved=0,vx=0.003,vy=0.002,idle=0;
+function build(){const D=window.JJ.D,IMG=window.JJ.IMG,T=D.tile,per=N*N,mats=[];
+  for(let f=0;f<6;f++){const cv=document.createElement("canvas");cv.width=cv.height=N*T;const g=cv.getContext("2d");
+    g.fillStyle="#0b0c12";g.fillRect(0,0,cv.width,cv.height);
+    for(let k=0;k<per;k++){const n=f*per+k;if(n>=D.ids.length)break;const sx=(n%D.cols)*T,sy=Math.floor(n/D.cols)*T;
+      g.drawImage(IMG,sx,sy,T,T,(k%N)*T,Math.floor(k/N)*T,T,T)}
+    const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=8;
+    mats.push(new THREE.MeshBasicMaterial({map:tex}))}
+  renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(2,devicePixelRatio));
+  box.appendChild(renderer.domElement);scene=new THREE.Scene();
+  cam=new THREE.PerspectiveCamera(45,1,.1,100);cam.position.z=3.6;
+  cube=new THREE.Mesh(new THREE.BoxGeometry(1.4,1.4,1.4),mats);cube.rotation.set(.45,-.6,0);scene.add(cube);
+  // gold edges
+  scene.add(Object.assign(new THREE.LineSegments(new THREE.EdgesGeometry(cube.geometry),new THREE.LineBasicMaterial({color:0xf2c94c})),{}));
+  cube.add(scene.children.pop());
+  size();ready=true;loop()}
+function size(){if(!renderer)return;renderer.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}
+function loop(){if(!on)return;requestAnimationFrame(loop);if(!drag&&Date.now()-idle>2500){cube.rotation.y+=vx;cube.rotation.x+=vy*.3}renderer.render(scene,cam)}
+const ray=new THREE.Raycaster(),m=new THREE.Vector2();
+function pick(x,y){m.set(x/innerWidth*2-1,-(y/innerHeight)*2+1);ray.setFromCamera(m,cam);const h=ray.intersectObject(cube,false)[0];if(!h)return null;
+  const f=h.face.materialIndex,c=Math.min(N-1,Math.floor(h.uv.x*N)),r=Math.min(N-1,Math.floor((1-h.uv.y)*N));return window.JJ.D.ids[f*N*N+r*N+c]??null}
+box.addEventListener("pointerdown",e=>{drag=[e.clientX,e.clientY];moved=0;idle=Date.now();box.setPointerCapture(e.pointerId);box.style.cursor="grabbing"});
+box.addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag[0],dy=e.clientY-drag[1];moved+=Math.abs(dx)+Math.abs(dy);
+  cube.rotation.y+=dx*.008;cube.rotation.x+=dy*.008;drag=[e.clientX,e.clientY];idle=Date.now()});
+box.addEventListener("pointerup",e=>{if(drag&&moved<6){const id=pick(e.clientX,e.clientY);if(id!=null)window.JJ.open(id)}drag=null;idle=Date.now();box.style.cursor="grab"});
+box.addEventListener("wheel",e=>{e.preventDefault();cam.position.z=Math.min(7,Math.max(1.6,cam.position.z*Math.exp(e.deltaY*.001)))},{passive:false});
+let pinch=null;box.addEventListener("touchmove",e=>{if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+  if(pinch)cam.position.z=Math.min(7,Math.max(1.6,cam.position.z*pinch/d));pinch=d;drag=null}},{passive:true});
+box.addEventListener("touchend",()=>pinch=null);
+addEventListener("resize",size);
+btn.onclick=()=>{if(!window.JJ||!window.JJ.ready())return;on=!on;box.style.display=on?"block":"none";wall.style.display=on?"none":"block";
+  btn.textContent=on?"▦ Wall":"🧊 Cube";if(on){if(!ready)build();else{size();loop()}}};
 </script>
 </body>
 </html>
