@@ -57,7 +57,7 @@ select,.row input{padding:10px;border-radius:10px;border:1px solid var(--line);b
 <div class="sub" id="sub">How good of a Vince Carter collector were you this year?</div>
 <form id="f"><input id="u" placeholder="Your Top Shot username" autocomplete="off" autocapitalize="none"><button>Grade me</button></form>
 <div id="out"></div>
-<div class="legend">Grades go by dollars, not just counts: buying VC raises your grade, trading VC in (at average sale price) raises it even more, and locking helps a little. Selling lowers it.<br>Unofficial and just for fun 🏀</div>
+<div class="legend">Grades go by dollars, not just counts: buying VC raises your grade, trading VC in (at average sale price) raises it even more, gifting VC to other collectors counts like buying, and locking helps a little. Selling lowers it.<br>Unofficial and just for fun 🏀</div>
 
 <div id="bill">
   <h2>💸 Billionaire Mode</h2>
@@ -84,7 +84,7 @@ const $=id=>document.getElementById(id);
 const ORDER=["A++","A+","A","B+","B","C","D","F"];
 const NOTES={"A++":"Hall of Fame collector! VC would dunk on a 7-footer for you 🔥","A+":"Elite! Half Man, Half Amazing, all collector.",
   "A":"Excellent work. VC would be proud.","B+":"Great year, a few more pickups and you're on the honour roll.","B":"Solid. Locked in and loyal.",
-  "C":"Steady holder. Room to grow in 2027 📈","D":"More selling than buying this year… VC believes in a comeback.","F":"Sold most of your VC this year. See me after class 😅"};
+  "C":"Even year. Room to grow in 2027 📈","D":"More selling than buying this year… VC believes in a comeback.","F":"Sold most of your VC this year. See me after class 😅"};
 let R=null,last=null;
 fetch("report.json?t="+Date.now()).then(r=>r.json()).then(d=>{R=d;const low={};for(const k in d.users)low[k.toLowerCase()]=k;R.low=low;
   $("sub").textContent=`How good of a Vince Carter collector were you in ${d.year}? (data up to ${d.asof})`;
@@ -101,11 +101,12 @@ function show(name){if(!R)return;const key=R.low[name.toLowerCase().replace(/^@/
       <tr><td>Started the year with</td><td>${x.st}</td></tr>
       <tr><td>VC bought 🛒</td><td>${x.b} · ${usd(x.sp)}</td></tr>
       <tr><td>VC sold</td><td>${x.s} · ${usd(x.e)}</td></tr>
+      ${x.go!=null?`<tr><td>VC gifted to others 🎁</td><td>${x.go}</td></tr>`:""}
       <tr><td>VC traded in 🔥</td><td>${x.t}${x.t?" · "+usd(x.tv):""}</td></tr>
       <tr><td>Holding now</td><td>${x.h}</td></tr>
       <tr><td>Locked 🔒</td><td>${x.l}</td></tr>
     </table>
-    <div class="foot">Marketplace sales only; gifts and transfers aren't counted. Data up to ${R.asof}.</div></div>
+    <div class="foot">Sales, trade-ins and gifts to other collectors all count. Data up to ${R.asof}.</div></div>
     <div class="share"><button class="ghost" onclick="copyLink()">🔗 Copy my report card link</button></div>`}
 function usd(n){return "$"+Math.round(n||0).toLocaleString()}
 function copyLink(){const u=location.origin+location.pathname+"?u="+encodeURIComponent(last);navigator.clipboard&&navigator.clipboard.writeText(u);
