@@ -115,7 +115,7 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",
 // ---------- Billionaire Mode (secret: ?billionaire, or type "billionaire" as the username) ----------
 function openBill(){$("bill").style.display="block";calc();$("bill").scrollIntoView({behavior:"smooth"})}
 function calc(){if(!R)return[];const bud=Math.max(0,+$("bud").value||0),how=$("how").value,min=ORDER.indexOf($("min").value);
-  const ppl=Object.entries(R.users).filter(([u,x])=>ORDER.indexOf(x.g)<=min&&x.h>0);
+  const ppl=Object.entries(R.users).filter(([u,x])=>u!=="VinceCarterLast"&&ORDER.indexOf(x.g)<=min&&x.h>0);   // no airdropping to yourself
   const w=([u,x])=>how==="score"?Math.max(0,x.sc):how==="hold"?x.h:how==="locked"?x.l:1;
   const tot=ppl.reduce((a,p)=>a+w(p),0)||1;
   const rows=ppl.map(p=>({u:p[0],g:p[1].g,h:p[1].h,amt:bud*w(p)/tot})).filter(r=>r.amt>0).sort((a,b)=>b.amt-a.amt);
