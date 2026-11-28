@@ -101,6 +101,7 @@ function show(name){if(!R)return;const key=R.low[name.toLowerCase().replace(/^@/
       <tr><td>Started the year with</td><td>${x.st}</td></tr>
       <tr><td>VC bought 🛒</td><td>${x.b} · ${usd(x.sp)}</td></tr>
       <tr><td>VC sold</td><td>${x.s} · ${usd(x.e)}</td></tr>
+      ${x.gi!=null?`<tr><td>VC gifts received 📥</td><td>${x.gi}</td></tr>`:""}
       ${x.go!=null?`<tr><td>VC gifted to others 🎁</td><td>${x.go}</td></tr>`:""}
       <tr><td>VC traded in 🔥</td><td>${x.t}${x.t?" · "+usd(x.tv):""}</td></tr>
       <tr><td>Holding now</td><td>${x.h}</td></tr>
