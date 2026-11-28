@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>VC Report Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Barlow:wght@500;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0c12;--card:#151826;--line:#262b3d;--red:#ce1141;--gold:#f2c94c;--muted:#9aa0b4;--paper:#fbf7ec;--ink:#1c1d24}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#1d1f30,#0b0c12 60%);color:#fff;font:500 16px Barlow,system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:28px 16px}
+h1{margin:0;font:400 46px Bangers,sans-serif;letter-spacing:1.5px;text-align:center;line-height:1}
+h1 span{color:var(--red)}
+.sub{color:var(--muted);text-align:center;margin:6px 0 18px}
+form{display:flex;gap:8px;width:min(460px,100%)}
+input{flex:1;padding:13px 14px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:#fff;font:700 17px Barlow}
+input:focus{outline:none;border-color:var(--gold)}
+button{padding:12px 16px;border-radius:12px;border:0;background:var(--red);color:#fff;font:800 16px Barlow;cursor:pointer}
+button.ghost{background:var(--card);border:1px solid var(--line)}
+#out{width:min(520px,100%);margin-top:22px}
+.card{background:var(--paper);color:var(--ink);border-radius:16px;padding:22px 22px 18px;box-shadow:0 16px 40px #000a;position:relative;overflow:hidden;
+  background-image:repeating-linear-gradient(transparent 0 31px,#c9d7ef 31px 32px);animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+.card:before{content:"";position:absolute;left:52px;top:0;bottom:0;width:2px;background:#e8a0a8}
+@keyframes pop{from{transform:scale(.85) rotate(-2deg);opacity:0}}
+.top{display:flex;justify-content:space-between;align-items:flex-start;padding-left:44px}
+.top small{display:block;color:#6b6f80;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:12px}
+.top b{font:800 24px Barlow}
+.grade{font:700 86px Caveat,cursive;line-height:.8;color:var(--red);transform:rotate(-8deg);border:4px solid var(--red);border-radius:50%;width:120px;height:120px;
+  display:flex;align-items:center;justify-content:center;flex:none}
+.grade.long{font-size:50px;letter-spacing:-2px}
+.note{font:700 26px Caveat,cursive;color:#2747a8;padding-left:44px;margin:10px 0 6px;line-height:1.1}
+table{width:calc(100% - 44px);margin-left:44px;border-collapse:collapse;font-weight:700}
+td{padding:5px 0;border-bottom:1px dashed #c8c2ad}td:last-child{text-align:right;font:800 18px Barlow}
+.foot{padding-left:44px;color:#6b6f80;font-size:12px;margin-top:10px}
+.share{display:flex;gap:8px;margin-top:12px;justify-content:center}
+.miss{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center;color:var(--muted)}
+.legend{width:min(520px,100%);margin-top:18px;color:var(--muted);font-size:13px;text-align:center;line-height:1.6}
+/* billionaire mode */
+#bill{display:none;width:min(820px,100%);margin-top:28px;background:var(--card);border:2px solid var(--gold);border-radius:18px;padding:18px}
+#bill h2{margin:0 0 4px;font:400 34px Bangers,sans-serif;letter-spacing:1px;color:var(--gold)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:10px 0}
+.row label{font:800 12px Barlow;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+select,.row input{padding:10px;border-radius:10px;border:1px solid var(--line);background:#0e1019;color:#fff;font:700 15px Barlow}
+.big{font:400 30px Bangers,sans-serif;color:var(--gold);letter-spacing:1px}
+#btab{width:100%;margin:10px 0 0;font-size:14px}
+#btab td,#btab th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+#btab td:last-child,#btab th:last-child{text-align:right}
+#btab th{color:var(--muted);font-size:12px;text-transform:uppercase}
+.money{position:fixed;top:-40px;font-size:28px;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+</style>
+</head>
+<body>
+<h1>VC <span>REPORT CARD</span></h1>
+<div class="sub" id="sub">How good of a Vince Carter collector were you this year?</div>
+<form id="f"><input id="u" placeholder="Your Top Shot username" autocomplete="off" autocapitalize="none"><button>Grade me</button></form>
+<div id="out"></div>
+<div class="legend">Grades go by dollars, not just counts: buying VC raises your grade, trading VC in (at average sale price) raises it even more, and locking helps a little. Selling lowers it.<br>Unofficial and just for fun 🏀</div>
+
+<div id="bill">
+  <h2>💸 Billionaire Mode</h2>
+  <div class="sub" style="text-align:left;margin:0">You just became a billionaire. How much do you airdrop to each VC collector?</div>
+  <div class="row">
+    <div><label>Budget ($)</label><input id="bud" type="number" value="1000000" min="0" step="1000" style="width:160px"></div>
+    <div><label>Split by</label><select id="how">
+      <option value="score">Report card score</option>
+      <option value="hold">VC Moments held</option>
+      <option value="locked">VC Moments locked</option>
+      <option value="equal">Equal for everyone</option></select></div>
+    <div><label>Minimum grade</label><select id="min">
+      <option>A++</option><option>A+</option><option>A</option><option selected>B+</option><option>B</option><option>C</option></select></div>
+    <button id="rain" type="button">💸 Make it rain</button>
+    <button id="csv" type="button" class="ghost">⬇ CSV</button>
+  </div>
+  <div id="bsum" class="big"></div>
+  <table id="btab"></table>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const ORDER=["A++","A+","A","B+","B","C","D","F"];
+const NOTES={"A++":"Hall of Fame collector! VC would dunk on a 7-footer for you 🔥","A+":"Elite! Half Man, Half Amazing, all collector.",
+  "A":"Excellent work. VC would be proud.","B+":"Great year, a few more pickups and you're on the honour roll.","B":"Solid. Locked in and loyal.",
+  "C":"Steady holder. Room to grow in 2027 📈","D":"More selling than buying this year… VC believes in a comeback.","F":"Sold most of your VC this year. See me after class 😅"};
+let R=null,last=null;
+fetch("report.json?t="+Date.now()).then(r=>r.json()).then(d=>{R=d;const low={};for(const k in d.users)low[k.toLowerCase()]=k;R.low=low;
+  $("sub").textContent=`How good of a Vince Carter collector were you in ${d.year}? (data up to ${d.asof})`;
+  const q=new URLSearchParams(location.search);if(q.has("u")){$("u").value=q.get("u");show(q.get("u"))}
+  if(q.has("billionaire")||q.has("airdrop"))openBill()}).catch(()=>$("out").innerHTML=`<div class="miss">Couldn't load the grades. Try again later.</div>`);
+$("f").onsubmit=e=>{e.preventDefault();const v=$("u").value.trim();if(v.toLowerCase()==="billionaire"){openBill();return}show(v)};
+function show(name){if(!R)return;const key=R.low[name.toLowerCase().replace(/^@/,"")];
+  if(!key){$("out").innerHTML=`<div class="miss">No VC activity found for <b>${esc(name)}</b> this year.<br>Check the spelling, or grab your first VC Moment and start your report card 🏀</div>`;return}
+  const x=R.users[key];last=key;history.replaceState(null,"","?u="+encodeURIComponent(key));
+  $("out").innerHTML=`<div class="card"><div class="top"><div><small>${R.year} report card</small><b>${esc(key)}</b></div>
+    <div class="grade${x.g.length>2?" long":""}">${x.g}</div></div>
+    <div class="note">${NOTES[x.g]}</div>
+    <table>
+      <tr><td>Started the year with</td><td>${x.st}</td></tr>
+      <tr><td>VC bought 🛒</td><td>${x.b} · ${usd(x.sp)}</td></tr>
+      <tr><td>VC sold</td><td>${x.s} · ${usd(x.e)}</td></tr>
+      <tr><td>VC traded in 🔥</td><td>${x.t}${x.t?" · "+usd(x.tv):""}</td></tr>
+      <tr><td>Holding now</td><td>${x.h}</td></tr>
+      <tr><td>Locked 🔒</td><td>${x.l}</td></tr>
+    </table>
+    <div class="foot">Marketplace sales only; gifts and transfers aren't counted. Data up to ${R.asof}.</div></div>
+    <div class="share"><button class="ghost" onclick="copyLink()">🔗 Copy my report card link</button></div>`}
+function usd(n){return "$"+Math.round(n||0).toLocaleString()}
+function copyLink(){const u=location.origin+location.pathname+"?u="+encodeURIComponent(last);navigator.clipboard&&navigator.clipboard.writeText(u);
+  event.target.textContent="✅ Copied"}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+// ---------- Billionaire Mode (secret: ?billionaire, or type "billionaire" as the username) ----------
+function openBill(){$("bill").style.display="block";calc();$("bill").scrollIntoView({behavior:"smooth"})}
+function calc(){if(!R)return[];const bud=Math.max(0,+$("bud").value||0),how=$("how").value,min=ORDER.indexOf($("min").value);
+  const ppl=Object.entries(R.users).filter(([u,x])=>ORDER.indexOf(x.g)<=min&&x.h>0);
+  const w=([u,x])=>how==="score"?Math.max(0,x.sc):how==="hold"?x.h:how==="locked"?x.l:1;
+  const tot=ppl.reduce((a,p)=>a+w(p),0)||1;
+  const rows=ppl.map(p=>({u:p[0],g:p[1].g,h:p[1].h,amt:bud*w(p)/tot})).filter(r=>r.amt>0).sort((a,b)=>b.amt-a.amt);
+  const $f=n=>"$"+Math.round(n).toLocaleString();
+  $("bsum").textContent=`${$f(bud)} to ${rows.length.toLocaleString()} collectors`;
+  $("btab").innerHTML="<tr><th>#</th><th>Collector</th><th>Grade</th><th>VC held</th><th>Airdrop</th></tr>"+
+    rows.slice(0,50).map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.u)}</td><td>${r.g}</td><td>${r.h}</td><td>${$f(r.amt)}</td></tr>`).join("")+
+    (rows.length>50?`<tr><td colspan="5" style="color:var(--muted)">…and ${rows.length-50} more (download the CSV for everyone)</td></tr>`:"");
+  return rows}
+["bud","how","min"].forEach(id=>$(id).oninput=calc);
+$("rain").onclick=()=>{calc();for(let i=0;i<40;i++){const m=document.createElement("div");m.className="money";m.textContent=["💸","💵","🏀"][i%3];
+  m.style.left=Math.random()*100+"vw";m.style.animationDuration=(1.5+Math.random()*2)+"s";m.style.animationDelay=Math.random()*.8+"s";document.body.appendChild(m);setTimeout(()=>m.remove(),4500)}};
+$("csv").onclick=()=>{const rows=calc(),t="username,grade,vc_held,airdrop_usd\n"+rows.map(r=>`${r.u},${r.g},${r.h},${Math.round(r.amt)}`).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv"}));a.download="vc_airdrop.csv";a.click()};
+</script>
+</body>
+</html>
